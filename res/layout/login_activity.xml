@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="30dp"
+    android:background="@drawable/pic">
+    <TextView 
+        android:id="@+id/title"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="8pt"
+        android:textColor="#00aaaa"/>
+    <TextView 
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/title"
+        android:textSize="10pt"/>
+    <EditText 
+        android:inputType="number"
+        android:id="@+id/userNameBox"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/userName"/>
+    <TextView 
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10pt"
+        android:layout_below="@+id/userNameBox"/>
+    <EditText 
+        android:inputType="textPassword"
+        android:id="@+id/passwordBox"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/password"/>   
+   <CheckBox
+		android:id="@+id/rememberPS"
+		android:layout_below="@+id/passwordBox"
+        android:layout_width="wrap_content"
+       	android:layout_height="wrap_content"
+        android:text="@string/rememberPS"
+  	/>
+   <CheckBox
+        android:id="@+id/autoDengLu"
+        android:layout_below="@+id/passwordBox"
+        android:layout_toRightOf="@+id/rememberPS"
+        android:layout_width="wrap_content"
+       	android:layout_height="wrap_content"
+        android:text="@string/autoDengLu"/>
+   <Button 
+        android:id="@+id/denglu"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/rememberPS"
+        android:layout_alignLeft="@+id/passwordBox"
+        android:text="@string/denglu"
+        android:onClick="dengLu"  />
+</RelativeLayout>
+    

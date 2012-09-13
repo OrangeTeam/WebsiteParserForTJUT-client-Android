@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme">
 		<activity
-            android:screenOrientation="sensor"
+            android:screenOrientation="portrait"
             android:label="Login Activity"
             android:name=".LoginActivity" >
             <intent-filter >

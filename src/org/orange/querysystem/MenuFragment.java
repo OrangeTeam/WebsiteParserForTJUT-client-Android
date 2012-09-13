@@ -1,6 +1,9 @@
 package org.orange.querysystem;
 
-import android.app.ActionBar.LayoutParams;
+import org.orange.querysystem.content.AllCourseListActivity;
+import org.orange.querysystem.content.StudentInfoActivity;
+import org.orange.querysystem.content.TerminalScoreActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,9 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import org.orange.querysystem.R;
-import org.orange.querysystem.content.AllCourseListActivity;
-import org.orange.querysystem.content.TerminalScoreActivity;
 
 public class MenuFragment extends ListFragment {
 
@@ -116,7 +116,7 @@ public class MenuFragment extends ListFragment {
             ImageView icon;
         }
     }
-	private static final String[] DATA = {"用户名\n", "常用", "课程表", "成绩单", "课程信息", "学生信息", "通知", "操作", "选项"};    
+	private static final String[] DATA = {"用户名\n", "常用", "课程表", "成绩单", "学生信息", "课程信息", "通知", "操作", "选项"};    
 	    
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -160,7 +160,7 @@ public class MenuFragment extends ListFragment {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					startActivity(new Intent(getActivity(),AllCourseListActivity.class));	}}, 500);	
+					startActivity(new Intent(getActivity(),StudentInfoActivity.class));	}}, 500);	
 			//startActivity(new Intent(getActivity(),WeekCourseListActivity.class));
 			
 		}

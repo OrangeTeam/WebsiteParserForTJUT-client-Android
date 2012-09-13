@@ -43,12 +43,12 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
 
 	@Override
 	protected void onStart(){
-		   super.onStart();
-		   ApplicationExit appExit = (ApplicationExit)getApplication();
-		   if(appExit.isExit()){
-			   finish();
-		   }
-	  }
+		super.onStart();
+		ApplicationExit appExit = (ApplicationExit)getApplication();
+		if(appExit.isExit()){
+			finish();
+		}
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -1,8 +1,11 @@
 package org.orange.querysystem;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -81,6 +84,43 @@ public class LoginActivity extends Activity{
 	    	startActivity(intent);
 	    	finish();
 	    }
+	    
+	    @Override
+		public boolean onKeyDown(int keyCode, KeyEvent event) {
+			if(keyCode == KeyEvent.KEYCODE_BACK){
+				new AlertDialog.Builder(LoginActivity.this)
+					.setTitle(R.string.menu_activity_title)
+					.setIcon(R.drawable.ic_action_refresh)
+					.setMessage(R.string.menu_activity_inform)
+					.setPositiveButton(R.string.alert_dialog_ok, 
+							new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									ApplicationExit appExit = (ApplicationExit)getApplication();
+									appExit.setExit(true);
+									finish();
+								}
+							}
+					)
+					.setNegativeButton(R.string.alert_dialog_cancel, 
+							new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									
+								}
+							}
+					).show();
+			}
+		
+//				mSlideoutHelper.close();
+//				return true;
+//			
+			return super.onKeyDown(keyCode, event);
+		}
 	    
 	   
 }

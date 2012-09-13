@@ -1,6 +1,5 @@
 package org.orange.querysystem.content;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,12 +11,8 @@ import org.orange.querysystem.R;
 import util.BitOperate.BitOperateException;
 import util.webpage.Constant;
 import util.webpage.Course;
-import util.webpage.ReadPageHelper;
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -33,10 +28,8 @@ import android.widget.Spinner;
 
 import com.korovyansk.android.slideout.SlideoutActivity;
 
-public class AllCourseListActivity extends ListActivity{
+public class AllCourseListActivity extends ListActivity implements ParseWebPage.CoursesInfo{
 	
-	private String charset = "GB2312";
-	private int timeout = 6000;
 	private Button refresh;
 	private Spinner spinner = null;
 
@@ -107,43 +100,10 @@ public class AllCourseListActivity extends ListActivity{
     }
     
     public void readWebPage(){
-    	new parseWebPage().execute(Constant.url.本学期修读课程);
-    }
-    public class parseWebPage extends AsyncTask<String,Void,ArrayList<Course>>{
-
-		@Override
-		protected ArrayList<Course> doInBackground(String... urls) {
-			ReadPageHelper readHelper = new ReadPageHelper("20106135","20106135",charset,timeout);
-			ArrayList<Course> courses = null;
-			try {
-				if(readHelper.doLogin()){
-					courses = SchoolWebpageParser.parseCourse(
-							Constant.url.本学期修读课程, readHelper);
-				}
-				else
-					System.out.println("Can't log in.");
-			} catch (IOException e) {
-				System.out.println("Encounter IOException when doLogin. "+e.getMessage());
-				e.printStackTrace();
-			} catch (ParserException e) {
-				System.out.println("Encounter ParserException. "+e.getMessage());
-				e.printStackTrace();
-			}
-			return courses;
-		}
-		@Override
-		protected void onPostExecute(ArrayList<Course> courses){
-			try {
-				coursesInfo(courses);
-			} catch (BitOperateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-    	
+    	new ParseWebPage().execute(ParseWebPage.PARSE_COURSE, Constant.url.本学期修读课程, this);
     }
     
-    public void coursesInfo(ArrayList<Course> courses) throws BitOperateException{
+    public void coursesInfo(ArrayList<Course> courses) {
                 
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map1 = new HashMap<String, String>();
@@ -168,6 +128,7 @@ public class AllCourseListActivity extends ListActivity{
 		map5.put("blank", "7-8节");
 		map6.put("blank", "9-10节");
 		map7.put("blank", "11-13节");
+		try{
 		for(int i=0; i<courses.size(); i++){
 			for(int j=0; j<courses.get(i).getTimeAndAddress().size(); j++ ){
 				if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
@@ -375,6 +336,9 @@ public class AllCourseListActivity extends ListActivity{
 				}
 			}
 				
+		}
+		} catch(BitOperateException e){
+			e.printStackTrace();
 		}
 		
 		list.add(map1);

@@ -206,30 +206,52 @@ public class BitOperate {
     				BitOperateException.TOO_LARGE_POSITON);
     	return ( tested & (~0<<position) ) != 0;
     }
-    
+
     public static class BitOperateException extends Exception{
 		private static final long serialVersionUID = 6979403183991540981L;
 
+		public static final int NOT_SET					=-1;
 		public static final int ILLEGAL_POSITION 		= 1;
 		public static final int NEGATIVE_POSITION 		= 2;
 		public static final int TOO_LARGE_POSITON 		= 3;
 		public static final int START_GREATER_THAN_END 	= 4;
 		public static final int UNKNOWN_NOTATION 		= 5;
 		public static final int UNKNOWN_TOKEN 			= 6;
-    	
-    	private int code = 0;
-    	public BitOperateException(String message, int exceptionCode){
-    		super(message);
-    		code = exceptionCode;
-    	}
-    	public BitOperateException(String message){
-    		this(message, 0);
-    	}
-    	public BitOperateException(){
-    		this("Can't do bit operate normally.");
-    	}
-    	public int getCode(){
-    		return code;
-    	}
+
+		private int code = NOT_SET;
+		public BitOperateException(String message, int exceptionCode){
+			super(message);
+			code = exceptionCode;
+		}
+		public BitOperateException(String message){
+			this(message, NOT_SET);
+		}
+		public BitOperateException(){
+			this("Cannot do bit operate normally.");
+		}
+		public BitOperateException(String message, int exceptionCode, Throwable cause){
+			super(message, cause);
+			code = exceptionCode;
+		}
+		public BitOperateException(String message, Throwable cause) {
+			this(message, NOT_SET, cause);
+		}
+		public BitOperateException(Throwable cause) {
+			this("Cannot do bit operate normally.", cause);
+		}
+
+		
+		/**
+		 * @param code 错误代码
+		 */
+		public void setCode(int exceptionCode) {
+			this.code = exceptionCode;
+		}
+		/**
+		 * @return 错误代码
+		 */
+		public int getCode(){
+			return code;
+		}
     }
 }

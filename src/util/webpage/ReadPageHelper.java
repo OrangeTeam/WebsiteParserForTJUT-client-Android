@@ -10,7 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
-public class ReadPageHelper {
+public class ReadPageHelper implements Cloneable{
 	/**网络连接的超时时间，单位milliseconds*/
 	private int timeout;
 	private String userName, password, charset, charsetForParsePostsFromSCCE;
@@ -222,26 +222,40 @@ public class ReadPageHelper {
 			conn.cookie(SCCESession.cookieKey, SCCESession.cookieValue);
 		return ((HttpConnection)conn).post(charset).outerHtml();
 	}
-	
-	
+	/** 修剪头尾不可见符，包括\s\u00a0\u3000 */
+	public static String trim(String src){
+		if(src!=null)
+			return src.replaceAll("(^[\\s\u00a0\u3000])|([\\s\u00a0\u3000]$)", "");
+		else
+			return null;
+	}
+	/** 删除所有不可见字符，包括\s\u00a0\u3000 */
 	public static String deleteSpace(String src){
     	if(src!=null)
-    		return src.replaceAll("\\s|\u00a0|\u3000", "");
+    		return src.replaceAll("[\\s\u00a0\u3000]", "");
     		//	ideographic space	0x3000	&#12288(HTML);
     	else
     		return null;
     }
-	/**
-	 * 打开连接，并打开输入流。用getInputStream()取得输入流
-	 * 注意：用完输入流后，要关闭输入流，并且getConnection().close();
-	 * @return "OK" for success, or the information about failure.成功返回“OK”，否则返回失败原因。
-	 * @author Bai Jie
-	 */
-	protected String openInputStream(){
-		return "";
-	}
 	
-	public static class Cookie {
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public ReadPageHelper clone() throws CloneNotSupportedException {
+		ReadPageHelper clone = (ReadPageHelper) super.clone();
+		if(this.SCCESession != null)
+			clone.SCCESession = this.SCCESession.clone();
+		else
+			clone.SCCESession = null;
+		if(this.teachingAffairsSession != null)
+			clone.teachingAffairsSession = this.teachingAffairsSession.clone();
+		else
+			clone.teachingAffairsSession = null;
+		return clone;
+	}
+
+	public static class Cookie implements Cloneable {
 		private String cookieKey;
 		private String cookieValue;
 		private Date modifiedTime;
@@ -294,6 +308,15 @@ public class ReadPageHelper {
 		}
 		public boolean isEmpty(){
 			return (cookieKey.length() == 0&&cookieValue.length() == 0);
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#clone()
+		 */
+		@Override
+		public Cookie clone() throws CloneNotSupportedException {
+			Cookie clone = (Cookie) super.clone();
+			clone.modifiedTime = (Date) this.modifiedTime.clone();
+			return clone;
 		}
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()

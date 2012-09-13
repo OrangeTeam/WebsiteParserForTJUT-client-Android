@@ -15,14 +15,17 @@ import java.util.TimeZone;
  * @author Bai Jie
  *
  */
-public class Post {
+public class Post implements Cloneable{
+	/**和Post来源相关的常量*/
 	public static final class SOURCES{
+		public static final int UNKNOWN_SOURCE = -1;
 		public static final int WEBSITE_OF_TEACHING_AFFAIRS = 1;
 		public static final int WEBSITE_OF_SCCE = 2;
 		public static final int STUDENT_WEBSITE_OF_SCCE = 3;
 		public static final String NOTICES_IN_SCCE_URL = "http://59.67.152.3/wnoticemore.aspx";
 		public static final String NEWS_IN_SCCE_URL = "http://59.67.152.3/wnewmore.aspx";
 	}
+	/**和Post类别相关的常量*/
 	public static final class CATEGORYS{
 		public static final String TEACHING_AFFAIRS_NOTICES = "重要通知";
 		public static final String TEACHING_AFFAIRS_COURSE_SELECTION = "选课相关通知";
@@ -61,25 +64,35 @@ public class Post {
 	}
 	
 
-	int source;
-	String category;
-	String title;
-	String url;
-	String author;
-	Date date;
+	/**来源，见{@link Post.SOURCES}*/
+	private int source;
+	/**类别，见{@link Post.CATEGORYS}*/
+	private String category;
+	/**标题*/
+	private String title;
+	/**统一资源定位符*/
+	private String url;
+	/**正文*/
+	private String mainBody;
+	/**作者/发布者*/
+	private String author;
+	/**发布日期*/
+	private Date date;
 
 	public Post() {
 		super();
-		source = -1; 
-		title = url = category = null;
-		date = null;
+		source = SOURCES.UNKNOWN_SOURCE; 
+		title = url = mainBody = category = null;
+		date = new Date(0);
 	}
-	public Post(int source, String category, String title, String url, String author, String date) {
+	/**全参构造方法*/
+	public Post(int source, String category, String title, String url, String mainBody, String author, String date) {
 		this();
 		this.source = source;
 		this.category = category;
 		this.title = title;
 		this.url = url;
+		this.mainBody = mainBody;
 		this.author = author;
 		try {
 			setDate(date);
@@ -89,15 +102,27 @@ public class Post {
 			e.printStackTrace();
 		}
 	}
+	/**拷贝构造方法*/
+	public Post(Post src){
+		this();
+		this.source = src.source;
+		this.category = src.category;
+		this.title = src.title;
+		this.url = src.url;
+		this.mainBody = src.mainBody;
+		this.author = src.author;
+		this.date = (Date) src.date.clone();
+	}
+	
 	/**
-	 * @return the source
+	 * @return 来源，参见{@link Post.SOURCES}
 	 */
 	public int getSource() {
 		return source;
 	}
 	/**
 	 * 以字符串形式返回通知源
-	 * @return 类似“教务处”的字符串
+	 * @return 类似“教务处”的字符串，参见{@link Post.SOURCES}
 	 */
 	public String getSourceString(){
 		switch(source){
@@ -108,76 +133,113 @@ public class Post {
 		}
 	}
 	/**
-	 * @param source the source to set
+	 * @param source 来源，请一定用{@link Post.SOURCES}中的常量
 	 */
 	public Post setSource(int source) {
 		this.source = source;
 		return this;
 	}
 	/**
-	 * @return the category
+	 * @return 类别，参见{@link Post.CATEGORYS}
 	 */
 	public String getCategory() {
 		return category;
 	}
 	/**
-	 * @param category the category to set
+	 * @param category 类别，请一定用{@link Post.CATEGORYS}中的常量
 	 */
 	public Post setCategory(String category) {
 		this.category = category;
 		return this;
 	}
 	/**
-	 * @return the title
+	 * @return 标题
 	 */
 	public String getTitle() {
 		return title;
 	}
 	/**
-	 * @param title the title to set
+	 * @param title 标题
 	 */
 	public Post setTitle(String title) {
 		this.title = title;
 		return this;
 	}
 	/**
-	 * @return the url
+	 * @return the URL
 	 */
 	public String getUrl() {
 		return url;
 	}
 	/**
-	 * @param url the url to set
+	 * @param url the URL to set
 	 */
 	public Post setUrl(String url) {
 		this.url = url;
 		return this;
 	}
 	/**
-	 * @return the author
+	 * @return 正文（包括HTML标签）
+	 */
+	public String getMainBody() {
+		return mainBody;
+	}
+	/**
+	 * @param mainBody 正文
+	 */
+	public Post setMainBody(String mainBody) {
+		this.mainBody = mainBody;
+		return this;
+	}
+	/**
+	 * @return 作者/发布者
 	 */
 	public String getAuthor() {
 		return author;
 	}
 	/**
-	 * @param author the author to set
+	 * @param author 作者/发布者
 	 */
 	public Post setAuthor(String author) {
 		this.author = author;
 		return this;
 	}
 	/**
-	 * 对返回时间的修改不会影响本对象（只读）
-	 * @return the date
+	 * 取得发布日期。对返回时间的修改不会影响本对象（只读）
+	 * @return 发布日期
 	 */
 	public Date getDate() {
 		return (Date)date.clone();
 	}
 	/**
-	 * @param date the date to set
+	 * 设置发布日期。将来对参数date的修改不会影响本对象（拷贝参数date）
+	 * @param date 发布日期
 	 */
 	public Post setDate(Date date) {
-		this.date = date;
+		if(date == null)
+			throw new NullPointerException("date shouldn't have been null.");
+		this.date = (Date) date.clone();
+		return this;
+	}
+	/**
+	 * 以字符串(YYYY-MM-DD格式)设置日期
+	 * @param date YYYY-MM-DD格式的字符串，例如2012-07-16
+	 * @return 返回this（Builder）
+	 * @throws ParseException if the beginning of the specified string cannot be parsed.
+	 */
+	public Post setDate(String date) throws ParseException{
+		this.date = convertToDate(date);
+		return this;
+	}
+	/**
+	 * 设置日期
+	 * @param year 年
+	 * @param month 月
+	 * @param date 日
+	 * @return 返回this（Builder）
+	 */
+	public Post setDate(int year, int month, int date){
+		this.date = convertToDate(year, month, date);
 		return this;
 	}
 	/**
@@ -197,17 +259,7 @@ public class Post {
 	public String getDateString(){
 		return getDateString("-");
 	}
-	/**
-	 * 设置日期
-	 * @param year 年
-	 * @param month 月
-	 * @param date 日
-	 * @return 返回this（Builder）
-	 */
-	public Post setDate(int year, int month, int date){
-		this.date = convertToDate(year, month, date);
-		return this;
-	}
+	/** 根据指定年月日生成Date对象 */
 	public static Date convertToDate(int year, int month, int date){
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+08"), Locale.PRC);
 		calendar.clear();
@@ -215,22 +267,27 @@ public class Post {
 		return calendar.getTime();
 	}
 	/**
-	 * 以字符串(YYYY-MM-DD格式)设置日期
-	 * @param date YYYY-MM-DD格式的字符串，例如2012-07-16
-	 * @return 返回this（Builder）
+	 * 字符串日期转化为Date对象
+	 * @param date 类似2012-08-23或2012-3-8的日期，以Locale.PRC的地区习惯处理
+	 * @return 对应的Date对象
 	 * @throws ParseException if the beginning of the specified string cannot be parsed.
 	 */
-	public Post setDate(String date) throws ParseException{
-		this.date = convertToDate(date);
-		return this;
-	}
 	public static Date convertToDate(String date) throws ParseException{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.PRC);
 		return dateFormat.parse(date);
 	}
-	
+	@Override
 	public String toString(){
 		return getSourceString()+"\t"+getCategory()+"\t"+getTitle()+"\t"+getUrl()+"\t"
-				+getAuthor()+"\t"+getDateString();
+				+getAuthor()+"\t"+getDateString()+"\n"+getMainBody();
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Post clone() throws CloneNotSupportedException {
+		Post clone = (Post) super.clone();
+		clone.date = (Date) this.date.clone();
+		return clone;
 	}
 }

@@ -1,18 +1,17 @@
 package org.orange.querysystem.content;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import util.BitOperate.BitOperateException;
+import org.orange.querysystem.ApplicationExit;
+import org.orange.querysystem.LoginActivity;
+import org.orange.querysystem.MenuActivity;
+import org.orange.querysystem.R;
+
 import util.webpage.Constant;
 import util.webpage.Course;
-import util.webpage.ReadPageHelper;
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -26,17 +25,9 @@ import android.widget.Button;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 
-import org.orange.querysystem.ApplicationExit;
-import org.orange.querysystem.LoginActivity;
-import org.orange.querysystem.MenuActivity;
-import org.orange.querysystem.R;
-
 import com.korovyansk.android.slideout.SlideoutActivity;
 
-public class TerminalScoreActivity extends ListActivity{
-
-	private String charset = "GB2312";
-	private int timeout = 6000;
+public class TerminalScoreActivity extends ListActivity implements ParseWebPage.CoursesInfo{
 	
 	private Button refresh;
 	private Spinner spinner = null;
@@ -97,44 +88,10 @@ public class TerminalScoreActivity extends ListActivity{
     }
 	
 	public void readWebPage(){
-    	new parseWebPage().execute(Constant.url.期末最新成绩);
-    }
-    public class parseWebPage extends AsyncTask<String,Void,ArrayList<Course>>{
-
-		@Override
-		protected ArrayList<Course> doInBackground(String... urls) {
-			ReadPageHelper readHelper = new ReadPageHelper("20106135","20106135",charset,timeout);
-			ArrayList<Course> courses = null;
-			try {
-				if(readHelper.doLogin()){
-					courses = SchoolWebpageParser.parseCourse(
-							Constant.url.期末最新成绩, readHelper);
-				}
-				else
-					System.out.println("Can't log in.");
-			} catch (IOException e) {
-				System.out.println("Encounter IOException when doLogin. "+e.getMessage());
-				e.printStackTrace();
-			} catch (ParserException e) {
-				System.out.println("Encounter ParserException. "+e.getMessage());
-				e.printStackTrace();
-			}
-
-			return courses;
-		}
-		@Override
-		protected void onPostExecute(ArrayList<Course> courses){
-			try {
-				coursesInfo(courses);
-			} catch (BitOperateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-    	
+    	new ParseWebPage().execute(ParseWebPage.PARSE_SCORE, Constant.url.期末最新成绩, this);
     }
     
-    public void coursesInfo(ArrayList<Course> courses) throws BitOperateException{
+    public void coursesInfo(ArrayList<Course> courses){
         
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map1 = new HashMap<String, String>();

@@ -1,6 +1,5 @@
 package org.orange.querysystem.content;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,15 +8,10 @@ import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.MenuActivity;
 import org.orange.querysystem.R;
 
-import util.BitOperate.BitOperateException;
 import util.webpage.Constant;
 import util.webpage.Course;
-import util.webpage.ReadPageHelper;
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -34,10 +28,7 @@ import android.widget.TextView;
 
 import com.korovyansk.android.slideout.SlideoutActivity;
 
-public class PersonalScoreActivityContent2 extends ListActivity{
-	
-	private String charset = "GB2312";
-	private int timeout = 6000;
+public class PersonalScoreActivityContent2 extends ListActivity implements ParseWebPage.CoursesInfo{
 	
 	private TextView courseListTitle;
 	private Button refresh;
@@ -102,44 +93,10 @@ public class PersonalScoreActivityContent2 extends ListActivity{
     }
 	
 	public void readWebPage(){
-    	new parseWebPage().execute(Constant.url.个人全部成绩);
-    }
-    public class parseWebPage extends AsyncTask<String,Void,ArrayList<Course>>{
-
-		@Override
-		protected ArrayList<Course> doInBackground(String... urls) {
-			ReadPageHelper readHelper = new ReadPageHelper("20106135","20106135",charset,timeout);
-			ArrayList<Course> courses = null;
-			try {
-				if(readHelper.doLogin()){
-					courses = SchoolWebpageParser.parseScores(
-							Constant.url.个人全部成绩, readHelper);
-				}
-				else
-					System.out.println("Can't log in.");
-			} catch (IOException e) {
-				System.out.println("Encounter IOException when doLogin. "+e.getMessage());
-				e.printStackTrace();
-			} catch (ParserException e) {
-				System.out.println("Encounter ParserException. "+e.getMessage());
-				e.printStackTrace();
-			}
-
-			return courses;
-		}
-		@Override
-		protected void onPostExecute(ArrayList<Course> courses){
-			try {
-				coursesInfo(courses);
-			} catch (BitOperateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-    	
+    	new ParseWebPage().execute(ParseWebPage.PARSE_SCORE, Constant.url.个人全部成绩, this);
     }
     
-    public void coursesInfo(ArrayList<Course> courses) throws BitOperateException{
+    public void coursesInfo(ArrayList<Course> courses){
 //    	courseListTitle = (TextView)findViewById(R.id.course_list_title);
 //        courseListTitle.setText("期末成绩单");
         

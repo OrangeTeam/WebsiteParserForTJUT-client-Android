@@ -25,6 +25,7 @@ public class Course {
 	/**教学班号*/
 	private String classNumber;
 	
+	/**时间地点列表*/
 	private ArrayList<TimeAndAddress> timeAndAddress;
 	//暂没参考教材
 	private String teachingMaterial;
@@ -38,7 +39,7 @@ public class Course {
 	private short testScore;
 	/**期末总评成绩*/
 	private short totalScore;
-	/**期末总评成绩*/
+	/**课程性质*/
 	private String kind;
 	
 
@@ -116,41 +117,41 @@ public class Course {
 		return this;
 	}
 	/**
-	 * @return the code
+	 * @return 课程代买
 	 */
 	public String getCode() {
 		return code;
 	}
 	/**
-	 * @param code the code to set
+	 * @param code 课程代码
 	 */
 	public Course setCode(String code) {
 		this.code = code;
 		return this;
 	}
 	/**
-	 * @return the name
+	 * @return 课程名称
 	 */
 	public String getName() {
 		return name;
 	}
 	/**
-	 * @param name the name to set
+	 * @param name 课程名称
 	 */
 	public Course setName(String name) {
 		this.name = name;
 		return this;
 	}
 	/**
-	 * 可直接用此方法的返回引用操作，对之的操作会作用在此Course对象上
-	 * @return the teachers
+	 * 取得教师列表。为方便，可直接对此方法返回的引用操作，对之的操作会作用在此Course对象上
+	 * @return 授课教师的ArrayList
 	 */
 	public ArrayList<String> getTeachers() {
 		return teachers;
 	}
 	/**
-	 * 把本Course对象的teachers清空并设置为参数指定的内容
-	 * @param teachers the teachers to set
+	 * 设置授课教师列表。把本Course对象的teachers清空并设置为参数指定的内容。之后对参数teachers的修改不会作用到此Course。
+	 * @param teachers 授课教师的ArrayList
 	 * @throws NullPointerException 参数为null
 	 */
 	public Course setTeachers(ArrayList<String> teachers){
@@ -162,7 +163,7 @@ public class Course {
 	}
 	/**
 	 * 把本Course对象的teachers清空并设置为参数指定的内容
-	 * @param teachers the teachers to set
+	 * @param teachers 授课教师列表的String[]
 	 * @throws NullPointerException 参数为null
 	 */
 	public Course setTeachers(String[] teachers){
@@ -187,13 +188,13 @@ public class Course {
 		return this;
 	}
 	/**
-	 * @return the credit
+	 * @return 学分
 	 */
 	public byte getCredit() {
 		return credit;
 	}
 	/**
-	 * @param credit the credit to set
+	 * @param credit 学分
 	 * @throws CourseException 参数不是正数,或者参数大于Byte.MAX_VALUE
 	 */
 	public Course setCredit(int credit) throws CourseException {
@@ -205,28 +206,28 @@ public class Course {
 		return this;
 	}
 	/**
-	 * @return the classNumber
+	 * @return 教学班号
 	 */
 	public String getClassNumber() {
 		return classNumber;
 	}
 	/**
-	 * @param classNumber the classNumber to set
+	 * @param classNumber 教学班号
 	 */
 	public Course setClassNumber(String classNumber) {
 		this.classNumber = classNumber;
 		return this;
 	}
 	/**
-	 * 可直接用此方法的返回引用操作，对之的操作会作用在此Course对象上
-	 * @return the timeAndAddress
+	 * 取得时间地点列表。为方便，可直接对此方法返回的引用操作，对之的操作会作用在此Course对象上
+	 * @return 时间地点列表
 	 */
 	public ArrayList<TimeAndAddress> getTimeAndAddress() {
 		return timeAndAddress;
 	}
 	/**
-	 * 把本Course对象的TimeAndAddresses清空并设置为参数指定的内容
-	 * @param timeAndAddress the timeAndAddress to set
+	 * 把本Course对象的TimeAndAddresses清空并设置为参数指定的内容。拷贝参数timeAndAddresses，以后对之的修改不影响此Course对象
+	 * @param timeAndAddresses 时间地点列表
 	 * @throws NullPointerException 参数是null
 	 */
 	public Course setTimeAndAddresse(ArrayList<TimeAndAddress> timeAndAddresses){
@@ -239,8 +240,8 @@ public class Course {
 		return this;
 	}
 	/**
-	 * 把本Course对象的TimeAndAddresses清空并设置为参数指定的内容
-	 * @param timeAndAddress the timeAndAddress to set
+	 * 把本Course对象的TimeAndAddresses清空并设置为参数指定的内容。拷贝参数timeAndAddresses，以后对之的修改不影响此Course对象
+	 * @param timeAndAddresses 时间地点列表
 	 * @throws NullPointerException 参数是null
 	 */
 	public Course setTimeAndAddresse(TimeAndAddress[] timeAndAddresses){
@@ -253,55 +254,55 @@ public class Course {
 		return this;
 	}
 	/**
-	 * @return the teachingMaterial
+	 * @return 参考教材
 	 */
 	public String getTeachingMaterial() {
 		return teachingMaterial;
 	}
 	/**
-	 * @param teachingMaterial the teachingMaterial to set
+	 * @param teachingMaterial 参考教材
 	 */
 	public Course setTeachingMaterial(String teachingMaterial) {
 		this.teachingMaterial = teachingMaterial;
 		return this;
 	}
 	/**
-	 * @return the note
+	 * @return 备注
 	 */
 	public String getNote() {
 		return note;
 	}
 	/**
-	 * @param note the note to set
+	 * @param note 备注
 	 */
 	public Course setNote(String note) {
 		this.note = note;
 		return this;
 	}
 	/**
-	 * @return the year
+	 * @return 学年
 	 */
 	public short getYear() {
 		return year;
 	}
 	/**
-	 * @param year the year to set
+	 * @param year 学年
 	 * @throws CourseException when year<1900 || year>9999
 	 */
 	public Course setYear(int year) throws CourseException {
 		if(year<1900 || year>9999)
-			throw new CourseException("Illegal year!");
+			throw new CourseException("Illegal year: "+year);
 		this.year = (short) year;
 		return this;
 	}
 	/**
-	 * @return the isFirstSemester
+	 * @return 学期。true表示上半学期，false表示下半学期，null表示未知
 	 */
 	public Boolean isFirstSemester() {
 		return isFirstSemester;
 	}
 	/**
-	 * @param isFirstSemester the isFirstSemester to set
+	 * @param isFirstSemester 学期。true表示上半学期，false表示下半学期，null表示未知
 	 */
 	public Course isFirstSemester(Boolean isFirstSemester) {
 		this.isFirstSemester = isFirstSemester;
@@ -309,48 +310,101 @@ public class Course {
 	}
 	/**
 	 * 取得 结课考核成绩
-	 * @return 结课考核成绩
+	 * @return 结课考核成绩。默认值-1表示未设置
 	 */
 	public short getTestScore() {
 		return testScore;
 	}
 	/**
 	 * 设置 结课考核成绩
-	 * @param testScore 结课考核成绩  to set
+	 * @param testScore 结课考核成绩 
 	 * @throws CourseException when testScore<0 || testScore>999
 	 */
 	public Course setTestScore(int testScore) throws CourseException {
 		if(testScore<0 || testScore>999)
-			throw new CourseException("Illegel score of test!");
+			throw new CourseException("Illegel score of test: "+testScore);
 		this.testScore = (short) testScore;
 		return this;
 	}
 	/**
 	 * 取得 期末总评成绩
-	 * @return 期末总评成绩
+	 * @return 期末总评成绩。默认值-1表示未设置
 	 */
 	public short getTotalScore() {
 		return totalScore;
 	}
 	/**
 	 * 设置 期末总评成绩
-	 * @param totalScore 期末总评成绩 to set
+	 * @param totalScore 期末总评成绩 
 	 * @throws CourseException when totalScore<0 || totalScore>999
 	 */
 	public Course setTotalScore(int totalScore) throws CourseException {
 		if(totalScore<0 || totalScore>999)
-			throw new CourseException("Illegel final score!");
+			throw new CourseException("Illegel final score: "+totalScore);
 		this.totalScore = (short) totalScore;
 		return this;
 	}
 	/**
-	 * @return the kind
+	 * 返回分数score对应的的绩点
+	 * @param score 要计算的分数
+	 * @return 分数score对应的绩点。0-59的绩点为0
+	 * @throws CourseException when score<0 || score>100
+	 */
+	public static float getGradePoint(int score) throws CourseException{
+		if(score<0 || score>100)
+			throw new CourseException("Illegel score: "+score);
+		if(score<60)
+			return 0;
+		else if(score<65)
+			return 1;
+		else if(score<70)
+			return 1.5f;
+		else if(score<75)
+			return 2;
+		else if(score<80)
+			return 2.5f;
+		else if(score<85)
+			return 3;
+		else if(score<90)
+			return 3.5f;
+		else if(score<96)
+			return 4;
+		else
+			return 4.5f;
+	}
+	/**
+	 * 取得绩点。若fromTotalScoreOrTestScore为真，从期末总评成绩计算；否则从结课考核成绩计算
+	 * @param fromTotalScoreOrTestScore 如果是true，从期末总评成绩计算绩点；如果是false，从结课考核成绩计算
+	 * @return 指定成绩的绩点。0-59分的绩点为0
+	 * @throws CourseException 当  尚未设置相关成绩 或者 score<0 || score>100  时
+	 */
+	public float getGradePoint(boolean fromTotalScoreOrTestScore) throws CourseException{
+		short score = -1;
+		if(fromTotalScoreOrTestScore)
+			score = getTotalScore();
+		else
+			score = getTestScore();
+		if(score == -1)
+			throw new CourseException("尚未设置"+(fromTotalScoreOrTestScore?"期末总评成绩":"结课考核成绩"));
+		return getGradePoint(score);
+	}
+	/**
+	 * 取得绩点。根据期末总评成绩计算
+	 * @return 期末总评成绩的绩点。0-59分的绩点为0
+	 * @throws CourseException 当  尚未设置期末总评成绩 或者 score<0 || score>100  时
+	 */
+	public float getGradePoint() throws CourseException{
+		return getGradePoint(true);
+	}
+	
+	/**
+	 * @return 课程性质
 	 */
 	public String getKind() {
 		return kind;
 	}
 	/**
-	 * @param kind the kind to set
+	 * @param kind 课程性质
 	 */
 	public Course setKind(String kind) {
 		this.kind = kind;
@@ -458,6 +512,12 @@ public class Course {
 		}
 		public CourseException(){
 			super("Encounter exception in Course class");
+		}
+		public CourseException(String message, Throwable cause) {
+			super(message, cause);
+		}
+		public CourseException(Throwable cause) {
+			super("Encounter exception in Course class", cause);
 		}
 	}
 
@@ -992,6 +1052,12 @@ public class Course {
 			}
 			public TimeAndAddressException(){
 				super("Encounter Exception in class TimeAndAddress.");
+			}
+			public TimeAndAddressException(String message, Throwable cause) {
+				super(message, cause);
+			}
+			public TimeAndAddressException(Throwable cause) {
+				super("Encounter Exception in class TimeAndAddress.", cause);
 			}
 		}
 	}

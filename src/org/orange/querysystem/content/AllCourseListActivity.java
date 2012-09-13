@@ -33,14 +33,6 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
 	private Button refresh;
 	private Spinner spinner = null;
 
-	/*创建用于表格内容插入的数组*/
-	private String[] lessonOne = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonTwo = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonThree = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonFour = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonFive = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonSix = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-
 	@Override
 	protected void onStart(){
 		super.onStart();
@@ -104,251 +96,53 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
     }
     
     public void coursesInfo(ArrayList<Course> courses) {
-                
+    	/*String[星期几][第几大节]*/
+    	String[][] lesson = new String[8][7];
+    	for(int i=0;i<lesson.length;i++)
+    		for(int j=0;j<lesson[i].length;j++)
+    			lesson[i][j]="";
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> map1 = new HashMap<String, String>();
-		HashMap<String, String> map2 = new HashMap<String, String>();
-		HashMap<String, String> map3 = new HashMap<String, String>();
-		HashMap<String, String> map4 = new HashMap<String, String>();
-		HashMap<String, String> map5 = new HashMap<String, String>();
-		HashMap<String, String> map6 = new HashMap<String, String>();
-		HashMap<String, String> map7 = new HashMap<String, String>();
+        for(int i=1;i<=7;i++)
+        	list.add(new HashMap<String, String>());
+        
+		list.get(0).put("0", "");
+		list.get(0).put("1", "周一");
+		list.get(0).put("2", "周二");
+		list.get(0).put("3", "周三");
+		list.get(0).put("4", "周四");
+		list.get(0).put("5", "周五");
+		list.get(0).put("6", "周六");
+		list.get(0).put("7", "周日");
+		list.get(1).put("0", "1-2节");
+		list.get(2).put("0", "3-4节");
+		list.get(3).put("0", "5-6节");
+		list.get(4).put("0", "7-8节");
+		list.get(5).put("0", "9-10节");
+		list.get(6).put("0", "11-13节");
+		for(Course course:courses)
+			for(Course.TimeAndAddress time:course.getTimeAndAddress())
+				for(int dayOfWeek = 1; dayOfWeek<=7; dayOfWeek++)
+					for(int period = 1; period<=13; period++)
+						try{
+							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)){
+								if((period&1) == 1)
+									period++;	//period为奇数，此大节已加，自动跳过一小节
+								int bigPeriod = period/2;	//转为大节，下面处理11-13特殊情况
+								if(bigPeriod==7){
+									bigPeriod=6;	//若period为13，对应第6大节
+									if(time.hasSetPeriod(11)||time.hasSetPeriod(12))
+										continue;	//若period为13，且11或12小节已记，则跳过此次
+								}
+								lesson[dayOfWeek][bigPeriod]+=course.getName() + "\n" + time.getWeekString() + "\n" + time.getAddress() + "\n";
+							}
+						} catch(BitOperateException e){
+							e.printStackTrace();
+						}
+		for(int row = 1 ;row<=6;row++)
+			for(int dayOfWeek = 1;dayOfWeek<=7;dayOfWeek++)
+				list.get(row).put(String.valueOf(dayOfWeek), lesson[dayOfWeek][row]);
 		
-		map1.put("blank", "");
-		map1.put("Monday", "周一");
-		map1.put("Tuesday", "周二");
-		map1.put("Wednesday", "周三");
-		map1.put("Thursday", "周四");
-		map1.put("Friday", "周五");
-		map1.put("Saturday", "周六");
-		map1.put("Sunday", "周日");
-		map2.put("blank", "1-2节");
-		map3.put("blank", "3-4节");
-		map4.put("blank", "5-6节");
-		map5.put("blank", "7-8节");
-		map6.put("blank", "9-10节");
-		map7.put("blank", "11-13节");
-		try{
-		for(int i=0; i<courses.size(); i++){
-			for(int j=0; j<courses.get(i).getTimeAndAddress().size(); j++ ){
-				if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
-					lessonOne[0] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Monday", lessonOne[0]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(2)){
-					lessonOne[1] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Tuesday", lessonOne[1]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(3)){
-					lessonOne[2] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Wednesday", lessonOne[2]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(4)){
-					lessonOne[3] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Thursday", lessonOne[3]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(5)){
-					lessonOne[4] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Friday", lessonOne[4]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(6)){
-					lessonOne[5] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Saturday", lessonOne[5]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(1) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(2) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(7)){
-					lessonOne[6] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map2.put("Sunday", lessonOne[6]);
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
-					lessonTwo[0] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Monday", lessonTwo[0]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(2)){
-					lessonTwo[1] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Tuesday", lessonTwo[1]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(3)){
-					lessonTwo[2] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Wednesday", lessonTwo[2]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(4)){
-					lessonTwo[3] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Thursday", lessonTwo[3]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(5)){
-					lessonTwo[4] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Friday", lessonTwo[4]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(6)){
-					lessonTwo[5] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Saturday", lessonTwo[5]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(3) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(4) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(7)){
-					lessonTwo[6] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map3.put("Sunday", lessonTwo[6]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
-					lessonThree[0] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Monday", lessonThree[0]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(2)){
-					lessonThree[1] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Tuesday", lessonThree[1]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(3)){
-					lessonThree[2] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Wednesday", lessonThree[2]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(4)){
-					lessonThree[3] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Thursday", lessonThree[3]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(5)){
-					lessonThree[4] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Friday", lessonThree[4]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(6)){
-					lessonThree[5] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Saturday", lessonThree[5]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(5) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(6) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(7)){
-					lessonThree[6] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map4.put("Sunday", lessonThree[6]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
-					lessonFour[0] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Monday", lessonFour[0]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(2)){
-					lessonFour[1] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Tuesday", lessonFour[1]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(3)){
-					lessonFour[2] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Wednesday", lessonFour[2]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(4)){
-					lessonFour[3] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Thursday", lessonFour[3]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(5)){
-					lessonFour[4] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Friday", lessonFour[4]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(6)){
-					lessonFour[5] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Saturday", lessonFour[5]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(7) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(8) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(7)){
-					lessonFour[6] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map5.put("Sunday", lessonFour[6]);
-				
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
-					lessonFive[0] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Monday", lessonFive[0]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(2)){
-					lessonFive[1] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Tuesday", lessonFive[1]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(3)){
-					lessonFive[2] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Wednesday", lessonFive[2]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(4)){
-					lessonFive[3] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Thursday", lessonFive[3]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(5)){
-					lessonFive[4] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Friday", lessonFive[4]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(6)){
-					lessonFive[5] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Saturday", lessonFive[5]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(9) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(10) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(7)){
-					lessonFive[6] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map6.put("Sunday", lessonFive[6]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(1)){
-					lessonSix[0] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Monday", lessonSix[0]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(2)){
-					lessonSix[1] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Tuesday", lessonSix[1]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(3)){
-					lessonSix[2] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Wednesday", lessonSix[2]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(4)){
-					lessonSix[3] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Thursday", lessonSix[3]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(5)){
-					lessonSix[4] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Friday", lessonSix[4]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(6)){
-					lessonSix[5] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Saturday", lessonSix[5]);
-					
-				}
-				else if(courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(11) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(12) && courses.get(i).getTimeAndAddress().get(j).hasSetPeriod(13) && courses.get(i).getTimeAndAddress().get(j).hasSetDay(7)){
-					lessonSix[6] += courses.get(i).getName() + "\n" + courses.get(i).getTimeAndAddress().get(j).getWeekString() + "\n" +courses.get(i).getTimeAndAddress().get(j).getAddress();
-					map7.put("Sunday", lessonSix[6]);
-					
-				}
-			}
-				
-		}
-		} catch(BitOperateException e){
-			e.printStackTrace();
-		}
-		
-		list.add(map1);
-		list.add(map2);
-		list.add(map3);
-		list.add(map4);
-		list.add(map5);
-		list.add(map6);
-		list.add(map7);
-		SimpleAdapter listAdapter = new MySimpleAdapter(this, list, R.layout.all_course_list_listview, new String[]{"blank", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}, new int[] {R.id.blank, R.id.Monday, R.id.Tuesday, R.id.Wednesday, R.id.Thursday, R.id.Friday, R.id.Saturday, R.id.Sunday});
+		SimpleAdapter listAdapter = new MySimpleAdapter(this, list, R.layout.all_course_list_listview, new String[]{"0", "1", "2", "3", "4", "5", "6", "7"}, new int[] {R.id.blank, R.id.Monday, R.id.Tuesday, R.id.Wednesday, R.id.Thursday, R.id.Friday, R.id.Saturday, R.id.Sunday});
 		setListAdapter(listAdapter);
 		
 //		ListView listView = (ListView)findViewById(android.R.id.list);

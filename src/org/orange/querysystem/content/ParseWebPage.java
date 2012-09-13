@@ -29,8 +29,8 @@ public class ParseWebPage extends AsyncTask<Object,Void,ArrayList<Course>>{
 			parser = new SchoolWebpageParser(
 					new MyParserListener(), "20106135","20106135");
 			switch((Integer)args[0]){
-			case PARSE_COURSE: result = parser.parseCourse((String)args[1]);
-			case PARSE_SCORE: result = parser.parseScores((String)args[1]);
+			case PARSE_COURSE: result = parser.parseCourse((String)args[1]);break;
+			case PARSE_SCORE: result = parser.parseScores((String)args[1]);break;
 			}
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

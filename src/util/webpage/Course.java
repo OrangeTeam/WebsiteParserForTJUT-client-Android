@@ -11,7 +11,7 @@ import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
  * @author Zhou Peican
  * @improver Bai Jie
  */
-public class Course {
+public class Course implements Cloneable{
 	/**本地数据库使用的ID*/
 	private int id;
 	/**课程代码*/
@@ -92,8 +92,17 @@ public class Course {
 		this.kind = kind;
 	}
 	/**拷贝构造方法*/
-	public Course(Course src) throws CourseException{
-		this(src.code, src.name, src.credit, src.classNumber, src.testScore, src.totalScore, src.year, src.isFirstSemester);
+	public Course(Course src){
+		this();
+		this.code = src.code;
+		this.name = src.name;
+		this.credit = src.credit;
+		this.classNumber = src.classNumber;
+		this.testScore = src.testScore;
+		this.totalScore = src.totalScore;
+		this.year = src.year;
+		this.isFirstSemester = src.isFirstSemester;
+		
 		this.id = src.id;
 		this.teachingMaterial = src.teachingMaterial;
 		this.note = src.note;
@@ -503,6 +512,17 @@ public class Course {
 		return getCode()+"\t"+getName()+"\t"+getClassNumber()+"\t"+getTeacherString()+"\t"
 				+getCredit()+"\t"+getTestScore()+"\t"+getTotalScore()+"\t"+getYear()+"\t"
 				+isFirstSemester()+"\t"+getKind()+"\t"+getNote()+"\n"+getTimeAndAddressString();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Course clone() throws CloneNotSupportedException {
+		Course clone = (Course) super.clone();
+		clone.setTeachers(this.teachers);
+		clone.setTimeAndAddresse(this.timeAndAddress);
+		return clone;
 	}
 
 	public static class CourseException extends Exception{

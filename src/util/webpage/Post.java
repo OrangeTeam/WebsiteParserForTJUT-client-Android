@@ -18,10 +18,10 @@ import java.util.TimeZone;
 public class Post implements Cloneable{
 	/**和Post来源相关的常量*/
 	public static final class SOURCES{
-		public static final int UNKNOWN_SOURCE = -1;
-		public static final int WEBSITE_OF_TEACHING_AFFAIRS = 1;
-		public static final int WEBSITE_OF_SCCE = 2;
-		public static final int STUDENT_WEBSITE_OF_SCCE = 3;
+		public static final byte UNKNOWN_SOURCE = -1;
+		public static final byte WEBSITE_OF_TEACHING_AFFAIRS = 1;
+		public static final byte WEBSITE_OF_SCCE = 2;
+		public static final byte STUDENT_WEBSITE_OF_SCCE = 3;
 		public static final String NOTICES_IN_SCCE_URL = "http://59.67.152.3/wnoticemore.aspx";
 		public static final String NEWS_IN_SCCE_URL = "http://59.67.152.3/wnewmore.aspx";
 	}
@@ -64,8 +64,9 @@ public class Post implements Cloneable{
 	}
 	
 
+	private int id; 
 	/**来源，见{@link Post.SOURCES}*/
-	private int source;
+	private byte source;
 	/**类别，见{@link Post.CATEGORYS}*/
 	private String category;
 	/**标题*/
@@ -86,7 +87,7 @@ public class Post implements Cloneable{
 		date = new Date(0);
 	}
 	/**全参构造方法*/
-	public Post(int source, String category, String title, String url, String mainBody, String author, String date) {
+	public Post(byte source, String category, String title, String url, String mainBody, String author, String date) {
 		this();
 		this.source = source;
 		this.category = category;
@@ -115,6 +116,18 @@ public class Post implements Cloneable{
 	}
 	
 	/**
+	 * @return 通知ID
+	 */
+	public int getId() {
+		return id;
+	}
+	/**
+	 * @param ID 通知ID
+	 */
+	public void setId(int ID) {
+		this.id = ID;
+	}
+	/**
 	 * @return 来源，参见{@link Post.SOURCES}
 	 */
 	public int getSource() {
@@ -135,7 +148,7 @@ public class Post implements Cloneable{
 	/**
 	 * @param source 来源，请一定用{@link Post.SOURCES}中的常量
 	 */
-	public Post setSource(int source) {
+	public Post setSource(byte source) {
 		this.source = source;
 		return this;
 	}

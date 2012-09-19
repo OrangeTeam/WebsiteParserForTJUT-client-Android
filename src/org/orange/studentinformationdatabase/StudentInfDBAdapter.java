@@ -748,7 +748,7 @@ public class StudentInfDBAdapter {
 				long newDate = cursor.getLong(6);
 				//date在数据库中的存储类型为integer（integer会根据数据的量级自动改变位数），date是长整型存储的所以要用getLong()，否则会丢失位数。
 				
-				post.setSource(newSource);
+				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
 				post.setTitle(newTitle);
 				post.setUrl(newUrl);
@@ -784,7 +784,7 @@ public class StudentInfDBAdapter {
 				String newAuthor = cursor.getString(5);
 				long newDate = cursor.getLong(6);
 				
-				post.setSource(newSource);
+				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
 				post.setTitle(newTitle);
 				post.setUrl(newUrl);
@@ -830,7 +830,7 @@ public class StudentInfDBAdapter {
 				String newAuthor = cursor.getString(5);
 				long newDate = cursor.getLong(6);
 				
-				post.setSource(newSource);
+				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
 				post.setTitle(newTitle);
 				post.setUrl(newUrl);

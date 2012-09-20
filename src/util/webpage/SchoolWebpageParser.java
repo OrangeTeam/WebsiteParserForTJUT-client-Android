@@ -115,21 +115,21 @@ public class SchoolWebpageParser {
 	/**
 	 * 从给定来源，在指定的categories类别中，解析通知等文章
 	 * @param postSource 来源，类似Post.CATEGORYS.TEACHING_AFFAIRS_WEBSITE
-	 * @param categories 指定类别范围，是String[]，内容类似Post.CATEGORYS.TEACHING_AFFAIRS_NOTICES
+	 * @param categories 指定类别范围，是String[]，内容类似Post.CATEGORYS.TEACHING_AFFAIRS_NOTICES。空数组或首项为null时不分类别全解析
 	 * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
 	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
 	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
-	 * @return 符合条件的posts；如果postSource不可识别，返回null
-	 * @throws IOException 
+	 * @return 符合条件的posts；如果postSource不可识别，返回空ArrayList
+	 * @throws IOException 链接超时等IO异常
 	 * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
 	 */
-    public ArrayList<Post> parsePosts(int postSource, String[] categories, Date start, 
+    public ArrayList<Post> parsePosts(byte postSource, String[] categories, Date start, 
     		Date end, int max) throws UnsupportedEncodingException, IOException{
     	ArrayList<Post> result = new ArrayList<Post>();
     	switch(postSource){
     	case Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS:
-    		if(categories == null)
-    			categories = Post.CATEGORYS.CATEGORYS_IN_TEACHING_AFFAIRS_WEBSITE;
+    		if(categories==null || categories.length==0 || categories[0]==null)
+    			categories = Post.CATEGORYS.IN_TEACHING_AFFAIRS_WEBSITE;
     		for(String aCategory:categories){
     			if(max>0 && result.size()>=max)
     				break;
@@ -137,7 +137,7 @@ public class SchoolWebpageParser {
     		}
     	break;
     	case Post.SOURCES.WEBSITE_OF_SCCE:
-    		if(categories == null){
+    		if(categories==null || categories.length==0 || categories[0]==null){
 	    		result.addAll(parsePostsFromSCCE(null, start, end, max, Post.SOURCES.NOTICES_IN_SCCE_URL));
 	    		if(max<=0 || result.size()<max)
 	    			result.addAll(parsePostsFromSCCE(null, start, end, max-result.size(), Post.SOURCES.NEWS_IN_SCCE_URL));
@@ -159,7 +159,7 @@ public class SchoolWebpageParser {
     		}
     	break;
     	case Post.SOURCES.STUDENT_WEBSITE_OF_SCCE:
-    		if(categories == null)
+    		if(categories==null || categories.length==0 || categories[0]==null)
     			categories = Post.CATEGORYS.IN_STUDENT_WEBSITE_OF_SCCE;
     		for(String aCategory:categories){
     			if(max>0 && result.size()>=max)
@@ -167,9 +167,86 @@ public class SchoolWebpageParser {
     			result.addAll(parsePostsFromSCCEStudent(aCategory, start, end, max-result.size()));
     		}
     	break;
-    	default:return null;
+    	case Post.SOURCES.UNKNOWN_SOURCE:
+    		if(categories==null || categories.length==0 || categories[0]==null){
+				if(max>=0 && result.size()>=max)
+    				break;
+    			result.addAll(parsePosts(Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS,categories, start, end, max));
+    			if(max>=0 && result.size()>=max)
+    				break;
+    			result.addAll(parsePosts(Post.SOURCES.WEBSITE_OF_SCCE, categories , start, end, max-result.size()));
+    			if(max>=0 && result.size()>=max)
+    				break;
+    			result.addAll(parsePosts(Post.SOURCES.STUDENT_WEBSITE_OF_SCCE, categories, start, end, max-result.size()));
+    		}
+    		else{
+    			for(String tested:categories){
+    				if(tested==null) continue;
+    				if(max>=0 && result.size()>=max)
+        				break;
+    				for(String aCategory:Post.CATEGORYS.IN_TEACHING_AFFAIRS_WEBSITE)
+    					if(aCategory.equals(tested)){
+    						result.addAll(parsePostsFromTeachingAffairs(tested, start, end, max));
+    						break;
+    					}
+    				if(max>=0 && result.size()>=max)
+        				break;
+    				for(String aCategory:Post.CATEGORYS.IN_SCCE)
+    					if(aCategory.equals(tested)){
+    						result.addAll(parsePostsFromSCCE(new String[]{tested}, start, end, max-result.size(), (String)null));
+    						break;
+    					}
+    				if(max>=0 && result.size()>=max)
+        				break;
+    				for(String aCategory:Post.CATEGORYS.IN_STUDENT_WEBSITE_OF_SCCE)
+    					if(aCategory.equals(tested)){
+    						result.addAll(parsePostsFromSCCEStudent(tested, start, end, max-result.size()));
+    						break;
+    					}
+    			}
+    		}
+    	break;
+    	default:
     	}
     	return result;
+    }
+    /**
+     * 在指定的categories类别中，解析通知等文章
+     * @param categories 指定类别范围，是String[]，内容类似Post.CATEGORYS.TEACHING_AFFAIRS_NOTICES。空数组或首项为null时不分类别全解析
+	 * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
+	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
+	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
+     * @return 符合条件的posts
+     * @throws IOException 链接超时等IO异常
+     * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
+     */
+    public ArrayList<Post> parsePosts(String[] categories, Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, categories, start, end, max);
+    }
+    /**
+     * 在指定的category类别中，解析通知等文章
+     * @param aCategory 某具体类别，类似Post.CATEGORYS.TEACHING_AFFAIRS_NOTICES等
+     * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
+	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
+	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
+     * @return 符合条件的posts
+     * @throws IOException 链接超时等IO异常
+     * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
+     */
+    public ArrayList<Post> parsePosts(String aCategory, Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, aCategory, start, end, max);
+    }
+    /**
+     * 从所有可处理来源中，解析通知等文章
+     * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
+	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
+	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
+     * @return 符合条件的posts
+     * @throws IOException 链接超时等IO异常
+     * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
+     */
+    public ArrayList<Post> parsePosts(Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, start, end, max);
     }
     /**
 	 * 从给定来源，解析通知等文章
@@ -181,11 +258,10 @@ public class SchoolWebpageParser {
      * @throws IOException 
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
 	 */
-    public ArrayList<Post> parsePosts(int postSource, Date start, 
+    public ArrayList<Post> parsePosts(byte postSource, Date start, 
     		Date end, int max) throws UnsupportedEncodingException, IOException{
     	String[] categories = null;
     	return parsePosts(postSource, categories, start, end, max);
-    	
     }
     /**
      * 从给定来源，根据指定的类别等条件，解析通知等文章
@@ -198,7 +274,7 @@ public class SchoolWebpageParser {
      * @throws IOException 
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
      */
-	public ArrayList<Post> parsePosts(int postSource, String aCategory, Date start, Date end, 
+	public ArrayList<Post> parsePosts(byte postSource, String aCategory, Date start, Date end, 
 			int max) throws UnsupportedEncodingException, IOException {
 		String[] categories = new String[]{aCategory};
 		return parsePosts(postSource, categories, start, end, max);

@@ -32,7 +32,7 @@ public class Post implements Cloneable{
 		public static final String TEACHING_AFFAIRS_NEWS = "教务快讯";
 		public static final String TEACHING_AFFAIRS_NOTICES_ON_TEST = "考试相关通知";
 		public static final String TEACHING_AFFAIRS_CET = "大学英语四六级考试";
-		public static final String[] CATEGORYS_IN_TEACHING_AFFAIRS_WEBSITE = new String[]{
+		public static final String[] IN_TEACHING_AFFAIRS_WEBSITE = new String[]{
 			TEACHING_AFFAIRS_NOTICES, TEACHING_AFFAIRS_COURSE_SELECTION, TEACHING_AFFAIRS_NEWS, 
 			TEACHING_AFFAIRS_NOTICES_ON_TEST, TEACHING_AFFAIRS_CET,"考试相关规定","选课相关规定","成绩学籍相关通知",
 			"成绩相关规定","学籍相关规定","教学研究与评价相关通知","专业建设","培养计划","课程建设","教材建设","教学评价","教学研究",
@@ -49,6 +49,9 @@ public class Post implements Cloneable{
 		public static final String SCCE_NEW_SCHOOL = "学校新闻";
 		public static final String SCCE_NEW_COLLEGE = "学院新闻";
 		public static final String SCCE_NEW_DEPARTMENT = "系内新闻";
+		public static final String[] IN_SCCE = new String[]{SCCE_NOTICE_TEACHING,SCCE_NOTICE_RESEARCH,
+			SCCE_NOTICE_STUDENT,SCCE_NOTICE_OFFICE,SCCE_NOTICE_UNION,SCCE_NEW_SCHOOL,SCCE_NEW_COLLEGE,
+			SCCE_NEW_DEPARTMENT};
 		
 		public static final String SCCE_STUDENT_NEWS = "新闻中心";
 		public static final String SCCE_STUDENT_NOTICES = "通知公告";

@@ -76,6 +76,7 @@ public class StudentInfDBAdapter {
 	private static final String KEY_URL = "url";
 	private static final String KEY_AUTHOR = "author";
 	private static final String KEY_DATE = "date";
+	private static final String KEY_MAINBODY = "mainbody";
 	
 	
 	/*
@@ -96,7 +97,7 @@ public class StudentInfDBAdapter {
 	    
 	    private static final String POST_TABLE_CREATE = "create table " + DATABASE_POST_TABLE + "(" + KEY_POST_ID + " integer primary key autoincrement," 
 	    + KEY_SOURCE + " integer," + KEY_CATEGORY + " varchar(35)," + KEY_TITLE + " varchar(35)," + KEY_URL + " varchar(60)," + KEY_AUTHOR + " varchar(15),"
-	    + KEY_DATE + " integer);"; 
+	    + KEY_DATE + " integer," + KEY_MAINBODY + " text);"; 
 	
 	    public void onCreate(SQLiteDatabase theDB){
 		    theDB.execSQL(COURSE_TABLE1_CREATE);
@@ -159,7 +160,7 @@ public class StudentInfDBAdapter {
 	 * 而当做成绩'插入'时已经为更新操作而不是真正的插入
 	 * @param theCourseInf 类型为 ArrayList<Course>
 	 */
-	public void insertArrayCoursesInf(ArrayList<Course> theCourseInf){
+	private void insertArrayCoursesInf(ArrayList<Course> theCourseInf){
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		for(int i = 0; i < theCourseInf.size(); i++){
@@ -202,6 +203,19 @@ public class StudentInfDBAdapter {
 	}
 	
 	/**
+	 * 判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然没有时就会调用insertArrayCoursesInf方法。
+	 * insertArrayCoursesInf：一次性插入多门课程及每门课程成绩的初始化（成绩与课程在同一张表中），之所以成绩要初始化是因为读取课程时并没有读取成绩，
+	 * 而当做成绩'插入'时已经为更新操作而不是真正的插入
+	 * @param theCourseInf 类型为 ArrayList<Course>
+	 */
+	public void autoInsertArrayCoursesInf(ArrayList<Course> theCourseInf){
+		String code = theCourseInf.get(0).getCode();
+		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
+		if(cursor.getCount() == 0)
+			insertArrayCoursesInf(theCourseInf);
+	}
+	
+	/**
 	 * 此插入方法实则为更新（上面也已经说到了），之所以叫插入是因为当每门课的成绩出来时就可以放到相应的课程上。
 	 * @param theScoreInf 类型为ArrayList,当出一门课程成绩时生成一个成员的ArrrayList类型，就可以调用此方法进行‘插入’。
 	 */
@@ -213,9 +227,9 @@ public class StudentInfDBAdapter {
 			//getCode()得到课程代码实现成绩插入到相应的课程中。getCode()是字符串所以两边要加单引号。
 			cursor1.moveToFirst();
 			if(cursor1.getInt(7) != theScoreInf.get(i).getYear())//判断数据库的内容和ArrayList的成绩对象的相关字段是否想等
-				if(theScoreInf.get(i).getYear() < 0)
+				if(theScoreInf.get(i).getYear() <= 1900)
 				{
-					newCourseInfValues1.put(KEY_YEAR, "");
+					newCourseInfValues1.put(KEY_YEAR, 0);
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_YEAR, theScoreInf.get(i).getYear());
@@ -231,7 +245,7 @@ public class StudentInfDBAdapter {
 			if(cursor1.getInt(9) != theScoreInf.get(i).getTestScore())
 				if(theScoreInf.get(i).getTestScore() < 0)
 				{
-					newCourseInfValues1.put(KEY_TEST_SCORE, "");
+					newCourseInfValues1.put(KEY_TEST_SCORE, -1);
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_TEST_SCORE, theScoreInf.get(i).getTestScore());
@@ -241,7 +255,7 @@ public class StudentInfDBAdapter {
 			if(cursor1.getInt(10) != theScoreInf.get(i).getTotalScore())
 				if(theScoreInf.get(i).getTotalScore() < 0)
 				{
-					newCourseInfValues1.put(KEY_TOTAL_SCORE, "");
+					newCourseInfValues1.put(KEY_TOTAL_SCORE, -1);
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_TOTAL_SCORE, theScoreInf.get(i).getTotalScore());
@@ -251,45 +265,25 @@ public class StudentInfDBAdapter {
 			if(cursor1.getString(11) != null)//成绩这一块已经在课程的表courseInf1建立时就已经初始化了，初始化时字符串是空的，所以这里要判断是否为空
 			{
 				if(!(cursor1.getString(11).equals(theScoreInf.get(i).getKind())))
-					if(theScoreInf.get(i).getKind() == null)
-					{
-						newCourseInfValues1.put(KEY_KIND, "" );
-						db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
-					}else{
-						newCourseInfValues1.put(KEY_KIND, theScoreInf.get(i).getKind());
-						db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
-					}
-			}else{
-				if(theScoreInf.get(i).getKind() == null)
 				{
-					newCourseInfValues1.put(KEY_KIND, "" );
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
-				}else{
 					newCourseInfValues1.put(KEY_KIND, theScoreInf.get(i).getKind());
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 				}
+			}else{
+				newCourseInfValues1.put(KEY_KIND, theScoreInf.get(i).getKind());
+				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 			}
 			
 			if(cursor1.getString(12) != null)
 			{
 				if(!(cursor1.getString(12).equals(theScoreInf.get(i).getNote())))
-					if(theScoreInf.get(i).getNote() == null)
-					{
-						newCourseInfValues1.put(KEY_NOTE, "");
-						db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
-					}else{
-						newCourseInfValues1.put(KEY_NOTE, theScoreInf.get(i).getNote());
-						db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
-					}
-			}else{
-				if(theScoreInf.get(i).getNote() == null)
 				{
-					newCourseInfValues1.put(KEY_NOTE, "" );
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
-				}else{
 					newCourseInfValues1.put(KEY_NOTE, theScoreInf.get(i).getNote());
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 				}
+			}else{
+				newCourseInfValues1.put(KEY_NOTE, theScoreInf.get(i).getNote());
+				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
 			}
 		}
 	}
@@ -298,7 +292,7 @@ public class StudentInfDBAdapter {
 	 * 这个课程插入的方法是一次插入一门课程及相关成绩的初始化，
 	 * @param theCourseInf 类型为Course类型
 	 */
-	public void insertCourseInf(Course theCourseInf){
+	private void insertCourseInf(Course theCourseInf){
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		newCourseInfValues.put(KEY_CODE, theCourseInf.getCode());
@@ -331,12 +325,23 @@ public class StudentInfDBAdapter {
 		db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues);
 	}
 	
+	/**
+	 *  判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然如果 没有就会掉用insertCourseInf方法
+	 *  insertCourseInf:这个课程插入的方法是一次插入一门课程及相关成绩的初始化，
+	 * @param theCourseInf
+	 */
+	public void autoInsertCourseInf(Course theCourseInf){
+		String code = theCourseInf.getCode();
+		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
+		if(cursor.getCount() == 0)
+			insertCourseInf(theCourseInf);
+	}
 	
 	/**
 	 * 解析出的通知通过此插入操作方法存入到数据库的post表中。
 	 * @param thePostInf 类型为ArrayList<Post>类型
 	 */
-	public void insertArrayPostsInf(ArrayList<Post> thePostInf){
+	private void insertArrayPostsInf(ArrayList<Post> thePostInf){
 		ContentValues newPostInfValues = new ContentValues();
 		
 		for(int i = 0; i < thePostInf.size(); i++){
@@ -346,6 +351,7 @@ public class StudentInfDBAdapter {
 			newPostInfValues.put(KEY_URL, thePostInf.get(i).getUrl());
 			newPostInfValues.put(KEY_AUTHOR, thePostInf.get(i).getAuthor());
 			newPostInfValues.put(KEY_DATE, thePostInf.get(i).getDate().getTime());
+			newPostInfValues.put(KEY_MAINBODY, thePostInf.get(i).getMainBody());
 			//thePostInf.get(i).getDate().getTime()获取date字段并进行转换为长整型数据。
 			
 			db.insert(DATABASE_POST_TABLE,null, newPostInfValues);
@@ -353,6 +359,17 @@ public class StudentInfDBAdapter {
 		
 	}
 	
+	/**
+	 * 判断数据库通知表中是否已经有要插入的通知，如果有就不进行插入操作，如果没有就调用insertArrayPostsInf
+	 * insertArrayPostsInf:解析出的通知通过此插入操作方法存入到数据库的post表中。
+	 * @param thePostInf
+	 */
+	public void autoInsertArrayPostsInf(ArrayList<Post> thePostInf){
+		String title = thePostInf.get(0).getTitle();
+		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_TITLE + "= '" + title + "'", null, null, null, null);
+		if(cursor.getCount() == 0)
+			insertArrayPostsInf(thePostInf);
+	}
 	
 	/**
 	 * 删除一门课程的所有信息，也就是一条记录。这调记录为courseInf1和courseInf2的相关的一门课程的信息，
@@ -397,73 +414,43 @@ public class StudentInfDBAdapter {
 		if(cursor1.getString(1) != null)//数据库里的字符串初始化值一般都为空，所以从数据库中获得字符串时要进行判断是否为空。为空是直接进行更新操作，不为空时进行数据库相应课程对应的字段的值与传递进来的课程相比较
 		{
 			if(!(cursor1.getString(1).equals(theCourseInf.getCode())))//判断数据库中与这门课传递进来的相应字段值是否相等
-				if(theCourseInf.getCode() == null)
-				{
-					newCourseInfValues1.put(KEY_CODE, "");
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}else{
-					newCourseInfValues1.put(KEY_CODE, theCourseInf.getCode());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}
-		}else{
-			if(theCourseInf.getCode() == null)
 			{
-				newCourseInfValues1.put(KEY_CODE, "");
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-			}else{
 				newCourseInfValues1.put(KEY_CODE, theCourseInf.getCode());
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 			}
+		}else{
+			newCourseInfValues1.put(KEY_CODE, theCourseInf.getCode());
+			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 		}
 		
 		if(cursor1.getString(2) != null)
 		{
 			if(!(cursor1.getString(2).equals(theCourseInf.getName())))
-				if(theCourseInf.getName() == null)
-				{
-					newCourseInfValues1.put(KEY_NAME, "");
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}else{
-					newCourseInfValues1.put(KEY_NAME, theCourseInf.getName());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}
-		}else{
-			if(theCourseInf.getName() == null)
 			{
-				newCourseInfValues1.put(KEY_NAME, "");
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-			}else{
 				newCourseInfValues1.put(KEY_NAME, theCourseInf.getName());
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 			}
+		}else{
+			newCourseInfValues1.put(KEY_NAME, theCourseInf.getName());
+			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 		}
 		
 		if(cursor1.getString(3) != null)
 		{
 			if(!(cursor1.getString(3).equals(theCourseInf.getTeacherString())))
-				if(theCourseInf.getTeacherString() == null)
-				{
-					newCourseInfValues1.put(KEY_TEACHERS, "");
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}else{
-					newCourseInfValues1.put(KEY_TEACHERS, theCourseInf.getTeacherString());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}
-		}else{
-			if(theCourseInf.getTeacherString() == null)
 			{
-				newCourseInfValues1.put(KEY_TEACHERS, "");
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-			}else{
 				newCourseInfValues1.put(KEY_TEACHERS, theCourseInf.getTeacherString());
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 			}
+		}else{
+			newCourseInfValues1.put(KEY_TEACHERS, theCourseInf.getTeacherString());
+			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 		}
 		
 		if(cursor1.getInt(4) != theCourseInf.getCredit())
 			if(theCourseInf.getCredit() < 0)
 			{
-				newCourseInfValues1.put(KEY_CREDIT, "");
+				newCourseInfValues1.put(KEY_CREDIT, 0);
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 			}else{
 				newCourseInfValues1.put(KEY_CREDIT, theCourseInf.getCredit());
@@ -473,45 +460,25 @@ public class StudentInfDBAdapter {
 		if(cursor1.getString(5) != null)
 		{
 			if(!(cursor1.getString(5).equals(theCourseInf.getClassNumber())))
-				if(theCourseInf.getClassNumber() == null)
-				{
-					newCourseInfValues1.put(KEY_CLASS_NUMBER, "");
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}else{
-					newCourseInfValues1.put(KEY_CLASS_NUMBER, theCourseInf.getClassNumber());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}
-		}else{
-			if(theCourseInf.getClassNumber() == null)
 			{
-				newCourseInfValues1.put(KEY_CLASS_NUMBER, "");
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-			}else{
 				newCourseInfValues1.put(KEY_CLASS_NUMBER, theCourseInf.getClassNumber());
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 			}
+		}else{
+			newCourseInfValues1.put(KEY_CLASS_NUMBER, theCourseInf.getClassNumber());
+			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 		}
 		
 		if(cursor1.getString(6) != null)
 		{
 			if(!(cursor1.getString(6).equals(theCourseInf.getTeachingMaterial())))
-				if(theCourseInf.getTeachingMaterial() == null)
-				{
-					newCourseInfValues1.put(KEY_TEACHING_MATERIAL, "" );
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}else{
-					newCourseInfValues1.put(KEY_TEACHING_MATERIAL, theCourseInf.getTeachingMaterial());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-				}
-		}else{
-			if(theCourseInf.getTeachingMaterial() == null)
 			{
-				newCourseInfValues1.put(KEY_TEACHING_MATERIAL, "" );
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
-			}else{
 				newCourseInfValues1.put(KEY_TEACHING_MATERIAL, theCourseInf.getTeachingMaterial());
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 			}
+		}else{
+			newCourseInfValues1.put(KEY_TEACHING_MATERIAL, theCourseInf.getTeachingMaterial());
+			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 		}
 		
 		if(cursor2.getCount() != 0)//判断这门课的TimeAndAddress是否没有。如外教的时间和地点就没此时ArrayList对象的TimeAndAddress的size就为0，数据库中的courseInf2中就没了这条记录，
@@ -519,55 +486,33 @@ public class StudentInfDBAdapter {
 			for(int i = 0; i < theCourseInf.getTimeAndAddress().size(); i++){
 				cursor2.moveToPosition(i);
 				if(cursor2.getInt(2) != theCourseInf.getTimeAndAddress().get(i).getWeek())
-					if(theCourseInf.getTimeAndAddress().get(i).getWeek() == 0)
-					{
-						newCourseInfValues2.put(KEY_WEEK, "");
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}else{
-						newCourseInfValues2.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(i).getWeek());
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}
+				{
+					newCourseInfValues2.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(i).getWeek());
+					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
+				}
 				
 				if(cursor2.getInt(3) != theCourseInf.getTimeAndAddress().get(i).getDay())
-					if(theCourseInf.getTimeAndAddress().get(i).getDay() == 0)
-					{
-						newCourseInfValues2.put(KEY_DAY, "");
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}else{
-						newCourseInfValues2.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(i).getDay());
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}
+				{
+					newCourseInfValues2.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(i).getDay());
+					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
+				}
 				
 				if(cursor2.getInt(4) != theCourseInf.getTimeAndAddress().get(i).getPeriod())
-					if(theCourseInf.getTimeAndAddress().get(i).getPeriod() == 0)
-					{
-						newCourseInfValues2.put(KEY_PERIOD, "");
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}else{
-						newCourseInfValues2.put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(i).getPeriod());
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}
+				{
+					newCourseInfValues2.put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(i).getPeriod());
+					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
+				}
 					
 				if(cursor2.getString(5) != null)
 				{
 					if(!(cursor2.getString(5).equals(theCourseInf.getTimeAndAddress().get(i).getAddress())))
-						if(theCourseInf.getTimeAndAddress().get(i).getAddress() == null)
-						{
-							newCourseInfValues2.put(KEY_ADDRESS, "");
-							db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-						}else{
-							newCourseInfValues2.put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(i).getAddress());
-							db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-						}
-				}else{
-					if(theCourseInf.getTimeAndAddress().get(i).getAddress() == null)
 					{
-						newCourseInfValues2.put(KEY_ADDRESS, "");
-						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
-					}else{
 						newCourseInfValues2.put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(i).getAddress());
 						db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
 					}
+				}else{
+					newCourseInfValues2.put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(i).getAddress());
+					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i + 1)), null);
 				}
 			}
 		}else{
@@ -592,10 +537,10 @@ public class StudentInfDBAdapter {
      * @throws TimeAndAddressException
      * @throws CourseException
      */
-	public ArrayList<Course> getCoursesFromDB() throws BitOperateException, TimeAndAddressException, CourseException{
+	public ArrayList<Course> getCoursesFromDB(short theYear) throws SQLException{
 		 ArrayList<Course> courses = new ArrayList<Course>();
 		 Course course = new Course();
-		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, null, null, null, null, null);
+		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + theYear, null, null, null, null);
 		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
 			 throw new SQLException("No course found from database");
 		 }
@@ -629,10 +574,16 @@ public class StudentInfDBAdapter {
 						 int newDay = cursor2.getInt(3);
 						 int newPeriod = cursor2.getInt(4);
 						 String newAddress = cursor2.getString(5);
-						 timeAndAddress.setWeek(newWeek);
-						 timeAndAddress.setDay(newDay);
-						 timeAndAddress.setPeriod(newPeriod);
-						 timeAndAddress.setAddress(newAddress);
+						 try{
+							 timeAndAddress.setWeek(newWeek);
+							 timeAndAddress.setDay(newDay);
+							 timeAndAddress.setPeriod(newPeriod);
+							 timeAndAddress.setAddress(newAddress);
+						 }catch(BitOperateException e){
+							 e.printStackTrace();
+						 }catch(TimeAndAddressException e){
+							 e.printStackTrace();
+						 }
 						 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
 						 //这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
 					 }
@@ -640,17 +591,101 @@ public class StudentInfDBAdapter {
 				 course.setId(newId);
 				 course.setCode(newCode);
 				 course.setName(newName);
-				 course.setTeachers(newTeachers);
-				 course.setCredit(newCredit);
 				 course.setClassNumber(newClassNumber);
 				 course.setTeachingMaterial(newTeachingMaterial);
-				 course.setYear(newYear);
 				 course.isFirstSemester(reconvert(newIsFirstSemester));
-				 course.setTestScore(newTestScore);
-				 course.setTotalScore(newTotalScore);
 				 course.setKind(newKind);
 				 course.setNote(newNote);
-				 course.setTimeAndAddresse(timeAndAddresses);
+				 try{
+					 course.setTimeAndAddresse(timeAndAddresses);
+					 course.setTeachers(newTeachers);
+					 course.setCredit(newCredit);
+					 if(newYear != 0)course.setYear(newYear);
+					 if(newTestScore != -1)course.setTestScore(newTestScore);
+					 if(newYear != -1)course.setTotalScore(newTotalScore);
+				 }catch(NullPointerException e){
+					 e.printStackTrace();
+				 }catch(CourseException e){
+					 e.printStackTrace();
+				 }
+				 courses.add(new Course(course));
+				 //这里使用了Course的拷贝构造方法进行了深拷贝。
+			 }
+		 }
+		 return courses;
+	 }
+	
+	public ArrayList<Course> getThisTermCoursesFromDB() throws SQLException{
+		 ArrayList<Course> courses = new ArrayList<Course>();
+		 Course course = new Course();
+		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
+		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
+			 throw new SQLException("No course found from database");
+		 }
+		 else{
+			 for(int i = 0; i <cursor1.getCount(); i++){
+				 cursor1.moveToPosition(i);
+				 int newId = cursor1.getInt(0);
+				 String newCode = cursor1.getString(1);
+				 String newName = cursor1.getString(2);
+				 String newTeachers = cursor1.getString(3);
+				 int newCredit = cursor1.getInt(4);
+				 String newClassNumber = cursor1.getString(5);
+				 String newTeachingMaterial = cursor1.getString(6);
+				 int newYear = cursor1.getInt(7);
+				 String newIsFirstSemester = cursor1.getString(8);
+				 int newTestScore = cursor1.getInt(9);
+				 int newTotalScore = cursor1.getInt(10);
+				 String newKind = cursor1.getString(11);
+				 String newNote = cursor1.getString(12);
+				 
+				 ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
+				 TimeAndAddress timeAndAddress = new TimeAndAddress();
+				 Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + newId, null, null, null, null);
+				 if((cursor2.getCount() == 0) || !cursor2.moveToFirst()){
+					 
+				 }
+				 else{
+					 for(int j = 0; j < cursor2.getCount(); j++){
+						 cursor2.moveToPosition(j);
+						 int newWeek = cursor2.getInt(2);
+						 int newDay = cursor2.getInt(3);
+						 int newPeriod = cursor2.getInt(4);
+						 String newAddress = cursor2.getString(5);
+						 try{
+							 timeAndAddress.setWeek(newWeek);
+							 timeAndAddress.setDay(newDay);
+							 timeAndAddress.setPeriod(newPeriod);
+							 timeAndAddress.setAddress(newAddress); 
+						 }catch(BitOperateException e){
+							 e.printStackTrace();
+						 }catch(TimeAndAddressException e){
+							 e.printStackTrace();
+						 }
+						 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
+						 //这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
+					 }
+				 }
+				 course.setId(newId);
+				 course.setCode(newCode);
+				 course.setName(newName);
+				 course.setClassNumber(newClassNumber);
+				 course.setTeachingMaterial(newTeachingMaterial);
+				 course.isFirstSemester(reconvert(newIsFirstSemester));
+				 course.setKind(newKind);
+				 course.setNote(newNote);
+				 try{
+					 course.setTimeAndAddresse(timeAndAddresses);
+					 course.setTeachers(newTeachers);
+					 course.setCredit(newCredit);
+					 if(newYear != 0)course.setYear(newYear);
+					 if(newTestScore != -1)course.setTestScore(newTestScore);
+					 if(newYear != -1)course.setTotalScore(newTotalScore);
+				 }catch(NullPointerException e){
+					 e.printStackTrace();
+				 }catch(CourseException e){
+					 e.printStackTrace();
+				 }
 				 courses.add(new Course(course));
 				 //这里使用了Course的拷贝构造方法进行了深拷贝。
 			 }
@@ -666,7 +701,7 @@ public class StudentInfDBAdapter {
 	 * @throws TimeAndAddressException
 	 * @throws CourseException
 	 */
-	public Course getCourseFromDB(String courseName) throws BitOperateException, TimeAndAddressException, CourseException{
+	public Course getCourseFromDB(String courseName) throws SQLException{
 		 Course course = new Course();
 		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_NAME + " = '" + courseName + "'", null, null, null, null);
 		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
@@ -700,27 +735,39 @@ public class StudentInfDBAdapter {
 					 int newDay = cursor2.getInt(3);
 					 int newPeriod = cursor2.getInt(4);
 					 String newAddress = cursor2.getString(5);
-					 timeAndAddress.setWeek(newWeek);
-					 timeAndAddress.setDay(newDay);
-					 timeAndAddress.setPeriod(newPeriod);
-					 timeAndAddress.setAddress(newAddress);
+					 try{
+						 timeAndAddress.setWeek(newWeek);
+						 timeAndAddress.setDay(newDay);
+						 timeAndAddress.setPeriod(newPeriod);
+						 timeAndAddress.setAddress(newAddress);
+					 }catch(BitOperateException e){
+						 e.printStackTrace();
+					 }catch(TimeAndAddressException e){
+						 e.printStackTrace();
+					 }
 					 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
 				 }
 			 }
 			 course.setId(newId);
 			 course.setCode(newCode);
 			 course.setName(newName);
-			 course.setTeachers(newTeachers);
-			 course.setCredit(newCredit);
 			 course.setClassNumber(newClassNumber);
 			 course.setTeachingMaterial(newTeachingMaterial);
-			 course.setYear(newYear);
 			 course.isFirstSemester(reconvert(newIsFirstSemester));
-			 course.setTestScore(newTestScore);
-			 course.setTotalScore(newTotalScore);
 			 course.setKind(newKind);
 			 course.setNote(newNote);
-			 course.setTimeAndAddresse(timeAndAddresses);
+			 try{
+				 course.setTeachers(newTeachers);
+				 course.setCredit(newCredit);
+				 if(newYear != 0)course.setYear(newYear);
+				 if(newTestScore != -1)course.setTestScore(newTestScore);
+				 if(newYear != -1)course.setTotalScore(newTotalScore);
+				 course.setTimeAndAddresse(timeAndAddresses);
+			 }catch(NullPointerException e){
+				 e.printStackTrace();
+			 }catch(CourseException e){
+				 e.printStackTrace();
+			 }
 		 }
 		 return new Course(course);
 	}
@@ -747,6 +794,7 @@ public class StudentInfDBAdapter {
 				String newAuthor = cursor.getString(5);
 				long newDate = cursor.getLong(6);
 				//date在数据库中的存储类型为integer（integer会根据数据的量级自动改变位数），date是长整型存储的所以要用getLong()，否则会丢失位数。
+				String newMainBody = cursor.getString(7);
 				
 				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
@@ -754,6 +802,7 @@ public class StudentInfDBAdapter {
 				post.setUrl(newUrl);
 				post.setAuthor(newAuthor);
 				post.setDate(new Date(newDate));//new Date(newDate))是把整型的date数据转换成Date类型
+				post.setMainBody(newMainBody);
 				posts.add(new Post(post));
 				//这里用了Post的拷贝构造方法进行深拷贝。
 			}
@@ -766,7 +815,7 @@ public class StudentInfDBAdapter {
 	 * @param theSource，int类型
 	 * @return ArrayList<Post>
 	 */
-	public ArrayList<Post> getPostsFromDB(int theSource){
+	public ArrayList<Post> getPostsFromDB(byte theSource){
 		ArrayList<Post> posts = new ArrayList<Post>();
 		Post post = new Post();
 		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_SOURCE + "= " + theSource, null, null, null,null);
@@ -783,6 +832,7 @@ public class StudentInfDBAdapter {
 				String newUrl = cursor.getString(4);
 				String newAuthor = cursor.getString(5);
 				long newDate = cursor.getLong(6);
+				String newMainBody = cursor.getString(7);
 				
 				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
@@ -790,6 +840,7 @@ public class StudentInfDBAdapter {
 				post.setUrl(newUrl);
 				post.setAuthor(newAuthor);
 				post.setDate(new Date(newDate));
+				post.setMainBody(newMainBody);
 				posts.add(new Post(post));
 			}
 		}
@@ -829,6 +880,7 @@ public class StudentInfDBAdapter {
 				String newUrl = cursor.getString(4);
 				String newAuthor = cursor.getString(5);
 				long newDate = cursor.getLong(6);
+				String newMainbody =cursor.getString(7);
 				
 				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
@@ -836,6 +888,7 @@ public class StudentInfDBAdapter {
 				post.setUrl(newUrl);
 				post.setAuthor(newAuthor);
 				post.setDate(new Date(newDate));
+				post.setMainBody(newMainbody);
 				posts.add(new Post(post));
 			}
 		}

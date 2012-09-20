@@ -131,15 +131,14 @@ public class SchoolWebpageParser {
     		if(categories==null || categories.length==0 || categories[0]==null)
     			categories = Post.CATEGORYS.IN_TEACHING_AFFAIRS_WEBSITE;
     		for(String aCategory:categories){
-    			if(max>0 && result.size()>=max)
-    				break;
-    			result.addAll(parsePostsFromTeachingAffairs(aCategory, start , end, max-result.size()));
+    			if(max<0 || result.size()<max)
+    				result.addAll(parsePostsFromTeachingAffairs(aCategory, start , end, max-result.size()));
     		}
     	break;
     	case Post.SOURCES.WEBSITE_OF_SCCE:
     		if(categories==null || categories.length==0 || categories[0]==null){
 	    		result.addAll(parsePostsFromSCCE(null, start, end, max, Post.SOURCES.NOTICES_IN_SCCE_URL));
-	    		if(max<=0 || result.size()<max)
+	    		if(max<0 || result.size()<max)
 	    			result.addAll(parsePostsFromSCCE(null, start, end, max-result.size(), Post.SOURCES.NEWS_IN_SCCE_URL));
     		}else{
     			ArrayList<String> categoriesInNotices = new ArrayList<String>();
@@ -150,10 +149,10 @@ public class SchoolWebpageParser {
     				else if(aCategory.matches(".*新闻.*"))
     					categoriesInNews.add(aCategory);
     			}
-    			if(!categoriesInNotices.isEmpty())
+    			if(!categoriesInNotices.isEmpty() && (max<0 || result.size()<max))
     				result.addAll(parsePostsFromSCCE(categoriesInNotices.toArray(new String[0]), 
     						start, end, max, Post.SOURCES.NOTICES_IN_SCCE_URL));
-    			if(!categoriesInNews.isEmpty() && (max<=0 || result.size()<max))
+    			if(!categoriesInNews.isEmpty() && (max<0 || result.size()<max))
     				result.addAll(parsePostsFromSCCE(categoriesInNews.toArray(new String[0]), start,
     						end, max-result.size(), Post.SOURCES.NEWS_IN_SCCE_URL));
     		}
@@ -162,9 +161,8 @@ public class SchoolWebpageParser {
     		if(categories==null || categories.length==0 || categories[0]==null)
     			categories = Post.CATEGORYS.IN_STUDENT_WEBSITE_OF_SCCE;
     		for(String aCategory:categories){
-    			if(max>0 && result.size()>=max)
-    				break;
-    			result.addAll(parsePostsFromSCCEStudent(aCategory, start, end, max-result.size()));
+    			if(max<0 || result.size()<max)
+    				result.addAll(parsePostsFromSCCEStudent(aCategory, start, end, max-result.size()));
     		}
     	break;
     	case Post.SOURCES.UNKNOWN_SOURCE:
@@ -298,6 +296,7 @@ public class SchoolWebpageParser {
 		Document doc = null;
 		int page = 0;
 		ArrayList<Post> result = new ArrayList<Post>();
+		if(max == 0) return result;
 		try {
 			url = "http://59.67.148.66:8080/getRecords.jsp?url=list.jsp&pageSize=100&name=" 
 					+ URLEncoder.encode(aCategory, "GB2312") + "&currentPage=";
@@ -312,7 +311,7 @@ public class SchoolWebpageParser {
 					.get(1).select("tr td form font:eq(1)").text() );
 			
 			for(int i = 2;i<=page;i++){
-				if(max>0 && result.size()>=max)
+				if(max>=0 && result.size()>=max)
 					break;
 				try {
 					if(start!=null && Post.convertToDate(doc.body().select("table table table table")
@@ -347,7 +346,7 @@ public class SchoolWebpageParser {
 		Element link = null;
 		Post aPost = null;
 		for(int i = 1;i<posts.size();i++){
-			if(max>0 && result.size()>max)
+			if(max>=0 && result.size()>=max)
 				break;
 			link = posts.get(i).getElementsByTag("a").first();
 			aPost = new Post();
@@ -384,6 +383,7 @@ public class SchoolWebpageParser {
 		Document doc = null;
 		int page = 0;
 		ArrayList<Post> result = new ArrayList<Post>();
+		if(max == 0) return result;
 		if(baseURL == null){
 			if(categories == null)
 				return parsePosts(Post.SOURCES.WEBSITE_OF_SCCE, start, end, max);
@@ -416,7 +416,7 @@ public class SchoolWebpageParser {
 			result.addAll(parsePostsFromSCCE(categories, start, end ,max ,doc));
 
 			for(int i = 2;i<=page;i++){
-				if(max>0 && result.size()>=max)
+				if(max>=0 && result.size()>=max)
 					break;
 				try {
 					if(start!=null && Post.convertToDate(ReadPageHelper.deleteSpace(doc
@@ -454,7 +454,7 @@ public class SchoolWebpageParser {
 		Elements posts = doc.select("form table table").first().getElementsByTag("tr");
 		posts.remove(0);
 		for(Element postTr:posts){
-			if(max>0 && result.size()>=max)
+			if(max>=0 && result.size()>=max)
 				break;
 			cols = postTr.getElementsByTag("td");
 			//验证通知对象
@@ -503,7 +503,7 @@ public class SchoolWebpageParser {
 	 * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
 	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
 	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
-	 * @return 符合条件的posts；如果aCategory不可识别，返回null
+	 * @return 符合条件的posts；如果aCategory不可识别，返回空ArrayList
 	 * @throws IOException 
 	 */
 	public ArrayList<Post> parsePostsFromSCCEStudent(String aCategory, Date start, Date end, int max) throws IOException{
@@ -514,6 +514,7 @@ public class SchoolWebpageParser {
 		Document doc = null;
 		String url = "http://59.67.152.6/Channels/";
 		ArrayList<Post> result = new ArrayList<Post>();
+		if(max == 0) return result;
 		if(aCategory.equals(Post.CATEGORYS.SCCE_STUDENT_NEWS))
 			url += "7";
 		else if(aCategory.equals(Post.CATEGORYS.SCCE_STUDENT_NOTICES))
@@ -529,7 +530,7 @@ public class SchoolWebpageParser {
 		else if(aCategory.equals(Post.CATEGORYS.SCCE_STUDENT_JOBS))
 			url += "55";
 		else
-			return null;
+			return result;
 		url += "?page=";
 		
 		try {
@@ -542,7 +543,7 @@ public class SchoolWebpageParser {
 				listener.onWarn(ParserListener.WARNING_CANNOT_PARSE_PAGE, "不能从计算机学院学生网站解析页数，现仅解析第一页内容。");
 			
 			for(int i = 2;i<=page;i++){
-				if(max>0 && result.size()>=max)
+				if(max>=0 && result.size()>=max)
 					break;
 				try {
 					if(start!=null && Post.convertToDate(doc.select(".oright .orbg ul li").last()
@@ -577,7 +578,7 @@ public class SchoolWebpageParser {
 		ArrayList<Post> result = new ArrayList<Post>();
 		Elements posts = doc.select(".oright .orbg ul li");
 		for(Element postLi:posts){
-			if(max>0 && result.size()>=max)
+			if(max>=0 && result.size()>=max)
 				break;
 			post = new Post();
 			try {

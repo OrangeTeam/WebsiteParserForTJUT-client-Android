@@ -56,6 +56,13 @@ public class Course implements Cloneable{
 		teachers = new ArrayList<String>();
 		timeAndAddress = new ArrayList<TimeAndAddress>();
 	}
+	/**
+	 * @param code 课程代码
+	 * @param name 课程名称
+	 * @param credit 课程学分
+	 * @param classNumber 教学班号
+	 * @throws CourseException credit<=0,或者credit大于Byte.MAX_VALUE
+	 */
 	public Course(String code, String name, int credit, String classNumber) throws CourseException{
 		this();
 		this.code = code;
@@ -63,6 +70,17 @@ public class Course implements Cloneable{
 		setCredit(credit);
 		this.classNumber = classNumber;
 	}
+	/**
+	 * @param code 课程代码
+	 * @param name 课程名称
+	 * @param credit 课程学分
+	 * @param classNumber 教学班号
+	 * @param testScore 结课考核成绩
+	 * @param totalScore 期末总评成绩
+	 * @param year 学年
+	 * @param isFirstSemester 学期。true表示上半学期，false表示下半学期，null表示未知
+	 * @throws CourseException credit<=0,或者credit大于Byte.MAX_VALUE 或者 成绩超出0~999的范围 或者 学年year超出1900~9999的范围
+	 */
 	public Course(String code, String name, int credit, String classNumber, int testScore, 
 			int totalScore, int year, Boolean isFirstSemester) throws CourseException{
 		this(code, name, credit, classNumber);
@@ -72,7 +90,7 @@ public class Course implements Cloneable{
 		this.isFirstSemester = isFirstSemester;
 	}
 	/**全参构造方法
-	 * @throws CourseException */
+	 * @throws CourseException 请见{@link #Course(String, String, int, String, int, int, int, Boolean)}*/
 	public Course(int id, String code, String name, String[] teachers, int credit, String classNumber, 
 			TimeAndAddress[] timeAndAddresses, String teachingMaterial, String note, int year,
 			Boolean isFirstSemester, int testScore, int totalScore, String kind) throws CourseException{
@@ -204,7 +222,7 @@ public class Course implements Cloneable{
 	}
 	/**
 	 * @param credit 学分
-	 * @throws CourseException 参数不是正数,或者参数大于Byte.MAX_VALUE
+	 * @throws CourseException credit<=0,或者credit大于Byte.MAX_VALUE
 	 */
 	public Course setCredit(int credit) throws CourseException {
 		if(credit<=0)
@@ -385,7 +403,7 @@ public class Course implements Cloneable{
 	 * 取得绩点。若fromTotalScoreOrTestScore为真，从期末总评成绩计算；否则从结课考核成绩计算
 	 * @param fromTotalScoreOrTestScore 如果是true，从期末总评成绩计算绩点；如果是false，从结课考核成绩计算
 	 * @return 指定成绩的绩点。0-59分的绩点为0
-	 * @throws CourseException 当  尚未设置相关成绩 或者 score<0 || score>100  时
+	 * @throws CourseException 当  尚未设置相关成绩  时
 	 */
 	public float getGradePoint(boolean fromTotalScoreOrTestScore) throws CourseException{
 		short score = -1;
@@ -400,7 +418,7 @@ public class Course implements Cloneable{
 	/**
 	 * 取得绩点。根据期末总评成绩计算
 	 * @return 期末总评成绩的绩点。0-59分的绩点为0
-	 * @throws CourseException 当  尚未设置期末总评成绩 或者 score<0 || score>100  时
+	 * @throws CourseException 当  尚未设置期末总评成绩  时
 	 */
 	public float getGradePoint() throws CourseException{
 		return getGradePoint(true);
@@ -458,8 +476,9 @@ public class Course implements Cloneable{
 	 * @param periods 课时（第几节课），类似2,4,6,8,10,12 10-13的字符串
 	 * @param address 对应上面确定的时间的 上课地址
 	 * @return 参数合法返回this（builder），参数非法抛出异常
-	 * @throws TimeAndAddressException
-	 * @throws BitOperateException
+	 * @throws TimeAndAddressException 请见{@link TimeAndAddress#TimeAndAddress(String, String, String, String)}
+	 * @throws BitOperateException 请见{@link TimeAndAddress#TimeAndAddress(String, String, String, String)}
+	 * @see TimeAndAddress#TimeAndAddress(String, String, String, String)
 	 */
 	public Course addTimeAndAddress(String weeks, String daysOfWeek, String periods, 
 			String address) throws TimeAndAddressException, BitOperateException{
@@ -474,8 +493,9 @@ public class Course implements Cloneable{
 	 * @param periods 课时（第几节课），类似2,4,6,8,10,12 10-13的字符串
 	 * @param address 对应上面确定的时间的 上课地址
 	 * @return 参数合法返回this（builder），参数非法抛出异常
-	 * @throws TimeAndAddressException
-	 * @throws BitOperateException
+	 * @throws TimeAndAddressException 请见{@link TimeAndAddress#TimeAndAddress(String, Boolean, String, String, String)}
+	 * @throws BitOperateException 请见{@link TimeAndAddress#TimeAndAddress(String, Boolean, String, String, String)}
+	 * @see TimeAndAddress#TimeAndAddress(String, Boolean, String, String, String)
 	 */
 	public Course addTimeAndAddress(String weeks, Boolean oddOrEvenWeeks, String daysOfWeek, 
 				String periods, String address) throws TimeAndAddressException, BitOperateException{
@@ -486,11 +506,11 @@ public class Course implements Cloneable{
 	 * 把timeAndAddress添加到本Course中
 	 * @param timeAndAddress 要新加入的时间和对应地点
 	 * @return 参数合法返回this（builder），参数非法抛出异常
-	 * @throws CourseException
+	 * @throws NullPointerException 当timeAndAddress==null时
 	 */
-	public Course addTimeAndAddress(TimeAndAddress timeAndAddress) throws CourseException{
+	public Course addTimeAndAddress(TimeAndAddress timeAndAddress) throws NullPointerException{
 		if(timeAndAddress == null)
-			throw new CourseException("timeAndAddress shouldn't have been null.");
+			throw new NullPointerException("timeAndAddress shouldn't have been null.");
 		this.timeAndAddress.add(new TimeAndAddress(timeAndAddress));
 		return this;
 	}
@@ -558,8 +578,10 @@ public class Course implements Cloneable{
 		 * @param daysOfWeek 星期(day of week)，类似“星期一 至 星期四 星期六”的字符串
 		 * @param periods 课时（第几节课），类似2,4,6,8,10,12 10-13的字符串
 		 * @param address 对应上面确定的时间的 上课地址
-		 * @throws TimeAndAddressException
-		 * @throws BitOperateException
+		 * @throws TimeAndAddressException daysOfWeek 连续遇到[至到] 或者 [至到]的位置不对 或者 星期字符串不合语法，不含[一~六]或"日"
+		 * @throws BitOperateException 当 weeks非法（非以上格式，无法解析，或者超出0-20的范围） <br />
+		 * 或者  daysOfWeek中有不可识别的符号[^\\s\u00a0\u3000;；,，星期周日一二三四五六至到] ，超过0~7的范围 ，start>end <br />
+		 * 或者 periods不符合以上格式，无法解析 ， 数字超过1~13的范围  时
 		 */
 		public TimeAndAddress(String weeks, String daysOfWeek, String periods, String address) 
 				throws TimeAndAddressException, BitOperateException{
@@ -573,8 +595,10 @@ public class Course implements Cloneable{
 		 * @param daysOfWeek 星期(day of week)，类似“星期一 至 星期四 星期六”的字符串
 		 * @param periods 课时（第几节课），类似2,4,6,8,10,12 10-13的字符串
 		 * @param address 对应上面确定的时间的 上课地址
-		 * @throws TimeAndAddressException
-		 * @throws BitOperateException
+		 * @throws TimeAndAddressException daysOfWeek 连续遇到[至到] 或者 [至到]的位置不对 或者 星期字符串不合语法，不含[一~六]或"日"
+		 * @throws BitOperateException 当 weeks非法（非以上格式，无法解析，或者超出0-20的范围） <br />
+		 * 或者  daysOfWeek中有不可识别的符号[^\\s\u00a0\u3000;；,，星期周日一二三四五六至到] ，超过0~7的范围 ，start>end <br />
+		 * 或者 periods不符合以上格式，无法解析 ， 数字超过1~13的范围  时
 		 */
 		public TimeAndAddress(String weeks, Boolean oddOrEvenWeeks, String daysOfWeek, 
 				String periods, String address) throws TimeAndAddressException, BitOperateException{
@@ -587,14 +611,18 @@ public class Course implements Cloneable{
 		 * @param dayOfWeek 0-6位分别表示周日到周六，1表有这一天，0表无。如二进制0010 0010表示星期一、星期五
 		 * @param period 类似上面，1-13为表1-13节课
 		 * @param address 对应上面时间的地点		 
-		 * @throws BitOperateException 
-		 * @throws TimeAndAddressException */
+		 * @throws BitOperateException 当 week中1超出0-20位的范围 或者  week中1超出0-20位的范围 或者 period中的1超出1~13位的范围 时
+		 */
 		public TimeAndAddress(int weekNumber,int dayOfWeek,int period,String address) 
-				throws BitOperateException, TimeAndAddressException{
+				throws BitOperateException{
 			//this();	//有没有必要呢
 			setWeek(weekNumber).setDay(dayOfWeek).setPeriod(period).setAddress(address);
 		}
-		public TimeAndAddress(String address) throws TimeAndAddressException{
+		/**
+		 * @param address 和时间对应的上课地点
+		 * @throws NullPointerException when address is null
+		 */
+		public TimeAndAddress(String address) throws NullPointerException{
 			this();
 			setAddress(address);
 		}
@@ -624,7 +652,7 @@ public class Course implements Cloneable{
 		/**
 		 * 类似setDay，0-20位的1/0表示是否有这一周。如16进制0x00 00 01 02 表示8、1周有课 
 		 * @param week the week to set
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 week中1超出0-20位的范围
 		 */
 		public TimeAndAddress setWeek(int week) throws BitOperateException {
 			if(BitOperate.has1onBitsHigherThan(week, 21))
@@ -641,19 +669,19 @@ public class Course implements Cloneable{
 			return day;
 		}
 		/**
-		 * 参数的0-6位分别表示周日到周六，1表有这一天，0表无。如二进制0010 0010表示星期一、星期五
-		 * @param day the day of week to set
-		 * @throws BitOperateException 
+		 * 参数的0-6位分别表示周日到周六，（第7位也表示周日，但用0更好）.1表有这一天，0表无。如二进制0010 0010表示星期一、星期五
+		 * @param daysOfWeek 一个整数，低到高位非别表示周日，周一，周二到周六。各位中1表真，0表假
+		 * @throws BitOperateException 当 dayOfWeek中的1超出0~7位的范围
 		 */
-		public TimeAndAddress setDay(int dayOfWeek) throws BitOperateException {
-			if(BitOperate.has1onBitsHigherThan(dayOfWeek, 8))
+		public TimeAndAddress setDay(int daysOfWeek) throws BitOperateException {
+			if(BitOperate.has1onBitsHigherThan(daysOfWeek, 8))
 				throw new BitOperateException("Too large day of week.(>=8)", 
 						BitOperateException.TOO_LARGE_POSITON);
-			if(BitOperate.is1onCertainBit(dayOfWeek, 7)){
-				dayOfWeek = BitOperate.add1onCertainBit(dayOfWeek, 0);
-				dayOfWeek = BitOperate.add0onCertainBit(dayOfWeek, 7);
+			if(BitOperate.is1onCertainBit(daysOfWeek, 7)){
+				daysOfWeek = BitOperate.add1onCertainBit(daysOfWeek, 0);
+				daysOfWeek = BitOperate.add0onCertainBit(daysOfWeek, 7);
 			}
-			this.day = (byte)dayOfWeek;
+			this.day = (byte)daysOfWeek;
 			return this;
 		}
 		/**
@@ -666,7 +694,7 @@ public class Course implements Cloneable{
 		/**
 		 * 类似setDay，1-13为表1-13节课
 		 * @param period the period to set
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 period中的1超出1~13位的范围
 		 */
 		public TimeAndAddress setPeriod(int period) throws BitOperateException {
 			if(BitOperate.has1onBitsHigherThan(period, 14))
@@ -686,11 +714,11 @@ public class Course implements Cloneable{
 		}
 		/**
 		 * @param address the address to set
-		 * @throws TimeAndAddressException when address is null
+		 * @throws NullPointerException when address is null
 		 */
-		public TimeAndAddress setAddress(String address) throws TimeAndAddressException {
+		public TimeAndAddress setAddress(String address) throws NullPointerException {
 			if(address == null)
-				throw new TimeAndAddressException("Shouldn't set address to null.");
+				throw new NullPointerException("Shouldn't set address to null.");
 			this.address = address;
 			return this;
 		}
@@ -700,7 +728,7 @@ public class Course implements Cloneable{
 		 * <strong>注意：</strong>2,4,6,8,10,12,14,18 01- 20（注意最后一个空格）无效
 		 * @param weeksStr 类似2,4,6,8,10,12,14,18 01-21的字符串
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 参数非法（非以上格式，无法解析，或者超出0-20的范围）时
 		 * @precondition weeksStr不包含[\\d\\s\u00a0\u3000;；,，\\-－\u2013\u2014\u2015]以外的任何内容
 		 */
 		public TimeAndAddress addWeeks(String weeksStr) throws BitOperateException{
@@ -713,7 +741,7 @@ public class Course implements Cloneable{
 		 * @param weeksStr 类似2,4,6,8,10,12,14,18 01-21的字符串
 		 * @param oddOrEven true表仅新增单周，false表仅双周，null表连续（不分单双周）。如1-11奇数周应设为true
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 参数非法（非以上格式，无法解析，或者超出0-20的范围）时
 		 * @precondition weeksStr不包含[\\d\\s\u00a0\u3000;；,，\\-－\u2013\u2014\u2015]以外的任何内容
 		 */
 		public TimeAndAddress addWeeks(String weeksStr, Boolean oddOrEven) 
@@ -727,7 +755,7 @@ public class Course implements Cloneable{
 		 * @param end 结束周次(0-20)，包括end。如1-11周，end为11
 		 * @param oddOrEven true表仅单周，false表仅双周，null表连续（不分单双周）。如1-11奇数周应设为true
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 start或end超出0~20的范围，或start>end 时
 		 */
 		public TimeAndAddress addWeeksOnRange(int start, int end, Boolean oddOrEven) throws BitOperateException{
 			int result = BitOperate.add1onRange(week, start, end, oddOrEven);
@@ -738,7 +766,7 @@ public class Course implements Cloneable{
 		 * @param start 起始周次(0-20)，包括start。如1-12周，start为1
 		 * @param end 结束周次(0-20)，包括end。如1-12周，end为12
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 start或end超出0~20的范围，或start>end 时
 		 */
 		public TimeAndAddress addWeeksOnRang(int start, int end) throws BitOperateException{
 			return addWeeksOnRange(start, end, null);
@@ -747,7 +775,7 @@ public class Course implements Cloneable{
 		 * 增加周次
 		 * @param week 0-20分别表示0-20周
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 week中1超出0-20位的范围
 		 */
 		public TimeAndAddress addWeek(int week) throws BitOperateException{
 			int result = BitOperate.add1onCertainBit(this.week, week);
@@ -757,7 +785,7 @@ public class Course implements Cloneable{
 		 * 批量增加周次
 		 * @param weeks 0-20分别表示0-20周
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 week中1超出0-20位的范围
 		 */
 		public TimeAndAddress addWeeks(int[] weeks) throws BitOperateException{
 			int result = BitOperate.add1onCertainBit(this.week, weeks);
@@ -767,7 +795,7 @@ public class Course implements Cloneable{
 		 * 检查是否设置了某周，已设置返回true
 		 * @param testedWeek 被检测的周数
 		 * @return 若设置了此周返回true，没有设置返回false
-		 * @throws BitOperateException when testedWeek<0 || testedWeek>20
+		 * @throws BitOperateException 当 testedWeek超出0~20的范围
 		 */
 		public boolean hasSetWeek(int testedWeek) throws BitOperateException{
 			if(testedWeek>20)
@@ -788,8 +816,9 @@ public class Course implements Cloneable{
 		 * @param daysStr 类似“星期一 至 星期五”的字符串
 		 * @return 参数合法返回this（builder），参数非法抛出异常
 		 * @precondition 不含“\\s\u00a0\u3000;；,，星期周日一二三四五六至到”以外字符
-		 * @throws BitOperateException
-		 * @throws TimeAndAddressException 参数大于7、不可识别星期、至/到位置错误
+		 * @throws BitOperateException daysStr中有不可识别的符号[^\\s\u00a0\u3000;；,，星期周日一二三四五六至到] 或者 超过0~7的范围 或者 start>end
+		 * @throws TimeAndAddressException 连续遇到[至到] 或者 [至到]的位置不对 或者 星期字符串不合语法，不含[一~六]或"日"
+
 		 */
 		public TimeAndAddress addDays(String daysStr) 
 				throws BitOperateException, TimeAndAddressException{
@@ -806,6 +835,12 @@ public class Course implements Cloneable{
 			setDay(HandleComplexDays(daysList));
 			return this;
 		}
+		/**
+		 * @param complexDaysStr
+		 * @return
+		 * @throws TimeAndAddressException 连续遇到[至到] 或者 [至到]的位置不对 或者 星期字符串不合语法，不含[一~六]或"日"
+		 * @throws BitOperateException 当超出0~31的范围，或时间start>end 时
+		 */
 		private int HandleComplexDays(ArrayList<String> complexDaysStr)
 				throws TimeAndAddressException, BitOperateException{
 			boolean justDone = false;
@@ -861,9 +896,16 @@ public class Course implements Cloneable{
 				result = BitOperate.add1onCertainBit(result, dayStringToNumber(day));
 			return result;
 		}
+		/**
+		 * 把中文周几或星期几转化为数字0~6，0表周日（星期日）
+		 * @param weekStr 要被转化的字符串
+		 * @return 0~6，0表周日（星期日），1~6表周一~周六（星期一~星期六）
+		 * @throws TimeAndAddressException weekStr不合法，不含[一~六]或"日"
+		 * @throws NullPointerException 当weekStr为null时
+		 */
 		public static int dayStringToNumber(String weekStr) throws TimeAndAddressException{
 			if(weekStr == null)
-				throw new TimeAndAddressException("weekStr is NULL.");
+				throw new NullPointerException("weekStr is NULL.");
 			if(weekStr.matches(".*日.*"))
 				return 0;
 			if(weekStr.matches(".*一.*"))
@@ -887,7 +929,7 @@ public class Course implements Cloneable{
 		 * @param oddOrEven true表仅单数星期，false表仅双数星期，null表连续（不分单双星期）。
 		 * 如周一至周五奇数星期应设为true <strong><em>注：</em></strong>周日用0表示为双数，用7表示为单数
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 超出0~7位的范围 或者 start>end 时
 		 */
 		public TimeAndAddress addDaysOnRange(int start, int end, Boolean oddOrEven) throws BitOperateException{
 			int result = BitOperate.add1onRange(day, start, end, oddOrEven);
@@ -898,16 +940,16 @@ public class Course implements Cloneable{
 		 * @param start 起始星期(0-7)，包括start，0、7都表周日。如周一至周五，start为1
 		 * @param end 结束星期(0-7)，包括end，0、7都表周日。如周一至周五，end为5
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 超出0~7位的范围 或者 start>end 时
 		 */
 		public TimeAndAddress addDaysOnRang(int start, int end) throws BitOperateException{
 			return addDaysOnRange(start, end, null);
 		}
 		/**
 		 * 增加星期
-		 * @param dayOfWeek 0 、7表周日，1-6表周一到周六
+		 * @param dayOfWeek 0 （推荐）、7表周日，1-6表周一到周六
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 dayOfWeek超出0~7的范围
 		 */
 		public TimeAndAddress addDay(int dayOfWeek) throws BitOperateException{
 			int result = BitOperate.add1onCertainBit(this.day, dayOfWeek);
@@ -917,7 +959,7 @@ public class Course implements Cloneable{
 		 * 批量增加星期
 		 * @param daysOfWeek 0、7表周日，1-6表周一到周六
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 dayOfWeek超出0~7的范围
 		 */
 		public TimeAndAddress addDays(int[] daysOfWeek) throws BitOperateException{
 			int result = BitOperate.add1onCertainBit(this.day, daysOfWeek);
@@ -927,7 +969,7 @@ public class Course implements Cloneable{
 		 * 检查是否设置了某星期(day of week),，已设置返回true
 		 * @param testedDayOfWeek 被检查的星期数，0、7都表示周日，1-6分别表示周一~周六
 		 * @return 若设置了此星期返回true，没有设置返回false
-		 * @throws BitOperateException when testedWeek<0 || testedWeek>7
+		 * @throws BitOperateException 当testedWeek超出0~7的范围
 		 */
 		public boolean hasSetDay(int testedDayOfWeek) throws BitOperateException{
 			if(testedDayOfWeek > 7)
@@ -968,7 +1010,7 @@ public class Course implements Cloneable{
 		 * <strong>注意：</strong>2,4,6,8,10,12 10- 13（注意最后一个空格）无效
 		 * @param periodsStr 类似2,4,6,8,10,12 10-13的字符串
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException
+		 * @throws BitOperateException 当不符合以上格式，无法解析 或者 数字超过1~13的范围 时
 		 * @precondition periodsStr不包含[\\d\\s\u00a0\u3000;；,，\\-－\u2013\u2014\u2015]以外的任何内容
 		 */
 		public TimeAndAddress addPeriods(String periodsStr) throws BitOperateException{
@@ -979,7 +1021,7 @@ public class Course implements Cloneable{
 		 * 增加课时（第几节课）
 		 * @param bigPeriod 1-6分别表1-2节、3-4节、5-6节、7-8节、9-10节、11-13节
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws Exception 
+		 * @throws TimeAndAddressException 当 bigPeriod超出1~6的范围 时
 		 */
 		public TimeAndAddress addPeriods(int bigPeriod) throws TimeAndAddressException{
 			try{
@@ -1003,7 +1045,7 @@ public class Course implements Cloneable{
 		 * @param end 结束课时(1-13)，包括end。如1-11节，end为11
 		 * @param oddOrEven true表仅单数节课，false表仅双数节，null表连续（不分单双节）。如1-11奇数节应设为true
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 start、end超出1~13的范围 或者 start>end 时
 		 */
 		public TimeAndAddress addPeriodsOnRange(int start, int end, Boolean oddOrEven) throws BitOperateException{
 			int result = BitOperate.add1onRange(period, start, end, oddOrEven);
@@ -1014,7 +1056,7 @@ public class Course implements Cloneable{
 		 * @param start 起始课时(1-13)，包括start。如1-12节课，start为1
 		 * @param end 结束课时(1-13)，包括end。如1-12节课，end为12
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 start、end超出1~13的范围 或者 start>end 时
 		 */
 		public TimeAndAddress addPeriodsOnRang(int start, int end) throws BitOperateException{
 			return addPeriodsOnRange(start, end, null);
@@ -1023,7 +1065,7 @@ public class Course implements Cloneable{
 		 * 增加课时（第几节课）
 		 * @param period 1-13分别表第1到13节课
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 period超出1~13的范围 时
 		 */
 		public TimeAndAddress addPeriod(int period) throws BitOperateException{
 			int result = BitOperate.add1onCertainBit(this.period, period);
@@ -1033,7 +1075,7 @@ public class Course implements Cloneable{
 		 * 批量增加课时（第几节课）
 		 * @param periods 1-13分别表第1到13节课
 		 * @return 参数合法返回this（builder），参数非法抛出异常
-		 * @throws BitOperateException 
+		 * @throws BitOperateException 当 period超出1~13的范围 时
 		 */
 		public TimeAndAddress addPeriods(int[] periods) throws BitOperateException{
 			int result = BitOperate.add1onCertainBit(period, periods);
@@ -1043,7 +1085,7 @@ public class Course implements Cloneable{
 		 * 检查是否设置了某节课，已设置返回true
 		 * @param testedPeriod 被检测的周数，1-13分别表示1-13节课
 		 * @return 若设置了此周返回true，没有设置返回false
-		 * @throws BitOperateException when testedWeek<1 || testedWeek>13
+		 * @throws BitOperateException 当 testedWeek超出1~13的范围 时
 		 */
 		public boolean hasSetPeriod(int testedPeriod) throws BitOperateException{
 			if(testedPeriod>13)
@@ -1064,7 +1106,7 @@ public class Course implements Cloneable{
 		public String toString(){
 			return getWeekString()+" "+getDayString()+" "+getPeriodString()+" "+getAddress();
 		}
-		
+		/**处理TimeAndAddress，遇到不可处理情况时的异常*/
 		public static class TimeAndAddressException extends Exception{
 			private static final long serialVersionUID = 1900908778609873214L;
 			public TimeAndAddressException(String message){

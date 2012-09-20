@@ -10,7 +10,7 @@ package util;
  */
 public class BitOperate {
 	/** 把original的第location位设为1.location从低位到高位,从0起 
-	 * @throws BitOperateException 
+	 * @throws BitOperateException 当 location超出0~31的范围
 	 */
     public static int add1onCertainBit(int original,int location) throws BitOperateException{
     	if(location<0)
@@ -21,6 +21,13 @@ public class BitOperate {
     				BitOperateException.TOO_LARGE_POSITON);
     	return original | (1<<location); 
     }
+    /**
+     * locations中有多个，把original的每个location位设为1.location从低位到高位,从0起 
+     * @param original 基数
+     * @param locations 位置（第几位）
+     * @return 计算结果
+     * @throws BitOperateException 当 location超出0~31的范围
+     */
     public static int add1onCertainBit(int original,int[] locations) throws BitOperateException{
     	int result = original;
     	for(int location:locations)
@@ -51,7 +58,7 @@ public class BitOperate {
      * @param start 起始位置（第start位也设为1）
      * @param end 结束位置（第end位也设为1）
      * @param oddOrEven null表示连续（不分奇偶位），true表仅设奇数位，false只设偶数位
-     * @throws BitOperateException 
+     * @throws BitOperateException 当 start或end超出0~31的范围，或start>end 时
      */
     public static int add1onRange(int original, int start, int end, Boolean oddOrEven) throws BitOperateException{
     	if(start<0 || end<0)
@@ -77,7 +84,7 @@ public class BitOperate {
      * @param original 基数
      * @param start 起始位置（第start位也设为1）
      * @param end 结束为止（第end位也设为1）
-     * @throws BitOperateException 
+     * @throws BitOperateException 当 start或end超出0~31的范围，或start>end 时
      */
     public static int add1onRange(int original, int start, int end) throws BitOperateException{
     	return add1onRange(original, start, end, null);

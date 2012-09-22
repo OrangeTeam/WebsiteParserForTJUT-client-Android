@@ -85,13 +85,15 @@ public class Post implements Cloneable{
 
 	public Post() {
 		super();
+		id = 0;
 		source = SOURCES.UNKNOWN_SOURCE; 
 		title = url = mainBody = category = null;
 		date = new Date(0);
 	}
 	/**全参构造方法*/
-	public Post(byte source, String category, String title, String url, String mainBody, String author, String date) {
+	public Post(int id, byte source, String category, String title, String url, String mainBody, String author, String date) {
 		this();
+		this.id = id;
 		this.source = source;
 		this.category = category;
 		this.title = title;

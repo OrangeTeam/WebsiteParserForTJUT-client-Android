@@ -1,15 +1,11 @@
 package org.orange.studentinformationdatabase;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
 import util.webpage.Course.TimeAndAddress;
-import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.Post;
 import android.content.ContentValues;
 import android.content.Context;
@@ -46,37 +42,37 @@ public class StudentInfDBAdapter {
 		dbHelper = new StudentInfDBOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 	
-	private static final String KEY_ID = "_id";
-	private static final String KEY_CODE = "code";
-	private static final String KEY_NAME = "name";
-	private static final String KEY_TEACHERS = "teacrhers";
-	private static final String KEY_CREDIT = "credit";
-	private static final String KEY_CLASS_NUMBER = "class_number";
-	private static final String KEY_TEACHING_MATERIAL = "teachingmaterial";
-	private static final String KEY_YEAR = "year";
-	private static final String KEY_ISFIRSTSEMESTER = "is_first_semester";
-	private static final String KEY_TEST_SCORE = "test_score";
-	private static final String KEY_TOTAL_SCORE = "total_score";
-	private static final String KEY_KIND = "kind";
-	private static final String KEY_NOTE = "note";
+	public static final String KEY_ID = "_id";
+	public static final String KEY_CODE = "code";
+	public static final String KEY_NAME = "name";
+	public static final String KEY_TEACHERS = "teacrhers";
+	public static final String KEY_CREDIT = "credit";
+	public static final String KEY_CLASS_NUMBER = "class_number";
+	public static final String KEY_TEACHING_MATERIAL = "teachingmaterial";
+	public static final String KEY_YEAR = "year";
+	public static final String KEY_ISFIRSTSEMESTER = "is_first_semester";
+	public static final String KEY_TEST_SCORE = "test_score";
+	public static final String KEY_TOTAL_SCORE = "total_score";
+	public static final String KEY_KIND = "kind";
+	public static final String KEY_NOTE = "note";
 	
 	
-	private static final String KEY_LINK = "link";
-	private static final String KEY_VICEID = "viceid";
-	private static final String KEY_WEEK ="week";
-	private static final String KEY_DAY = "day";
-	private static final String KEY_PERIOD = "period";
-	private static final String KEY_ADDRESS ="address";
+	public static final String KEY_LINK = "link";
+	public static final String KEY_VICEID = "viceid";
+	public static final String KEY_WEEK ="week";
+	public static final String KEY_DAY = "day";
+	public static final String KEY_PERIOD = "period";
+	public static final String KEY_ADDRESS ="address";
 	
 	
-	private static final String KEY_POST_ID = "post_id";
-	private static final String KEY_SOURCE = "source";
-	private static final String KEY_CATEGORY = "category";
-	private static final String KEY_TITLE = "title";
-	private static final String KEY_URL = "url";
-	private static final String KEY_AUTHOR = "author";
-	private static final String KEY_DATE = "date";
-	private static final String KEY_MAINBODY = "mainbody";
+	public static final String KEY_POST_ID = "post_id";
+	public static final String KEY_SOURCE = "source";
+	public static final String KEY_CATEGORY = "category";
+	public static final String KEY_TITLE = "title";
+	public static final String KEY_URL = "url";
+	public static final String KEY_AUTHOR = "author";
+	public static final String KEY_DATE = "date";
+	public static final String KEY_MAINBODY = "mainbody";
 	
 	
 	/*
@@ -103,6 +99,7 @@ public class StudentInfDBAdapter {
 		    theDB.execSQL(COURSE_TABLE1_CREATE);
 		    theDB.execSQL(COURSE_TABLE2_CREATE);
 		    theDB.execSQL(POST_TABLE_CREATE);
+		    theDB.execSQL("CREATE INDEX post_index ON " + DATABASE_POST_TABLE + "(" + KEY_DATE + ");");
 	    }
 	    
 	    public void onUpgrade(SQLiteDatabase theDB, int theOldVersion, int theNewVersion){
@@ -531,16 +528,15 @@ public class StudentInfDBAdapter {
 	
 	
     /**
-     * 从数据库中一次获得courseInf1和courseInf2中的所有记录，也就是所有课程信息包括每门课程的成绩。  
+     * 从数据库中一次获得courseInf1和courseInf2中的在where条件下的所有记录，也就是所有课程信息包括每门课程的成绩。  
+     * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_YEAR + "=" + 2011, StudentInfDBAdapter.KEY_CODE + " DESC"。
      * @return ArrayList<Course>
-     * @throws BitOperateException
-     * @throws TimeAndAddressException
      * @throws CourseException
      */
-	public ArrayList<Course> getCoursesFromDB(short theYear) throws SQLException{
+	public ArrayList<Course> getCoursesFromDB(String where,String order) throws SQLException{
 		 ArrayList<Course> courses = new ArrayList<Course>();
 		 Course course = new Course();
-		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + theYear, null, null, null, null);
+		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, where, null, null, null, order);
 		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
 			 throw new SQLException("No course found from database");
 		 }
@@ -581,7 +577,7 @@ public class StudentInfDBAdapter {
 							 timeAndAddress.setAddress(newAddress);
 						 }catch(BitOperateException e){
 							 e.printStackTrace();
-						 }catch(TimeAndAddressException e){
+						 }catch(NullPointerException e){
 							 e.printStackTrace();
 						 }
 						 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
@@ -615,6 +611,11 @@ public class StudentInfDBAdapter {
 		 return courses;
 	 }
 	
+	/**
+	 * 从数据库中的courseInf1和courseInf2返回本学期的所有课程也包括成绩。
+	 * @return ArrayList<Course>
+	 * @throws SQLException
+	 */
 	public ArrayList<Course> getThisTermCoursesFromDB() throws SQLException{
 		 ArrayList<Course> courses = new ArrayList<Course>();
 		 Course course = new Course();
@@ -659,7 +660,7 @@ public class StudentInfDBAdapter {
 							 timeAndAddress.setAddress(newAddress); 
 						 }catch(BitOperateException e){
 							 e.printStackTrace();
-						 }catch(TimeAndAddressException e){
+						 }catch(NullPointerException e){
 							 e.printStackTrace();
 						 }
 						 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
@@ -694,16 +695,14 @@ public class StudentInfDBAdapter {
 	 }
 	
 	/**
-	 * 通过参数传递进来课程名称进行一门课程的查询。
-	 * @param courseName，string类型
+	 * 从数据库中的courseInf1和courseInf2返回一门课程和成绩。
+	 * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_NAME + "=" + 营销学.
 	 * @return Course.
-	 * @throws BitOperateException
-	 * @throws TimeAndAddressException
 	 * @throws CourseException
 	 */
-	public Course getCourseFromDB(String courseName) throws SQLException{
+	public Course getCourseFromDB(String where) throws SQLException{
 		 Course course = new Course();
-		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_NAME + " = '" + courseName + "'", null, null, null, null);
+		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, where, null, null, null, null);
 		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
 			 throw new SQLException("No course found from database");
 		 }
@@ -742,7 +741,7 @@ public class StudentInfDBAdapter {
 						 timeAndAddress.setAddress(newAddress);
 					 }catch(BitOperateException e){
 						 e.printStackTrace();
-					 }catch(TimeAndAddressException e){
+					 }catch(NullPointerException e){
 						 e.printStackTrace();
 					 }
 					 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
@@ -773,13 +772,15 @@ public class StudentInfDBAdapter {
 	}
 	
 	/**
-	 * 一次性从post表中读取所有的通知信息。
+	 * 在where条件下，从post表中读取所有的通知信息。
+	 * @param where。order.limit这三个参数和mysql的用法一样，调用时的参数用法如：StudentInfDBAdapter.KEY_TITLE + "=" + xxxx, StudentInfDBAdapter.KEY_DATE + " DESC", "2".
 	 * @return ArrayList<Post>
+	 * @throws SQLException
 	 */
-	public ArrayList<Post> getPostsFromDB(){
+	public ArrayList<Post> getPostsFromDB(String where, String order, String limit)throws SQLException{
 		ArrayList<Post> posts = new ArrayList<Post>();
 		Post post = new Post();
-		Cursor cursor = db.query(DATABASE_POST_TABLE, null, null, null, null, null,null);
+		Cursor cursor = db.query(DATABASE_POST_TABLE, null, where, null, null, null, order, limit);
 		
 		if((cursor.getCount() == 0) || !cursor.moveToFirst())
 		{
@@ -787,6 +788,7 @@ public class StudentInfDBAdapter {
 		}else{
 			for(int i = 0; i < cursor.getCount(); i++){
 				cursor.moveToPosition(i);
+				int newId = cursor.getInt(0);
 				int newSource = cursor.getInt(1);
 				String newCategory = cursor.getString(2);
 				String newTitle = cursor.getString(3);
@@ -796,6 +798,7 @@ public class StudentInfDBAdapter {
 				//date在数据库中的存储类型为integer（integer会根据数据的量级自动改变位数），date是长整型存储的所以要用getLong()，否则会丢失位数。
 				String newMainBody = cursor.getString(7);
 				
+				post.setId(newId);
 				post.setSource((byte)newSource);
 				post.setCategory(newCategory);
 				post.setTitle(newTitle);
@@ -811,88 +814,25 @@ public class StudentInfDBAdapter {
 	}
 	
 	/**
-	 * 根据source字段来获取post表中的通知
-	 * @param theSource，int类型
-	 * @return ArrayList<Post>
+	 * 更新MainBody字段。
+	 * @param thePost。 Post类型
 	 */
-	public ArrayList<Post> getPostsFromDB(byte theSource){
-		ArrayList<Post> posts = new ArrayList<Post>();
-		Post post = new Post();
-		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_SOURCE + "= " + theSource, null, null, null,null);
-		
-		if((cursor.getCount() == 0) || !cursor.moveToFirst())
+	public void updatePostInf(Post thePost){
+		ContentValues newPostValue = new ContentValues();
+		int rowIndex = thePost.getId();
+		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_MAINBODY + "=" + rowIndex, null, null, null, null);
+		cursor.moveToFirst();
+		if(cursor.getString(7) != null)
 		{
-			throw new SQLException("No post found from database");
-		}else{
-			for(int i = 0; i < cursor.getCount(); i++){
-				cursor.moveToPosition(i);
-				int newSource = cursor.getInt(1);
-				String newCategory = cursor.getString(2);
-				String newTitle = cursor.getString(3);
-				String newUrl = cursor.getString(4);
-				String newAuthor = cursor.getString(5);
-				long newDate = cursor.getLong(6);
-				String newMainBody = cursor.getString(7);
-				
-				post.setSource((byte)newSource);
-				post.setCategory(newCategory);
-				post.setTitle(newTitle);
-				post.setUrl(newUrl);
-				post.setAuthor(newAuthor);
-				post.setDate(new Date(newDate));
-				post.setMainBody(newMainBody);
-				posts.add(new Post(post));
+			if(!(cursor.getString(7).equals(thePost.getMainBody())))
+			{
+				newPostValue.put(KEY_MAINBODY, thePost.getMainBody());
+				db.update(DATABASE_POST_TABLE, newPostValue, KEY_POST_ID + "=" + rowIndex, null);
 			}
-		}
-		return posts;
-	}
-	
-	
-	/*
-	 * 这个方法来自柏杰编写的Post类，这里要用到所以直接搬过来用。作用是吧字符串"yyyy-MM-dd"转换为date类型。
-	 */
-	private static Date convertToDate(String date) throws ParseException{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.PRC);
-		return dateFormat.parse(date);
-	}
-	
-	/**
-	 * 根据日期获取post表中的指定日期的通知。
-	 * @param date，String类型"yyyy-MM-dd"
-	 * @return ArrayList<Post>
-	 * @throws ParseException
-	 */
-	public ArrayList<Post> getPostsFromDB(String date) throws ParseException{
-		ArrayList<Post> posts = new ArrayList<Post>();
-		Post post = new Post();
-		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_DATE + "=" + convertToDate(date).getTime(), null, null, null,null);
-		//convertToDate(date).getTime()先转化为date类型再转化为长整型。
-		
-		if((cursor.getCount() == 0) || !cursor.moveToFirst())
-		{
-			throw new SQLException("No post found from database");
 		}else{
-			for(int i = 0; i < cursor.getCount(); i++){
-				cursor.moveToPosition(i);
-				int newSource = cursor.getInt(1);
-				String newCategory = cursor.getString(2);
-				String newTitle = cursor.getString(3);
-				String newUrl = cursor.getString(4);
-				String newAuthor = cursor.getString(5);
-				long newDate = cursor.getLong(6);
-				String newMainbody =cursor.getString(7);
-				
-				post.setSource((byte)newSource);
-				post.setCategory(newCategory);
-				post.setTitle(newTitle);
-				post.setUrl(newUrl);
-				post.setAuthor(newAuthor);
-				post.setDate(new Date(newDate));
-				post.setMainBody(newMainbody);
-				posts.add(new Post(post));
-			}
+			newPostValue.put(KEY_MAINBODY, thePost.getMainBody());
+			db.update(DATABASE_POST_TABLE, newPostValue, KEY_POST_ID + "=" + rowIndex, null);
 		}
-		return posts;
 	}
 	 	
 }

@@ -85,6 +85,15 @@ public class SchoolWebpageParser {
 		this.listener = listener.clone();
 	}
 	/**
+	 * 设置ReadPageHelper的监听器。总是设置内部自动生成的helper，若已自定义helper，也会同时设置
+	 * @param listener
+	 */
+	public void setOnReadPageListener(ReadPageHelper.OnReadPageListener listener){
+		autoReadHelper.setListener(listener);
+		if(readHelper != null)
+			readHelper.setListener(listener);
+	}
+	/**
 	 * @return the readhelper
 	 */
 	public ReadPageHelper getReadHelper() {
@@ -871,11 +880,11 @@ public class SchoolWebpageParser {
 		case Headings.COURSE_KIND:result.setKind(temp);break;
 		case Headings.COURSE_SEMESTER:
 			if(temp.equals("1"))
-				result.isFirstSemester(true);
+				result.setIsFirstSemester(true);
 			else if(temp.equals("2"))
-				result.isFirstSemester(false);
+				result.setIsFirstSemester(false);
 			else{
-				result.isFirstSemester(null);
+				result.setIsFirstSemester(null);
 				listener.onWarn(ParserListener.WARNINT_CANNOT_PARSE_SEMESTER, "未知的学期数据"+temp+"，解析学期失败。");
 			}
 			break;

@@ -144,7 +144,7 @@ public class Course implements Cloneable{
 		return this;
 	}
 	/**
-	 * @return 课程代买
+	 * @return 课程代码
 	 */
 	public String getCode() {
 		return code;
@@ -178,40 +178,34 @@ public class Course implements Cloneable{
 	}
 	/**
 	 * 设置授课教师列表。把本Course对象的teachers清空并设置为参数指定的内容。之后对参数teachers的修改不会作用到此Course。
-	 * @param teachers 授课教师的ArrayList
-	 * @throws NullPointerException 参数为null
+	 * @param teachers 授课教师的ArrayList。如果为null或为空ArrayList或teachers.get(0)为null，则仅清空教师信息
 	 */
 	public Course setTeachers(ArrayList<String> teachers){
-		if(teachers == null)
-			throw new NullPointerException("teachers shouldn't have been null.");
 		this.teachers.clear();
-		this.teachers.addAll(teachers);
+		if(teachers != null && !teachers.isEmpty() && teachers.get(0) != null)
+			this.teachers.addAll(teachers);
 		return this;
 	}
 	/**
 	 * 把本Course对象的teachers清空并设置为参数指定的内容
-	 * @param teachers 授课教师列表的String[]
-	 * @throws NullPointerException 参数为null
+	 * @param teachers 授课教师列表的String[]。如果为null或长度为0，则仅清空教师信息
 	 */
 	public Course setTeachers(String[] teachers){
-		if(teachers == null)
-			throw new NullPointerException("teachers shouldn't have been null.");
 		this.teachers.clear();
-		for(String teacher:teachers)
-			if(teacher != null)
-				this.teachers.add(teacher);
+		if(teachers != null && teachers.length != 0)
+			for(String teacher:teachers)
+				if(teacher != null)
+					this.teachers.add(teacher);
 		return this;
 	}
 	/**
 	 * 把本Course对象的teachers清空并设置为参数指定的内容
-	 * @param teachers 教师名，可以是多名教师，用[,，;；]分开
-	 * @throws NullPointerException 参数为null
+	 * @param teachers 教师名，可以是多名教师，用[,，;；]分开。如果为null，则仅清空教师信息
 	 */
 	public Course setTeachers(String teachers){
-		if(teachers == null)
-			throw new NullPointerException("teachers shouldn't have been null.");
 		this.teachers.clear();
-		addTeacher(teachers);
+		if(teachers != null)
+			addTeacher(teachers);
 		return this;
 	}
 	/**
@@ -222,13 +216,13 @@ public class Course implements Cloneable{
 	}
 	/**
 	 * @param credit 学分
-	 * @throws CourseException credit<=0,或者credit大于Byte.MAX_VALUE
+	 * @throws CourseException credit<0,或者credit大于Byte.MAX_VALUE
 	 */
 	public Course setCredit(int credit) throws CourseException {
-		if(credit<=0)
-			throw new CourseException("Field credit should have been positive.");
+		if(credit<0)
+			throw new CourseException("Illegal credit: "+credit+". Credit should have been positive.");
 		else if(credit>Byte.MAX_VALUE)
-			throw new CourseException("Field credit shouldn't have been more than "+Byte.MAX_VALUE+".");
+			throw new CourseException("Illegal credit: "+credit+". Credit should have been less than "+Byte.MAX_VALUE+".");
 		this.credit = (byte)credit;
 		return this;
 	}
@@ -254,30 +248,26 @@ public class Course implements Cloneable{
 	}
 	/**
 	 * 把本Course对象的TimeAndAddresses清空并设置为参数指定的内容。拷贝参数timeAndAddresses，以后对之的修改不影响此Course对象
-	 * @param timeAndAddresses 时间地点列表
-	 * @throws NullPointerException 参数是null
+	 * @param timeAndAddresses 时间地点列表。如果为null或为空ArrayList，则仅清空时间地点信息
 	 */
 	public Course setTimeAndAddresse(ArrayList<TimeAndAddress> timeAndAddresses){
-		if(timeAndAddresses == null)
-			throw new NullPointerException("timeAndAddresses shouldn't have been null.");
 		this.timeAndAddress.clear();
-		for(TimeAndAddress TA:timeAndAddresses)
-			if(TA != null)
-				this.timeAndAddress.add(new TimeAndAddress(TA));
+		if(timeAndAddresses!=null && !timeAndAddresses.isEmpty())
+			for(TimeAndAddress TA:timeAndAddresses)
+				if(TA != null)
+					this.timeAndAddress.add(new TimeAndAddress(TA));
 		return this;
 	}
 	/**
 	 * 把本Course对象的TimeAndAddresses清空并设置为参数指定的内容。拷贝参数timeAndAddresses，以后对之的修改不影响此Course对象
-	 * @param timeAndAddresses 时间地点列表
-	 * @throws NullPointerException 参数是null
+	 * @param timeAndAddresses 时间地点列表。若果为null或长度为0，则仅清空时间地点信息
 	 */
 	public Course setTimeAndAddresse(TimeAndAddress[] timeAndAddresses){
-		if(timeAndAddresses == null)
-			throw new NullPointerException("timeAndAddresses shouldn't have been null.");
 		this.timeAndAddress.clear();
-		for(TimeAndAddress TA:timeAndAddresses)
-			if(TA != null)
-				this.timeAndAddress.add(new TimeAndAddress(TA));
+		if(timeAndAddresses!=null && timeAndAddresses.length!=0)
+			for(TimeAndAddress TA:timeAndAddresses)
+				if(TA != null)
+					this.timeAndAddress.add(new TimeAndAddress(TA));
 		return this;
 	}
 	/**
@@ -313,11 +303,11 @@ public class Course implements Cloneable{
 		return year;
 	}
 	/**
-	 * @param year 学年
-	 * @throws CourseException when year<1900 || year>9999
+	 * @param year 学年。
+	 * @throws CourseException when (year!=0 && year<1900) || year>9999
 	 */
 	public Course setYear(int year) throws CourseException {
-		if(year<1900 || year>9999)
+		if( (year!=0 && year<1900) || year>9999)
 			throw new CourseException("Illegal year: "+year);
 		this.year = (short) year;
 		return this;
@@ -331,7 +321,7 @@ public class Course implements Cloneable{
 	/**
 	 * @param isFirstSemester 学期。true表示上半学期，false表示下半学期，null表示未知
 	 */
-	public Course isFirstSemester(Boolean isFirstSemester) {
+	public Course setIsFirstSemester(Boolean isFirstSemester) {
 		this.isFirstSemester = isFirstSemester;
 		return this;
 	}
@@ -345,10 +335,10 @@ public class Course implements Cloneable{
 	/**
 	 * 设置 结课考核成绩
 	 * @param testScore 结课考核成绩 
-	 * @throws CourseException when testScore<0 || testScore>999
+	 * @throws CourseException when testScore<-1 || testScore>999
 	 */
 	public Course setTestScore(int testScore) throws CourseException {
-		if(testScore<0 || testScore>999)
+		if(testScore<-1 || testScore>999)
 			throw new CourseException("Illegel score of test: "+testScore);
 		this.testScore = (short) testScore;
 		return this;
@@ -363,10 +353,10 @@ public class Course implements Cloneable{
 	/**
 	 * 设置 期末总评成绩
 	 * @param totalScore 期末总评成绩 
-	 * @throws CourseException when totalScore<0 || totalScore>999
+	 * @throws CourseException when totalScore<-1 || totalScore>999
 	 */
 	public Course setTotalScore(int totalScore) throws CourseException {
-		if(totalScore<0 || totalScore>999)
+		if(totalScore<-1 || totalScore>999)
 			throw new CourseException("Illegel final score: "+totalScore);
 		this.totalScore = (short) totalScore;
 		return this;
@@ -440,13 +430,12 @@ public class Course implements Cloneable{
 	
 	/**
 	 * 增加教师，可以一次添加多名，用[,，;；]分开
-	 * @param teacher 教师名，可以是多名教师，用[,，;；]分开
+	 * @param teacher 教师名，可以是多名教师，用[,，;；]分开。如果为null，则直接退出
 	 * @return 参数合法返回this（builder），参数非法抛出异常
-	 * @throws NullPointerException 参数teacher是null
 	 */
 	public Course addTeacher(String teacher){
 		if(teacher == null)
-			throw new NullPointerException("teacher shouldn't haven been null when addTeacher.");
+			return this;
 		String[] teachers = teacher.split("[,，;；]");
 		for(String t:teachers){
 			t = t.trim();

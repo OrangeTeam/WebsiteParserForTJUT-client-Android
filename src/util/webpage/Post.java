@@ -111,6 +111,7 @@ public class Post implements Cloneable{
 	/**拷贝构造方法*/
 	public Post(Post src){
 		this();
+		this.id = src.id;
 		this.source = src.source;
 		this.category = src.category;
 		this.title = src.title;

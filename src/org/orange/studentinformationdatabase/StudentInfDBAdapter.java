@@ -820,7 +820,7 @@ public class StudentInfDBAdapter {
 	public void updatePostInf(Post thePost){
 		ContentValues newPostValue = new ContentValues();
 		int rowIndex = thePost.getId();
-		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_MAINBODY + "=" + rowIndex, null, null, null, null);
+		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_POST_ID + "=" + rowIndex, null, null, null, null);
 		cursor.moveToFirst();
 		if(cursor.getString(7) != null)
 		{

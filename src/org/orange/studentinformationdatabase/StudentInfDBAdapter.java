@@ -589,7 +589,7 @@ public class StudentInfDBAdapter {
 				 course.setName(newName);
 				 course.setClassNumber(newClassNumber);
 				 course.setTeachingMaterial(newTeachingMaterial);
-				 course.isFirstSemester(reconvert(newIsFirstSemester));
+				 course.setIsFirstSemester(reconvert(newIsFirstSemester));
 				 course.setKind(newKind);
 				 course.setNote(newNote);
 				 try{
@@ -672,7 +672,7 @@ public class StudentInfDBAdapter {
 				 course.setName(newName);
 				 course.setClassNumber(newClassNumber);
 				 course.setTeachingMaterial(newTeachingMaterial);
-				 course.isFirstSemester(reconvert(newIsFirstSemester));
+				 course.setIsFirstSemester(reconvert(newIsFirstSemester));
 				 course.setKind(newKind);
 				 course.setNote(newNote);
 				 try{
@@ -752,7 +752,7 @@ public class StudentInfDBAdapter {
 			 course.setName(newName);
 			 course.setClassNumber(newClassNumber);
 			 course.setTeachingMaterial(newTeachingMaterial);
-			 course.isFirstSemester(reconvert(newIsFirstSemester));
+			 course.setIsFirstSemester(reconvert(newIsFirstSemester));
 			 course.setKind(newKind);
 			 course.setNote(newNote);
 			 try{

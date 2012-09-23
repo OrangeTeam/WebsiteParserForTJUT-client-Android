@@ -871,11 +871,11 @@ public class SchoolWebpageParser {
 		case Headings.COURSE_KIND:result.setKind(temp);break;
 		case Headings.COURSE_SEMESTER:
 			if(temp.equals("1"))
-				result.isFirstSemester(true);
+				result.setIsFirstSemester(true);
 			else if(temp.equals("2"))
-				result.isFirstSemester(false);
+				result.setIsFirstSemester(false);
 			else{
-				result.isFirstSemester(null);
+				result.setIsFirstSemester(null);
 				listener.onWarn(ParserListener.WARNINT_CANNOT_PARSE_SEMESTER, "未知的学期数据"+temp+"，解析学期失败。");
 			}
 			break;

@@ -11,6 +11,8 @@ import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
 public class ReadPageHelper implements Cloneable{
+	private OnReadPageListener listener = null;
+	
 	/**网络连接的超时时间，单位milliseconds*/
 	private int timeout;
 	private String userName, password, charset, charsetForParsePostsFromSCCE;
@@ -41,6 +43,18 @@ public class ReadPageHelper implements Cloneable{
 		setTimeout(timeout);
 	}
 	
+	/**
+	 * @return the listener
+	 */
+	public OnReadPageListener getListener() {
+		return listener;
+	}
+	/**
+	 * @param listener the listener to set
+	 */
+	public void setListener(OnReadPageListener listener) {
+		this.listener = listener;
+	}
 	/**
 	 * @return the timeout
 	 */
@@ -206,7 +220,12 @@ public class ReadPageHelper implements Cloneable{
 			conn.cookie(teachingAffairsSession.cookieKey, teachingAffairsSession.cookieValue);
 		if(SCCESession != null && !SCCESession.isEmpty())
 			conn.cookie(SCCESession.cookieKey, SCCESession.cookieValue);
-		return ((HttpConnection)conn).get(charset);
+		Document doc = ((HttpConnection)conn).get(charset);
+		if(listener != null){
+			org.jsoup.Connection.Response response = conn.response();
+			listener.onGet(url, response.statusCode(), response.statusMessage(), response.bodyAsBytes().length);
+		}
+		return doc;
 	}
 	/**
 	 * read page by POST method
@@ -326,5 +345,16 @@ public class ReadPageHelper implements Cloneable{
 			return "Cookie [cookieKey=" + cookieKey + ", cookieValue="
 					+ cookieValue +"modifiedTime="+getModifiedTimeString()+ "]";
 		}
+	}
+	
+	public static interface OnReadPageListener{
+		/**
+		 * 当以Get方法读取一个页面后
+		 * @param url
+		 * @param statusCode
+		 * @param statusMessage
+		 * @param pageSize 单位：字节
+		 */
+		public void onGet(String url, int statusCode, String statusMessage, int pageSize);
 	}
 }

@@ -85,6 +85,15 @@ public class SchoolWebpageParser {
 		this.listener = listener.clone();
 	}
 	/**
+	 * 设置ReadPageHelper的监听器。总是设置内部自动生成的helper，若已自定义helper，也会同时设置
+	 * @param listener
+	 */
+	public void setOnReadPageListener(ReadPageHelper.OnReadPageListener listener){
+		autoReadHelper.setListener(listener);
+		if(readHelper != null)
+			readHelper.setListener(listener);
+	}
+	/**
 	 * @return the readhelper
 	 */
 	public ReadPageHelper getReadHelper() {

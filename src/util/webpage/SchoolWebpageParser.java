@@ -256,6 +256,28 @@ public class SchoolWebpageParser {
     	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, start, end, max);
     }
     /**
+     * 从所有可处理来源的常用类别中，解析通知等文章
+     * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
+	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
+	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
+     * @return 符合条件的posts
+     * @throws IOException 链接超时等IO异常
+     * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
+     */
+    public ArrayList<Post> parseCommonPosts(Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    	ArrayList<Post> result = new ArrayList<Post>();
+    	if(max>=0 && result.size()>=max)
+			return result;;
+		result.addAll(parsePosts(Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS,Post.CATEGORYS.IN_TEACHING_AFFAIRS_WEBSITE_COMMON, start, end, max));
+		if(max>=0 && result.size()>=max)
+			return result;
+		result.addAll(parsePosts(Post.SOURCES.WEBSITE_OF_SCCE, (String[])null , start, end, max-result.size()));
+		if(max>=0 && result.size()>=max)
+			return result;
+		result.addAll(parsePosts(Post.SOURCES.STUDENT_WEBSITE_OF_SCCE,Post.CATEGORYS.IN_STUDENT_WEBSITE_OF_SCCE_COMMON, start, end, max-result.size()));
+		return result;
+    }
+    /**
 	 * 从给定来源，解析通知等文章
 	 * @param postSource 来源，类似Post.CATEGORYS.TEACHING_AFFAIRS_WEBSITE
 	 * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post

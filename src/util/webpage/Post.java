@@ -40,6 +40,9 @@ public class Post implements Cloneable{
 			"课程设计专业设计","仪器设备","投资规划相关规定","基本教学管理文件","学籍与考试管理文件","教学建设文件","实践教学管理文件",
 			"教学质量监控文件","表格下载"
 		};
+		public static final String[] IN_TEACHING_AFFAIRS_WEBSITE_COMMON = new String[]{
+			TEACHING_AFFAIRS_NOTICES, TEACHING_AFFAIRS_COURSE_SELECTION, TEACHING_AFFAIRS_NEWS,
+			TEACHING_AFFAIRS_NOTICES_ON_TEST, TEACHING_AFFAIRS_CET};
 		
 		public static final String SCCE_NOTICE_TEACHING = "教学通知";
 		public static final String SCCE_NOTICE_RESEARCH = "科研通知";
@@ -63,6 +66,9 @@ public class Post implements Cloneable{
 		public static final String[] IN_STUDENT_WEBSITE_OF_SCCE = new String[]{
 			SCCE_STUDENT_NOTICES, SCCE_STUDENT_NEWS, SCCE_STUDENT_UNION, SCCE_STUDENT_EMPLOYMENT
 			, SCCE_STUDENT_DOWNLOADS, SCCE_STUDENT_YOUTH_LEAGUE, SCCE_STUDENT_JOBS
+		};
+		public static final String[] IN_STUDENT_WEBSITE_OF_SCCE_COMMON = new String[]{
+			SCCE_STUDENT_NEWS, SCCE_STUDENT_NOTICES, SCCE_STUDENT_UNION, SCCE_STUDENT_EMPLOYMENT
 		};
 	}
 	

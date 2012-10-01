@@ -21,9 +21,12 @@
     <string name="exit">退出</string>
     <string name="change_number">切换账号</string>
     <string name="about">关于</string>
+
     <string name="course_query">课程表</string>
     <string name="score_query">成绩单</string>
     <string name="post_query">通知</string>
+    
+    <string name="open_with_browser">用浏览器打开</string>
     <string-array name="day_course_menu_array">
         <item >今日课程表</item>
         <item >本周课程表</item>

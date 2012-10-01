@@ -47,5 +47,16 @@
         <item >个人总成绩</item>
         <item >期末最新成绩</item>
     </string-array>
+    
+    <string name="student_number">学号</string>
+    <string name="name">姓名</string>
+    <string name="gender">性别</string>
+    <string name="birth">出生年月日</string>
+    <string name="lengthofschooling">学制</string>
+    <string name="admission_date">入学时间</string>
+    <string name="school_name">院系名称</string>
+    <string name="profession">专业名称</string>
+    <string name="class_name">班级名称</string>
+    <string name="photo">照片</string>
 
 </resources>

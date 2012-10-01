@@ -94,14 +94,53 @@ public class SchoolWebpageParser {
 			readHelper.setListener(listener);
 	}
 	/**
-	 * @return the readhelper
+	 * 取得 用户最近通过
+	 * {@link SchoolWebpageParser#setListener(ParserListener) setListener(ParserListener)}
+	 * 设置的ReadPageHelper（用于登录，读取页面等）。对之的修改会应用到本对象。
+	 * @return 用户最近设置的ReadPageHelper，若您之前没有设置过则返回null
 	 */
 	public ReadPageHelper getReadHelper() {
 		return readHelper;
 	}
 	/**
-	 * @param readHelper 用于读取网页，你可以在readHelper中设置timeout、charset等
-	 * @throws CloneNotSupportedException 
+	 * 取得 本对象自动设置的ReadPageHelper（用于登录，读取页面等），这个helper只在您没有自行通过
+	 * {@link SchoolWebpageParser#setListener(ParserListener) setListener(ParserListener)}
+	 * 设置过ReadHelper时使用。对之的修改会应用到本对象自动生成的ReadHelper上。
+	 * @return 本对象自动设置的ReadPageHelper
+	 */
+	public ReadPageHelper getAutoReadHelper() {
+		return autoReadHelper;
+	}
+	/**
+	 * 返回当前使用的ReadPageHelper
+	 * @return 如果您自定义过ReadPageHelper，返回您上次定义的ReadPageHelper；否则返回本对象自动生成的ReadPageHelper
+	 */
+	public ReadPageHelper getCurrentHelper(){
+		return readHelper!=null?readHelper:autoReadHelper;
+	}
+	/**
+	 * 登录后，再返回当前使用的ReadPageHelper
+	 * @return 如果您自定义过ReadPageHelper，返回您上次定义的ReadPageHelper；否则返回本对象自动生成的ReadPageHelper
+	 * @throws ParserException 登录失败
+	 * @throws IOException doLogin进行post请求时遇到error
+	 */
+	public ReadPageHelper getCurrentHelperAfterLogin() throws ParserException, IOException{
+		ReadPageHelper readHelper = getCurrentHelper();
+		try{
+			if(!readHelper.doLogin()){
+				this.listener.onError(ParserListener.ERROR_CANNOT_LOGIN, "登录失败。");
+				throw new ParserException("Cannot login website.");
+			}
+		}catch(IOException e){
+			listener.onError(ParserListener.ERROR_IO, "遇到IO异常，无法登录。 "+e.getMessage());
+			throw e;
+		}
+		return readHelper;
+	}
+	/**
+	 * 设置ReadPageHelper，它用于登录，读取页面等工作。
+	 * @param readHelper 用于读取网页的ReadPageHelper，您可以在readHelper中设置timeout、charset等
+	 * @throws CloneNotSupportedException 用{@link ReadPageHelper#clone()}复制readHelper时遇到此异常
 	 */
 	public void setReadHelper(ReadPageHelper readHelper) throws CloneNotSupportedException {
 		this.readHelper = readHelper.clone();
@@ -117,9 +156,15 @@ public class SchoolWebpageParser {
 			readHelper.setUser(userName, password);
 		autoReadHelper.setUser(userName, password);
 	}
-	
-	private ReadPageHelper getCurrentHelper(){
-		return readHelper!=null?readHelper:autoReadHelper;
+	/**
+	 * 设置ReadPageHelper的超时时间，单位milliseconds
+	 * @param timeout 超时时间，单位milliseconds
+	 * @return 参数大于0返回真；参数小于等于0忽略本次调用，忽略此次调用，返回假
+	 */
+	public boolean setTimeout(int timeout) {
+		if(readHelper != null)
+			readHelper.setTimeout(timeout);
+		return autoReadHelper.setTimeout(timeout);
 	}
 	/**
 	 * 从给定来源，在指定的categories类别中，解析通知等文章
@@ -682,20 +727,6 @@ public class SchoolWebpageParser {
 		rawMainBody = String.format(format, doc.baseUri(), target.getTitle(), rawMainBody);
 		target.setMainBody(rawMainBody);
 		return target;
-	}
-	
-	private ReadPageHelper getCurrentHelperAfterLogin() throws ParserException, IOException{
-		ReadPageHelper readHelper = getCurrentHelper();
-		try{
-			if(!readHelper.doLogin()){
-				this.listener.onError(ParserListener.ERROR_CANNOT_LOGIN, "登录失败。");
-				throw new ParserException("Cannot login website.");
-			}
-		}catch(IOException e){
-			listener.onError(ParserListener.ERROR_IO, "遇到IO异常，无法登录。 "+e.getMessage());
-			throw e;
-		}
-		return readHelper;
 	}
 	/**
 	 * 从URL指定的页面，解析课程信息，同时返回对应同学信息（如果studentInfoToReturn!=null）

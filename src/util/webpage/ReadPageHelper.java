@@ -62,7 +62,9 @@ public class ReadPageHelper implements Cloneable{
 		return timeout;
 	}
 	/**
-	 * @param timeout the timeout to set
+	 * 设置 网络连接的超时时间，单位milliseconds
+	 * @param timeout 网络连接的超时时间，单位milliseconds
+	 * @return 参数大于0返回真；参数小于等于0忽略本次调用，直接返回假
 	 */
 	public boolean setTimeout(int timeout) {
 		if(timeout<=0)
@@ -134,8 +136,8 @@ public class ReadPageHelper implements Cloneable{
 	/**
 	 * do login<br />登录
 	 * @param loginPageURL send login request to this page 向此网址发送登录请求 
-	 * @return true for success, false for failure
-	 * @throws IOException
+	 * @return true for success, false for failure 成功登录返回真，失败返回假
+	 * @throws IOException encounter error when make post request 进行post请求时遇到error
 	 */
 	public boolean doLogin(String loginPageURL) throws IOException{
 		if(!isNewUser && teachingAffairsSession!=null 

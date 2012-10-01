@@ -33,15 +33,16 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/option_right"
-            android:onClick="test"/>
+            android:layout_toLeftOf="@+id/refresh_db"
+            android:onClick="refreshActivity"/>
        	<Button 
        	    android:background="@drawable/option_right"
-       	    android:id="@+id/option_right"
+       	    android:id="@+id/refresh_db"
        	    android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:onClick="refreshdb"/>
     </RelativeLayout>
     <LinearLayout 
 		    android:id="@+id/listLinearLayout"

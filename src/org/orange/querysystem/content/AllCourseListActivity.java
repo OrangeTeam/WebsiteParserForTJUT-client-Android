@@ -7,12 +7,13 @@ import org.orange.querysystem.ApplicationExit;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.MenuActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 
 import util.BitOperate.BitOperateException;
-import util.webpage.Constant;
 import util.webpage.Course;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -28,10 +29,12 @@ import android.widget.Spinner;
 
 import com.korovyansk.android.slideout.SlideoutActivity;
 
-public class AllCourseListActivity extends ListActivity implements ParseWebPage.CoursesInfo{
+public class AllCourseListActivity extends ListActivity implements OnPostExcuteListerner{
 	
 	private Button refresh;
+	private Button refresh_db;
 	private Spinner spinner = null;
+	private int mStackLevel = 0;
 
 	@Override
 	protected void onStart(){
@@ -47,20 +50,14 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_course_list_main);
 
-        readWebPage();
+        if (savedInstanceState != null) {
+            mStackLevel = savedInstanceState.getInt("level");
+        }
+//        startActivity(new Intent(this, InsertDBFragmentActivity.class));
+        readDB();
         refresh = (Button)findViewById(R.id.refresh);
         refresh.setBackgroundResource(R.drawable.ic_action_refresh);
-		findViewById(R.id.sample_button).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-						SlideoutActivity.prepare(AllCourseListActivity.this, R.id.inner_content, width);
-						startActivity(new Intent(AllCourseListActivity.this,
-						MenuActivity.class));
-						overridePendingTransition(0, 0);
-					}
-				});
+        refresh_db = (Button)findViewById(R.id.refresh_db);
 		ArrayAdapter<CharSequence> menu_adapter = ArrayAdapter.createFromResource(this, R.array.all_course_menu_array, android.R.layout.simple_spinner_item); 
 		menu_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner = (Spinner)findViewById(R.id.course_spinner_menu);
@@ -91,11 +88,16 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
 		}
     }
     
-    public void readWebPage(){
-    	new ParseWebPage().execute(ParseWebPage.PARSE_COURSE, Constant.url.本学期修读课程, this);
+    public void readDB(){
+    	new ReadDB(this, this).execute();
     }
     
-    public void coursesInfo(ArrayList<Course> courses) {
+    @Override
+	public void onPostReadFromDB(ArrayList<Course> courses) {
+			showCoursesInfo(courses);
+	}
+    
+    public void showCoursesInfo(ArrayList<Course> courses) {
     	/*String[星期几][第几大节]*/
     	String[][] lesson = new String[8][7];
     	for(int i=0;i<lesson.length;i++)
@@ -155,30 +157,33 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
         menu.add(0, 1, 1, R.string.exit);
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.about);
+        menu.add(0, 4, 4, R.string.course_query);
+        menu.add(0, 5, 5, R.string.score_query);
+        menu.add(0, 6, 6, R.string.post_query);
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
-    	if(item.getItemId()==1){
+    	if(item.getItemId() == 1){
     		finish();
     	}
-    	if(item.getItemId()==2){
-    		startActivity(new Intent(AllCourseListActivity.this, LoginActivity.class));
+    	else if(item.getItemId() == 2){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+    		editor.putBoolean("logIn_auto", false);
+    		editor.commit();
+    		startActivity(new Intent(this, LoginActivity.class));
+    	}
+    	else if(item.getItemId() == 4){
+    		readDB();
+    	}
+    	else if(item.getItemId() == 5){
+    		startActivity(new Intent(this, TerminalScoreActivity.class));
+    	}
+    	else{
+    		startActivity(new Intent(this, StudentInfoActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
-    }
-
-    @Override
-   	public boolean onKeyDown(int keyCode, KeyEvent event) {
-   		if(keyCode == KeyEvent.KEYCODE_BACK){
-   			int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-   			SlideoutActivity.prepare(AllCourseListActivity.this, R.id.inner_content, width);
-   			startActivity(new Intent(AllCourseListActivity.this,
-   					MenuActivity.class));
-   			overridePendingTransition(0, 0);
-   		}
-   		return super.onKeyDown(keyCode, event);
     }
     
     @Override
@@ -191,8 +196,11 @@ public class AllCourseListActivity extends ListActivity implements ParseWebPage.
     	startActivity(i);
     }
     
-    public void test(View view){
-    	System.out.println("hello");
+    public void refreshdb(View view){
+      	startActivity(new Intent(this, InsertDBFragmentActivity.class));   	
     }
-    
+    public void refreshActivity(View view){
+    	System.out.println("dianji");
+    	readDB();
+    }
 }

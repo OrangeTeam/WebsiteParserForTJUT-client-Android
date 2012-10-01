@@ -7,11 +7,13 @@ import org.orange.querysystem.ApplicationExit;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.MenuActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 
 import util.webpage.Constant;
 import util.webpage.Course;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -27,9 +29,10 @@ import android.widget.Spinner;
 
 import com.korovyansk.android.slideout.SlideoutActivity;
 
-public class TerminalScoreActivity extends ListActivity implements ParseWebPage.CoursesInfo{
+public class TerminalScoreActivity extends ListActivity implements OnPostExcuteListerner{
 	
 	private Button refresh;
+	private Button refresh_db;
 	private Spinner spinner = null;
 	
 	@Override
@@ -46,20 +49,10 @@ public class TerminalScoreActivity extends ListActivity implements ParseWebPage.
 		super.onCreate(savedInstanceState);
 	    setContentView(R.layout.terminal_score_main);
 	    
-	    readWebPage();
+	    readDB();
 	    refresh = (Button)findViewById(R.id.refresh);
         refresh.setBackgroundResource(R.drawable.ic_action_refresh);
-		findViewById(R.id.sample_button).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-						SlideoutActivity.prepare(TerminalScoreActivity.this, R.id.inner_content, width);
-						startActivity(new Intent(TerminalScoreActivity.this,
-								MenuActivity.class));
-						overridePendingTransition(0, 0);
-					}
-				});
+        refresh_db = (Button)findViewById(R.id.refresh_db);
 		ArrayAdapter<CharSequence> menu_adapter = ArrayAdapter.createFromResource(this, R.array.terminal_score_menu_array, android.R.layout.simple_spinner_item); 
 		menu_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner = (Spinner)findViewById(R.id.score_spinner_menu);
@@ -87,11 +80,16 @@ public class TerminalScoreActivity extends ListActivity implements ParseWebPage.
 		}
     }
 	
-	public void readWebPage(){
-    	new ParseWebPage().execute(ParseWebPage.PARSE_SCORE, Constant.url.期末最新成绩, this);
+	public void readDB(){
+		new ReadDB(this, this).execute();
     }
+	
+	@Override
+	public void onPostReadFromDB(ArrayList<Course> courses) {
+			showCoursesInfo(courses);
+	}
     
-    public void coursesInfo(ArrayList<Course> courses){
+    public void showCoursesInfo(ArrayList<Course> courses){
         
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map1 = new HashMap<String, String>();
@@ -129,31 +127,34 @@ public class TerminalScoreActivity extends ListActivity implements ParseWebPage.
         menu.add(0, 1, 1, R.string.exit);
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.about);
+        menu.add(0, 4, 4, R.string.course_query);
+        menu.add(0, 5, 5, R.string.score_query);
+        menu.add(0, 6, 6, R.string.post_query);
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
-    	if(item.getItemId()==1){
+    	if(item.getItemId() == 1){
     		finish();
     	}
-    	if(item.getItemId()==2){
-    		startActivity(new Intent(TerminalScoreActivity.this, LoginActivity.class));
+    	else if(item.getItemId() == 2){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+    		editor.remove("logIn_auto");
+    		editor.putBoolean("logIn_auto", false);
+    		editor.commit();
+    		startActivity(new Intent(this, LoginActivity.class));
+    	}
+    	else if(item.getItemId() == 4){
+    		startActivity(new Intent(this, AllCourseListActivity.class));
+    	}
+    	else if(item.getItemId() == 5){
+    		readDB();
+    	}
+    	else{
+    		startActivity(new Intent(this, StudentInfoActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
-    }
-
-    
-    @Override
-   	public boolean onKeyDown(int keyCode, KeyEvent event) {
-   		if(keyCode == KeyEvent.KEYCODE_BACK){
-   			int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-   			SlideoutActivity.prepare(TerminalScoreActivity.this, R.id.inner_content, width);
-   			startActivity(new Intent(TerminalScoreActivity.this,
-   					MenuActivity.class));
-   			overridePendingTransition(0, 0);
-   		}
-   		return super.onKeyDown(keyCode, event);
     }
     
     @Override
@@ -166,8 +167,11 @@ public class TerminalScoreActivity extends ListActivity implements ParseWebPage.
     	startActivity(i);
     }
     
-    public void test(View view){
-    	System.out.println("hello");
+    public void refreshdb(View view){
+      	startActivity(new Intent(this, InsertDBFragmentActivity.class));   	
     }
-    
+    public void refreshActivity(View view){
+    	System.out.println("dianji");
+    	readDB();
+    }
 }

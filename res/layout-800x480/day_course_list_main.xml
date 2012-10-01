@@ -28,20 +28,21 @@
             android:layout_toRightOf="@id/sample_button"
             android:layout_centerVertical="true"/>
         <Button 
+       	    android:background="@drawable/option_right"
+       	    android:id="@+id/refresh_db"
+       	    android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:onClick="refreshdb"/>
+         <Button 
             android:id="@+id/refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/option_right"
-            android:onClick="test"/>
-       	<Button 
-       	    android:background="@drawable/option_right"
-       	    android:id="@+id/option_right"
-       	    android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_toLeftOf="@+id/refresh_db"
+            android:onClick="refreshActivity"/>
     </RelativeLayout>
     <LinearLayout 
 		    android:id="@+id/listLinearLayout"

@@ -10,11 +10,11 @@
     <application 
         android:name="ApplicationExit"
         android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/logo_3"
         android:theme="@style/AppTheme">
 		<activity
             android:screenOrientation="portrait"
-            android:label="Login Activity"
+            android:label="天津理工大学信息查询系统"
             android:name=".LoginActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
@@ -74,6 +74,11 @@
             android:screenOrientation="landscape"
             android:name=".content.PersonalScoreActivityContent4"
             android:windowSoftInputMode="stateVisible|adjustPan"/>
+        <activity
+            android:screenOrientation="sensor"
+            android:name=".content.InsertDBFragmentActivity"
+            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:theme="@android:style/Theme.Dialog"/>
     </application>
 
 </manifest>

@@ -12,15 +12,14 @@
         android:paddingLeft="2dip"
         android:paddingRight="2dip"
         android:background="#0000FF">
-
-        <Button 
-			android:background="@drawable/button_left"
+
+        <Button
             android:id="@+id/sample_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dip"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"/>
+            android:background="@drawable/button_left" />
+
          <Spinner 
             android:id="@+id/course_spinner_menu"
             android:layout_width="wrap_content"
@@ -34,14 +33,15 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@+id/option_right"
-            android:onClick="test"/>
+            android:onClick="refreshActivity"/>
        	<Button 
        	    android:background="@drawable/option_right"
        	    android:id="@+id/option_right"
        	    android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:onClick="refreshdb"/>
     </RelativeLayout>
     <LinearLayout 
 		    android:id="@+id/listLinearLayout"

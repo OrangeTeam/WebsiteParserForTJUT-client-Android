@@ -8,15 +8,18 @@ import org.orange.querysystem.ApplicationExit;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.MenuActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Constant;
 import util.webpage.Course;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -29,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -36,14 +40,15 @@ import android.widget.TextView;
 
 import com.korovyansk.android.slideout.SlideoutActivity;
 
-public class WeekCourseListActivity extends ListActivity implements ParseWebPage.CoursesInfo{
+public class WeekCourseListActivity extends ListActivity implements OnPostExcuteListerner{
 	
 	private TextView courseListTitle;
 	private Button refresh;
+	private Button refresh_db;
 	private Spinner spinner = null;
 	private int year = 0;
 	private int month = 0;
-	private int date = 0;
+	private int day = 0;
 	private int hour = 0;
 	private int minute = 0;
 	private int second = 0;
@@ -58,17 +63,12 @@ public class WeekCourseListActivity extends ListActivity implements ParseWebPage
 	private EditText input_date_box;
 	private int input_year_get = 0;
 	private int input_month_get = 0;
-	private int input_date_get = 0;
+	private int input_day_get = 0;
 	private int calculate_week = 0;
 	private int real_week = 0;
-	private String[] lessonOne = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonTwo = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonThree = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonFour = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonFive = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
-	private String[] lessonSix = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
 	
-	private static final int DIALOG_TEXT_ENTRY = 1;	
+	
+	static final int DATE_DIALOG_ID = 1;
 	
 	@Override
 	protected void onStart(){
@@ -86,44 +86,57 @@ public class WeekCourseListActivity extends ListActivity implements ParseWebPage
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);//比正常少一个月
-        date = calendar.get(Calendar.DAY_OF_MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
         second = calendar.get(Calendar.SECOND);
         week = calendar.get(Calendar.WEEK_OF_YEAR);//正常
         dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         
-        
-        if(1 > 0){
-        	showDialog(DIALOG_TEXT_ENTRY);
-        }
-        else
-        	this.finish();
-        
-    }
-    
-    public void showContent(){
-        refresh();
         refresh = (Button)findViewById(R.id.refresh);
         refresh.setBackgroundResource(R.drawable.ic_action_refresh);
-		findViewById(R.id.sample_button).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-						SlideoutActivity.prepare(WeekCourseListActivity.this, R.id.inner_content, width);
-						startActivity(new Intent(WeekCourseListActivity.this,
-								MenuActivity.class));
-						overridePendingTransition(0, 0);
-					}
-				});
+        refresh_db = (Button)findViewById(R.id.refresh_db);
 		ArrayAdapter<CharSequence> menu_adapter = ArrayAdapter.createFromResource(this, R.array.week_course_menu_array, android.R.layout.simple_spinner_item); 
 		menu_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner = (Spinner)findViewById(R.id.course_spinner_menu);
 		spinner.setAdapter(menu_adapter);
 		spinner.setPrompt("课程表");
 		spinner.setOnItemSelectedListener(new SpinnerOnSelectedListener());
+		showDialog(DATE_DIALOG_ID);
+        
     }
+    
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                return new DatePickerDialog(this,
+                            mDateSetListener,
+                            year, month, day);
+        }
+        return null;
+    }
+    
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                ((DatePickerDialog) dialog).updateDate(year, month, day);
+                break;
+        }
+    }    
+
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+
+                public void onDateSet(DatePicker view, int year_choice, int month_choice,
+                        int day_choice) {
+                    input_year_get = year_choice;
+                    input_month_get = month_choice;
+                    input_day_get = day_choice;
+                    readDB();
+                }
+            };
     
     class SpinnerOnSelectedListener implements OnItemSelectedListener{
     	@Override
@@ -146,74 +159,32 @@ public class WeekCourseListActivity extends ListActivity implements ParseWebPage
 			
 		}
     }
+//    }
+    
+    public void readDB(){
+    	new ReadDB(this, this).execute();
+    }
     
     @Override
-	protected Dialog onCreateDialog(int id) {
-    	switch(id){
-    	 case DIALOG_TEXT_ENTRY:
-             // This example shows how to add a custom layout to an AlertDialog
-             LayoutInflater factory = LayoutInflater.from(this);
-             final View textEntryView = factory.inflate(R.layout.dialog_term_begins, null);
-             return new AlertDialog.Builder(this)
-                 //.setIconAttribute(android.R.attr.alertDialogIcon)
-                 .setTitle(R.string.alert_dialog_text_entry)
-                 .setView(textEntryView)
-                 .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
-                     @Override
-					public void onClick(DialogInterface dialog, int whichButton) {
-                    	 dialog_title = (TextView)findViewById(R.id.dialog_title);
-                    	 input_year = (TextView)findViewById(R.id.input_year);
-        	        	 input_month = (TextView)findViewById(R.id.input_month);
-        	        	 input_date = (TextView)findViewById(R.id.input_date);
-        	             input_year_box = (EditText)textEntryView.findViewById(R.id.input_year_box);
-        	             input_month_box = (EditText)textEntryView.findViewById(R.id.input_month_box);
-        	             input_date_box = (EditText)textEntryView.findViewById(R.id.input_date_box);
-        	             if(input_year_box.getText().toString().equals("")){
-        	            	 finish();
-        	             }
-        	             else{
-        	            	 input_year_get = Integer.parseInt(input_year_box.getText().toString()); 
-        	             }
-        	             if(input_date_box.getText().toString().equals("")){
-        	            	 finish();
-        	             }
-        	             else{
-        	            	 input_date_get = Integer.parseInt(input_date_box.getText().toString());
-        	             }
-        	             if(input_month_box.getText().toString().equals("")){
-        	            	 finish();
-        	             }
-        	             else{
-        	            	 input_month_get = Integer.parseInt(input_month_box.getText().toString()); 
-        	             }      	        	 
-                    	 showContent();
-                         /* User clicked OK so do some stuff */
-                     }
-                 })
-                 .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-                     @Override
-					public void onClick(DialogInterface dialog, int whichButton) {
-                    	 finish();
-                         /* User clicked cancel so do some stuff */
-                     }
-                 })
-                 .create();
-    	}
-    	return null;
-    }
+   	public void onPostReadFromDB(ArrayList<Course> courses) {
+   			showCoursesInfo(courses);
+   	}
     
-    public void refresh(){
-    	new ParseWebPage().execute(ParseWebPage.PARSE_COURSE, Constant.url.本学期修读课程, this);
-    }
-    
-    public void coursesInfo(ArrayList<Course> courses){
+    public void showCoursesInfo(ArrayList<Course> courses){
     	courseListTitle = (TextView)findViewById(R.id.course_list_title);
         
         Calendar calendar_2 = Calendar.getInstance();
-        calendar_2.set(input_year_get, input_month_get-1, input_date_get);
+        calendar_2.set(input_year_get, input_month_get, input_day_get);
         calculate_week =  week - calendar_2.get(Calendar.WEEK_OF_YEAR);
         real_week = calculate_week + 1;
         courseListTitle.setText("第" + real_week + "周课程表");
+        
+        String[] lessonOne = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
+    	String[] lessonTwo = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
+    	String[] lessonThree = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
+    	String[] lessonFour = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
+    	String[] lessonFive = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
+    	String[] lessonSix = new String[]{" " ,"" ,"" ,"" ,"" ,"" ,""};
         
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map1 = new HashMap<String, String>();
@@ -473,16 +444,32 @@ public class WeekCourseListActivity extends ListActivity implements ParseWebPage
         menu.add(0, 1, 1, R.string.exit);
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.about);
+        menu.add(0, 4, 4, R.string.course_query);
+        menu.add(0, 5, 5, R.string.score_query);
+        menu.add(0, 6, 6, R.string.post_query);
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
-    	if(item.getItemId()==1){
+    	if(item.getItemId() == 1){
     		finish();
     	}
-    	if(item.getItemId()==2){
-    		startActivity(new Intent(WeekCourseListActivity.this, LoginActivity.class));
+    	else if(item.getItemId() == 2){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+    		editor.remove("logIn_auto");
+    		editor.putBoolean("logIn_auto", false);
+    		editor.commit();
+    		startActivity(new Intent(this, LoginActivity.class));
+    	}
+    	else if(item.getItemId() == 4){
+    		readDB();
+    	}
+    	else if(item.getItemId() == 5){
+    		startActivity(new Intent(this, TerminalScoreActivity.class));
+    	}
+    	else{
+    		startActivity(new Intent(this, StudentInfoActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
@@ -511,18 +498,6 @@ public class WeekCourseListActivity extends ListActivity implements ParseWebPage
     }
     
     @Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-			SlideoutActivity.prepare(WeekCourseListActivity.this, R.id.inner_content, width);
-			startActivity(new Intent(WeekCourseListActivity.this,
-					MenuActivity.class));
-			overridePendingTransition(0, 0);
-		}
-		return super.onKeyDown(keyCode, event);
-    }
-    
-    @Override
     public void onBackPressed() {
     	//实现Home键效果
     	//super.onBackPressed();这句话一定要注掉,不然又去调用默认的back处理方式了
@@ -532,8 +507,10 @@ public class WeekCourseListActivity extends ListActivity implements ParseWebPage
     	startActivity(i);
     }
 
-    public void test(View view){
-    	System.out.println("hello");
+    public void refreshdb(View view){
+      	startActivity(new Intent(this, InsertDBFragmentActivity.class));   	
     }
-    
+    public void refreshActivity(View view){
+    	showDialog(DATE_DIALOG_ID);
+    }
 }

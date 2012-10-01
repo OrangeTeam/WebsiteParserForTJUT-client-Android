@@ -79,6 +79,15 @@
             android:name=".content.InsertDBFragmentActivity"
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".content.ListCourseActivity" />
+        <activity
+            android:name=".TestListCourseActivity"
+            android:label="Test">
+            <intent-filter >
+            	<action android:name="android.intent.action.MAIN" />
+            	<category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -23,11 +23,11 @@ import android.widget.TextView;
  * @author Bai Jie
  *
  */
-public class ListCourseFragment extends ListFragment {
+public class ListCoursesFragment extends ListFragment {
 	public static final String COURSES_KEY = "org.orange.querysystem.simplecourses.key";
 	
-	public static ListCourseFragment newInstance(ArrayList<SimpleCourse> courses){
-		ListCourseFragment listADay = new ListCourseFragment();
+	public static ListCoursesFragment newInstance(ArrayList<SimpleCourse> courses){
+		ListCoursesFragment listADay = new ListCoursesFragment();
 		Bundle args = new Bundle();
 		args.putParcelableArrayList(COURSES_KEY, courses);
 		listADay.setArguments(args);

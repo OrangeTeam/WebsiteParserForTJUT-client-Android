@@ -24,11 +24,11 @@ import android.widget.TextView;
 /**
  * @author Bai Jie
  */
-public class ListPostFragment extends ListFragment {
-	public static final String POSTS_KEY = ListPostFragment.class.getName()+"simplepost.key";
+public class ListPostsFragment extends ListFragment {
+	public static final String POSTS_KEY = ListPostsFragment.class.getName()+"simplepost.key";
 	
-	public static ListPostFragment newInstance(ArrayList<SimplePost> posts){
-		ListPostFragment listADay = new ListPostFragment();
+	public static ListPostsFragment newInstance(ArrayList<SimplePost> posts){
+		ListPostsFragment listADay = new ListPostsFragment();
 		Bundle args = new Bundle();
 		args.putParcelableArrayList(POSTS_KEY, posts);
 		listADay.setArguments(args);
@@ -57,8 +57,8 @@ public class ListPostFragment extends ListFragment {
 	 */
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent(getActivity(), ShowPostActivity.class);
-		intent.putExtra(ShowPostActivity.EXTRA_POST_ID, (int)id);
+		Intent intent = new Intent(getActivity(), ShowOnePostActivity.class);
+		intent.putExtra(ShowOnePostActivity.EXTRA_POST_ID, (int)id);
 		startActivity(intent);
 	}
 

@@ -80,9 +80,9 @@
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@android:style/Theme.Dialog"/>
         
-        <activity android:name=".content.ListCourseActivity" />
+        <activity android:name=".content.ListCoursesActivity" />
         <activity
-            android:name=".TestListCourseActivity"
+            android:name=".TestListCoursesActivity"
             android:label="Test">
             <intent-filter >
             	<action android:name="android.intent.action.MAIN" />
@@ -91,14 +91,14 @@
         </activity>
         
         <activity
-            android:name=".content.ListPostActivity"
+            android:name=".content.ListPostsActivity"
             android:label="Test Posts" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".content.ShowPostActivity" />
+        <activity android:name=".content.ShowOnePostActivity" />
         
         <activity 
           	android:name=".content.StudentInfoActivity"

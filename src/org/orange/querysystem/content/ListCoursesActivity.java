@@ -26,9 +26,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.TabHost;
 
-public class ListCourseActivity extends FragmentActivity{
+public class ListCoursesActivity extends FragmentActivity{
 	public static final String ARRAYLIST_OF_COURSES_KEY
-		= ListCourseActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
+		= ListCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
 	
 	TabHost mTabHost;
     ViewPager  mViewPager;
@@ -54,7 +54,7 @@ public class ListCourseActivity extends FragmentActivity{
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
 		for(int day = 0;day<=6;day++)
 			mTabsAdapter.addTab(mTabHost.newTabSpec(daysOfWeek[day]).setIndicator(daysOfWeek[day]),
-					ListCourseFragment.class, args.get(day));
+					ListCoursesFragment.class, args.get(day));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)

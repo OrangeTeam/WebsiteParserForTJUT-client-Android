@@ -2,15 +2,15 @@ package org.orange.querysystem;
 
 import java.util.ArrayList;
 
-import org.orange.querysystem.content.ListCourseActivity;
-import org.orange.querysystem.content.ListCourseFragment;
-import org.orange.querysystem.content.ListCourseFragment.SimpleCourse;
+import org.orange.querysystem.content.ListCoursesActivity;
+import org.orange.querysystem.content.ListCoursesFragment;
+import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class TestListCourseActivity extends Activity {
+public class TestListCoursesActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,11 +22,11 @@ public class TestListCourseActivity extends Activity {
         		courses.add(new SimpleCourse(day+counter, "课程名称"+day+" "+counter, 
         				counter*2-1+"、"+counter*2, day+" "+counter));
         	Bundle arg = new Bundle();
-        	arg.putParcelableArrayList(ListCourseFragment.COURSES_KEY, courses);
+        	arg.putParcelableArrayList(ListCoursesFragment.COURSES_KEY, courses);
         	args.add(arg);
         }
-        Intent intent = new Intent(this, ListCourseActivity.class);
-        intent.putExtra(ListCourseActivity.ARRAYLIST_OF_COURSES_KEY, args);
+        Intent intent = new Intent(this, ListCoursesActivity.class);
+        intent.putExtra(ListCoursesActivity.ARRAYLIST_OF_COURSES_KEY, args);
         startActivityForResult(intent,0);
     }
 

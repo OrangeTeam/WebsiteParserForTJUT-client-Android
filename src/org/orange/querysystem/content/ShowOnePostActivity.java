@@ -31,9 +31,9 @@ import android.widget.TextView;
  * @author Bai Jie
  */
 @TargetApi(11)
-public class ShowPostActivity extends Activity {
-	public static final String EXTRA_POST_ID = ShowPostActivity.class.getName()+"EXTRA_POST_ID";
-	private static final String TAG = ShowPostActivity.class.getName();
+public class ShowOnePostActivity extends Activity {
+	public static final String EXTRA_POST_ID = ShowOnePostActivity.class.getName()+"EXTRA_POST_ID";
+	private static final String TAG = ShowOnePostActivity.class.getName();
 
 	TextView titleView;
 	WebView mainBodyView;
@@ -117,7 +117,7 @@ public class ShowPostActivity extends Activity {
 		@Override
 		protected Post doInBackground(Integer... id) {
 			Post post = null;
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowPostActivity.this);
+			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowOnePostActivity.this);
 			try{
 				database.open();
 				post = database.getPostsFromDB(StudentInfDBAdapter.KEY_POST_ID+" = "+id[0], null, null).get(0);
@@ -161,7 +161,7 @@ public class ShowPostActivity extends Activity {
 			if(result == null)
 				return null;
 			SchoolWebpageParser parser = new SchoolWebpageParser();
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowPostActivity.this);
+			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowOnePostActivity.this);
 			try {
 				parser.parsePostMainBody(result);
 				database.open();

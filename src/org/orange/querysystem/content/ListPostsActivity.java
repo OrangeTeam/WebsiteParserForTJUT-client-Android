@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.ListPostFragment.SimplePost;
+import org.orange.querysystem.content.ListPostsFragment.SimplePost;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Post;
@@ -46,10 +46,10 @@ import android.widget.TextView;
 /**
  * @author Bai Jie
  */
-public class ListPostActivity extends FragmentActivity{
+public class ListPostsActivity extends FragmentActivity{
 	public static final String ARRAYLIST_OF_POSTS_KEY
-		= ListPostActivity.class.getName()+"arraylist_of_posts_key";
-	private static final String TAG = ListPostActivity.class.getName();
+		= ListPostsActivity.class.getName()+"arraylist_of_posts_key";
+	private static final String TAG = ListPostsActivity.class.getName();
 	private static final String LAST_UPDATED_TIME_KEY = "LAST_UPDATED_TIME_KEY";
 	
 	TabHost mTabHost;
@@ -165,10 +165,10 @@ public class ListPostActivity extends FragmentActivity{
 			simplePosts.add(new SimplePost(post.getId(), post.getTitle(), post.getCategory(),
 					post.getAuthor(), post.getDateString()));
 		}
-		arg.putParcelableArrayList(ListPostFragment.POSTS_KEY, simplePosts);
+		arg.putParcelableArrayList(ListPostsFragment.POSTS_KEY, simplePosts);
 		
 		mTabsAdapter.addTab(mTabHost.newTabSpec(source).setIndicator(source),
-				ListPostFragment.class, arg);
+				ListPostsFragment.class, arg);
 		return;
 	}
 
@@ -192,7 +192,7 @@ public class ListPostActivity extends FragmentActivity{
 
 		@Override
 		protected ArrayList<Post> doInBackground(String... where) {
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostActivity.this);
+			StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
 			ArrayList<Post> result = null;
 			try{
 				database.open();
@@ -232,7 +232,7 @@ public class ListPostActivity extends FragmentActivity{
 
 		@Override
 		protected Void doInBackground(Integer... params) {
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostActivity.this);
+			StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
 			MyOnReadPageListener readPageListener = new MyOnReadPageListener();
 			Date lastUpdatedTime = new Date(mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0));
 			try {
@@ -283,7 +283,7 @@ public class ListPostActivity extends FragmentActivity{
 			
 		}
 		private class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
-			String TAG = ListPostActivity.class.getName();
+			String TAG = ListPostsActivity.class.getName();
 		
 			/* (non-Javadoc)
 			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)

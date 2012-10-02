@@ -273,7 +273,7 @@ public class ListPostsActivity extends FragmentActivity{
 			int totalSize = 0;
 
 			@Override
-			public void onGet(String url, int statusCode, String statusMessage,
+			public void onRequest(String url, int statusCode, String statusMessage,
 					int pageSize) {
 				Log.v(TAG,"URL: "+url+"\nStatus Code: "+statusCode+"\tStatusMessage: "
 						+statusMessage+"\t Page Size: "+pageSize);

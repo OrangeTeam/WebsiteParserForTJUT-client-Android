@@ -144,12 +144,15 @@ public class ReadPageHelper implements Cloneable{
 		if(!isNewUser && teachingAffairsSession!=null 
 				&& teachingAffairsSession.isModifiedWithIn(expire))
 			return true;
-		Connection conn = Jsoup.connect(loginPageURL).timeout(timeout)
-				.data("name",userName,"pswd", password).followRedirects(false);
-		conn.post();
-		if(conn.response().statusCode() != 302)
+		Response res = Jsoup
+				.connect(loginPageURL).timeout(timeout).followRedirects(false)
+				.data("name",userName,"pswd", password)
+				.method(Method.POST).execute();
+		if(listener != null)
+			listener.onRequest(loginPageURL, res.statusCode(), res.statusMessage(), res.bodyAsBytes().length);
+		if(res.statusCode() != 302)
 			return false;
-		this.teachingAffairsSession = getCookie1FromMap(conn.response().cookies());
+		this.teachingAffairsSession = getCookie1FromMap(res.cookies());
 		if(this.teachingAffairsSession == null)
 			return false;
 		return true;
@@ -257,12 +260,11 @@ public class ReadPageHelper implements Cloneable{
 		if(SCCESession != null && !SCCESession.isEmpty())
 			conn.cookie(SCCESession.cookieKey, SCCESession.cookieValue);
 		
-		conn.method(method).execute();
-		Response response = conn.response();
+		Response response = conn.method(method).execute();
 		if(charset != null)
 			response.charset(charset);
 		if(listener != null){
-			listener.onGet(url, response.statusCode(), response.statusMessage(), response.bodyAsBytes().length);
+			listener.onRequest(url, response.statusCode(), response.statusMessage(), response.bodyAsBytes().length);
 		}
 		return response;
 	}
@@ -374,12 +376,12 @@ public class ReadPageHelper implements Cloneable{
 	
 	public static interface OnReadPageListener{
 		/**
-		 * 当以Get方法读取一个页面后
+		 * 当（用Get或Post等方法）读取一个页面后
 		 * @param url
 		 * @param statusCode
 		 * @param statusMessage
 		 * @param pageSize 单位：字节
 		 */
-		public void onGet(String url, int statusCode, String statusMessage, int pageSize);
+		public void onRequest(String url, int statusCode, String statusMessage, int pageSize);
 	}
 }

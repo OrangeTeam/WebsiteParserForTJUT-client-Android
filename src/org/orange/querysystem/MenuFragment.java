@@ -1,6 +1,7 @@
 package org.orange.querysystem;
 
 import org.orange.querysystem.content.AllCourseListActivity;
+import org.orange.querysystem.content.ListCoursesActivity;
 import org.orange.querysystem.content.StudentInfoActivity;
 import org.orange.querysystem.content.TerminalScoreActivity;
 

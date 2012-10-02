@@ -79,7 +79,6 @@
             android:name=".content.InsertDBFragmentActivity"
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@android:style/Theme.Dialog"/>
-        
         <activity android:name=".content.ListCoursesActivity" />
         <activity
             android:name=".TestListCoursesActivity"
@@ -89,20 +88,6 @@
             	<category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <activity
-            android:name=".content.ListPostsActivity"
-            android:label="Test Posts" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".content.ShowOnePostActivity" />
-        
-        <activity 
-          	android:name=".content.StudentInfoActivity"
-            android:windowSoftInputMode="stateVisible|adjustPan"/>
     </application>
 
 </manifest>

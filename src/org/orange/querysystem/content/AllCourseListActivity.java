@@ -181,7 +181,7 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
     		startActivity(new Intent(this, TerminalScoreActivity.class));
     	}
     	else{
-    		startActivity(new Intent(this, StudentInfoActivity.class));
+    		startActivity(new Intent(this, ListCoursesActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

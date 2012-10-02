@@ -740,6 +740,8 @@ public class SchoolWebpageParser {
 			Student studentInfoToReturn) throws ParserException, IOException{
 		try{
 			Document doc = this.getCurrentHelperAfterLogin().getWithDocument(url);
+			if(doc == null || doc.getElementsByTag("table").isEmpty())
+				return new ArrayList<Course>(0);
 			//student
 			if(studentInfoToReturn != null){
 				Pattern pattern = Pattern.compile
@@ -783,6 +785,8 @@ public class SchoolWebpageParser {
 			Student studentInfoToReturn) throws ParserException, IOException{
 		try{
 			Document doc = getCurrentHelperAfterLogin().getWithDocument(url);
+			if(doc == null || doc.getElementsByTag("table").isEmpty())
+				return new ArrayList<Course>(0);
 			//student
 			if(studentInfoToReturn != null){
 				if(url.equals(Constant.url.ALL_PERSONAL_GRADES)){

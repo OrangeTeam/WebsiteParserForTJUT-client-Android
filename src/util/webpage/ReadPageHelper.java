@@ -6,8 +6,9 @@ import java.util.Date;
 import java.util.Map;
 
 import org.jsoup.Connection;
+import org.jsoup.Connection.Method;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
 public class ReadPageHelper implements Cloneable{
@@ -24,8 +25,8 @@ public class ReadPageHelper implements Cloneable{
 	public ReadPageHelper(){
 		this.timeout = 12000;
 		this.userName = this.password = "";
-		this.charset = "GB2312";
-		this.charsetForParsePostsFromSCCE = "UTF-8";
+		this.charset = null;
+		this.charsetForParsePostsFromSCCE = null;
 		this.isNewUser = false;
 		this.teachingAffairsSession = this.SCCESession = null;
 		this.expire = 60 * 60 *1000;//	1 hour 
@@ -167,13 +168,12 @@ public class ReadPageHelper implements Cloneable{
 	 * @param charset
 	 * @return
 	 * @throws IOException
+	 * @see {@link #request(String, Method, String)}
 	 */
 	public boolean prepareToParsePostsFromSCCE(String preparePageURL) throws IOException{
 		if(SCCESession!=null && SCCESession.isModifiedWithIn(expire))
 			return true;
-		Connection conn = Jsoup.connect(preparePageURL).timeout(timeout).followRedirects(false);
-		conn.get();
-		this.SCCESession = getCookie1FromMap(conn.response().cookies());
+		this.SCCESession = getCookie1FromMap(request(preparePageURL, Method.GET, null).cookies());
 		if(this.SCCESession == null)
 			return false;
 		return true;
@@ -210,38 +210,61 @@ public class ReadPageHelper implements Cloneable{
 	public String get(String url) throws IOException{
 		return getWithDocument(url).outerHtml();
 	}
+	/**
+	 * @see {@link #request(String, Method, String)}
+	 */
 	public Document getWithDocument(String url) throws IOException{
 		return getWithDocument(url, this.charset);
 	}
+	/**
+	 * @see {@link #request(String, Method, String)}
+	 */
 	public Document getWithDocumentForParsePostsFromSCCE(String url) throws IOException{
 		return getWithDocument(url, this.charsetForParsePostsFromSCCE);
 	}
+	/**
+	 * @see {@link #request(String, Method, String)}
+	 */
 	public Document getWithDocument(String url, String charset) throws IOException{
-		Connection conn = Jsoup.connect(url).timeout(timeout).followRedirects(false);
-		if(teachingAffairsSession != null && !teachingAffairsSession.isEmpty())
-			conn.cookie(teachingAffairsSession.cookieKey, teachingAffairsSession.cookieValue);
-		if(SCCESession != null && !SCCESession.isEmpty())
-			conn.cookie(SCCESession.cookieKey, SCCESession.cookieValue);
-		Document doc = ((HttpConnection)conn).get(charset);
-		if(listener != null){
-			org.jsoup.Connection.Response response = conn.response();
-			listener.onGet(url, response.statusCode(), response.statusMessage(), response.bodyAsBytes().length);
-		}
-		return doc;
+		return request(url, Method.GET, charset).parse();
 	}
 	/**
 	 * read page by POST method
 	 * @param url page's URL you want to read from
 	 * @return web page's content in String
 	 * @throws IOException
+	 * @see {@link #request(String, Method, String)}
 	 */
 	public String post(String url) throws IOException{
-		Connection conn = Jsoup.connect(url).timeout(timeout);
+		return request(url, Method.POST, null).parse().outerHtml();
+	}
+	/**
+	 * Execute the request.
+	 * @param url URL to connect to
+	 * @param method {@link Method}
+	 * @param charset set character set to be used
+	 * @return a response object
+	 * @throws java.net.MalformedURLException if the request URL is not a HTTP or HTTPS URL, or is otherwise malformed
+	 * @throws org.jsoup.HttpStatusException if the response is not OK and HTTP response errors are not ignored
+	 * @throws org.jsoup.UnsupportedMimeTypeException if the response mime type is not supported and those errors are not ignored
+	 * @throws java.net.SocketTimeoutException if the connection times out
+	 * @throws IOException on error
+	 */
+	private Response request(String url, Method method, String charset) throws IOException{
+		Connection conn = Jsoup.connect(url).timeout(timeout).followRedirects(false);
 		if(teachingAffairsSession != null && !teachingAffairsSession.isEmpty())
 			conn.cookie(teachingAffairsSession.cookieKey, teachingAffairsSession.cookieValue);
 		if(SCCESession != null && !SCCESession.isEmpty())
 			conn.cookie(SCCESession.cookieKey, SCCESession.cookieValue);
-		return ((HttpConnection)conn).post(charset).outerHtml();
+		
+		conn.method(method).execute();
+		Response response = conn.response();
+		if(charset != null)
+			response.charset(charset);
+		if(listener != null){
+			listener.onGet(url, response.statusCode(), response.statusMessage(), response.bodyAsBytes().length);
+		}
+		return response;
 	}
 	/** 修剪头尾不可见符，包括\s\u00a0\u3000 */
 	public static String trim(String src){

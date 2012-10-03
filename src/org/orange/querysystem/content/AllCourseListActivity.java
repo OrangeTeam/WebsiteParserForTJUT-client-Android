@@ -5,18 +5,18 @@ import java.util.HashMap;
 
 import org.orange.querysystem.ApplicationExit;
 import org.orange.querysystem.LoginActivity;
-import org.orange.querysystem.MenuActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
-
-import com.korovyansk.android.slideout.SlideoutActivity;
+import android.widget.Toast;
 
 public class AllCourseListActivity extends ListActivity implements OnPostExcuteListerner{
 	
@@ -53,8 +52,13 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
         if (savedInstanceState != null) {
             mStackLevel = savedInstanceState.getInt("level");
         }
-//        startActivity(new Intent(this, InsertDBFragmentActivity.class));
-        readDB();
+        if(isNetworkConnected()){
+        	readDB();
+        }
+        else{
+        	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+        }
+        
         refresh = (Button)findViewById(R.id.refresh);
         refresh.setBackgroundResource(R.drawable.ic_action_refresh);
         refresh_db = (Button)findViewById(R.id.refresh_db);
@@ -159,7 +163,10 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
         menu.add(0, 3, 3, R.string.about);
         menu.add(0, 4, 4, R.string.course_query);
         menu.add(0, 5, 5, R.string.score_query);
-        menu.add(0, 6, 6, R.string.post_query);
+        menu.add(0, 6, 6, R.string.all_post_query);
+        menu.add(0, 7, 7, R.string.day_and_week_courses);
+        menu.add(0, 8, 8, R.string.student_info);
+        
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
@@ -174,14 +181,23 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
     		editor.commit();
     		startActivity(new Intent(this, LoginActivity.class));
     	}
+    	else if(item.getItemId() == 3){
+    		
+    	}
     	else if(item.getItemId() == 4){
     		readDB();
     	}
     	else if(item.getItemId() == 5){
     		startActivity(new Intent(this, TerminalScoreActivity.class));
     	}
-    	else{
+    	else if(item.getItemId() == 6){
+    		startActivity(new Intent(this, ListPostsActivity.class));
+    	}
+    	else if(item.getItemId() == 7){
     		startActivity(new Intent(this, ListCoursesActivity.class));
+    	}
+    	else if(item.getItemId() == 8){
+    		startActivity(new Intent(this, StudentInfoActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
@@ -196,11 +212,33 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
     	startActivity(i);
     }
     
+    public boolean isNetworkConnected(){
+    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		if(networkInfo !=null && networkInfo.isConnected()){
+			return true;
+		}
+		else{
+		    return false;
+		}
+    }
+    
     public void refreshdb(View view){
-      	startActivity(new Intent(this, InsertDBFragmentActivity.class));   	
+    	if(isNetworkConnected()){
+    		startActivity(new Intent(this, InsertDBFragmentActivity.class));
+        }
+        else{
+        	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+        }
+      	   	
     }
     public void refreshActivity(View view){
-    	System.out.println("dianji");
-    	readDB();
+    	if(isNetworkConnected()){
+    		readDB();
+        }
+        else{
+        	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+        }
+    	
     }
 }

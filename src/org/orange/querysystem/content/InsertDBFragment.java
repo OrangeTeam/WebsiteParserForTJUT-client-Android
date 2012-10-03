@@ -69,7 +69,7 @@ public class InsertDBFragment extends Fragment{
 				parser = new SchoolWebpageParser(new MyParserListener(), args[0], args[1]);
 				studentInfDBAdapter.open();
 				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.本学期修读课程));
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.个人全部成绩));
+				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.个人全部成绩));
 //				studentInfDBAdapter.insertScoreInf(parser.parseScores(Constant.url.个人全部成绩));
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block

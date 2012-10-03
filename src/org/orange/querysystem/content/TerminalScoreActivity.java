@@ -129,7 +129,7 @@ public class TerminalScoreActivity extends ListActivity implements OnPostExcuteL
         menu.add(0, 3, 3, R.string.about);
         menu.add(0, 4, 4, R.string.course_query);
         menu.add(0, 5, 5, R.string.score_query);
-        menu.add(0, 6, 6, R.string.post_query);
+        menu.add(0, 6, 6, R.string.all_post_query);
         return super.onCreateOptionsMenu(menu); 
     }
     @Override

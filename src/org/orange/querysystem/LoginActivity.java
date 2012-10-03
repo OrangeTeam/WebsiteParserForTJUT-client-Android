@@ -4,12 +4,17 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources.NotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -119,32 +124,37 @@ public class LoginActivity extends Activity{
 	    
 	    //通过Intent方法对登陆信息进行获取和传递
 	  public void dengLu(View view){
-	    	try {
-				SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener(), userNameBox.getText().toString(), passwordBox.getText().toString());
-				if(!parser.getCurrentHelper().doLogin()){
-					passwordBox.setText("");
-					Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-					userNameBox.startAnimation(shake);
-					passwordBox.startAnimation(shake);
-					Toast.makeText(this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
-					
+		  ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		  NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		  if(networkInfo !=null && networkInfo.isConnected()){
+			  try {
+					SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener(), userNameBox.getText().toString(), passwordBox.getText().toString());
+					if(!parser.getCurrentHelper().doLogin()){
+						passwordBox.setText("");
+						Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+						userNameBox.startAnimation(shake);
+						passwordBox.startAnimation(shake);
+						Toast.makeText(this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
+						
+					}
+					else{
+						Intent intent = new Intent(this, AllCourseListActivity.class);
+						startActivity(intent);
+					}
+				} catch (NotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();	
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else{
-					Intent intent = new Intent(this, AllCourseListActivity.class);
-					startActivity(intent);
-				}
-			} catch (NotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();	
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    		
-	    	
+		  }
+		  else{
+			  Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();  
+		  }
 	    }
 	    
 	    private class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
@@ -204,13 +214,7 @@ public class LoginActivity extends Activity{
 							}
 					).show();
 			}
-		
-//				mSlideoutHelper.close();
-//				return true;
-//			
 			return super.onKeyDown(keyCode, event);
 		}
-	    
-	   
 }
 	    

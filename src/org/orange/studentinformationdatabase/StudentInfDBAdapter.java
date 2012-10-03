@@ -57,6 +57,7 @@ public class StudentInfDBAdapter {
 	public static final String KEY_TOTAL_SCORE = "total_score";
 	public static final String KEY_KIND = "kind";
 	public static final String KEY_NOTE = "note";
+	public static final String KEY_USER_NAME = "user_name";
 	
 	
 	public static final String KEY_LINK = "link";
@@ -86,9 +87,9 @@ public class StudentInfDBAdapter {
 		}
 	
 	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key autoincrement,"
-	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(15)," + KEY_TEACHERS + " varchar(15)," + 
-	    KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5)," + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER
-	    + " varchar(1)," + KEY_TEST_SCORE + " integer," + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30));";
+	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(15)," + KEY_TEACHERS + " varchar(15)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
+	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " integer,"
+	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_USER_NAME + " varchar(8) unique);";
 	    
 	    private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2 + "(" + KEY_LINK + " integer," + KEY_VICEID + " varchar(5) unique,"
 	    + KEY_WEEK + " integer," + KEY_DAY + " integer," + KEY_PERIOD + " integer," + KEY_ADDRESS + " varchar(5));";
@@ -158,7 +159,7 @@ public class StudentInfDBAdapter {
 	 * 一次性插入多门课程及每门课程成绩的初始化（成绩与课程在同一张表中），之所以成绩要初始化是因为读取课程时并没有读取成绩，
 	 * @param theCourseInf 类型为 ArrayList<Course>
 	 */
-	private void insertArrayCoursesToCourseInf1(ArrayList<Course> theCourseInf){
+	private void insertArrayCoursesToCourseInf1(ArrayList<Course> theCourseInf, String theUserName){
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		for(int i = 0; i < theCourseInf.size(); i++){
@@ -174,6 +175,7 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_TOTAL_SCORE, theCourseInf.get(i).getTotalScore());
 			newCourseInfValues.put(KEY_KIND, theCourseInf.get(i).getKind());
 			newCourseInfValues.put(KEY_NOTE, theCourseInf.get(i).getNote());
+			newCourseInfValues.put(KEY_USER_NAME, theUserName);
 			//theCourseInf为ArrayList对象，get(i)顺序找到其中的一门课程。getCode()等方法得到相应实例变量的值。
 			
 			db.insert(DATABASE_COURSE_TABLE1,null, newCourseInfValues);
@@ -208,16 +210,33 @@ public class StudentInfDBAdapter {
 	}
 	
 	/**
-	 * 判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然没有时就会调用insertArrayCoursesToCourseInf1方法和insertArrayCoursesToCourseInf2。
-	 * @param theCourseInf 类型为 ArrayList<Course>
+	 * 先判断数据库课程的记录是否为当前用户的，如果不是就清空课程的记录，建立当前用户的课程信息记录。是当前用户的就继续操作。
+	 *  判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然没有时就会调用insertArrayCoursesToCourseInf1方法和insertArrayCoursesToCourseInf2。
+	 * @param theCourseInf ArrayList<Course>类型
+	 * @param theUserName String类型
 	 */
-	public void autoInsertArrayCoursesInf(ArrayList<Course> theCourseInf){
-		String code = theCourseInf.get(0).getCode();
-		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
-		if(cursor.getCount() == 0)
+	public void autoInsertArrayCoursesInf(ArrayList<Course> theCourseInf, String theUserName){
+		Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
+		if(cursor1.getCount() != 0)
 		{
-			insertArrayCoursesToCourseInf1(theCourseInf);
-			insertArrayCoursesToCourseInf2(theCourseInf);
+			String code = theCourseInf.get(0).getCode();
+			Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
+			if(cursor2.getCount() == 0)
+			{
+				insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
+				insertArrayCoursesToCourseInf2(theCourseInf);
+			}
+		}else{
+			db.delete(DATABASE_COURSE_TABLE1, KEY_USER_NAME + "= '" + theUserName + "'", null);
+			db.delete(DATABASE_COURSE_TABLE2, null, null);
+			
+			String code = theCourseInf.get(0).getCode();
+			Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
+			if(cursor2.getCount() == 0)
+			{
+				insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
+				insertArrayCoursesToCourseInf2(theCourseInf);
+			}
 		}
 	}
 	
@@ -225,7 +244,7 @@ public class StudentInfDBAdapter {
 	 * 这个课程插入的方法是一次插入一门课程及相关成绩的初始化，
 	 * @param theCourseInf 类型为Course类型
 	 */
-	private void insertCourseToCourseInf1(Course theCourseInf){
+	private void insertCourseToCourseInf1(Course theCourseInf, String theUserName){
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		newCourseInfValues.put(KEY_CODE, theCourseInf.getCode());
@@ -240,6 +259,7 @@ public class StudentInfDBAdapter {
 		newCourseInfValues.put(KEY_TOTAL_SCORE, theCourseInf.getTotalScore());
 		newCourseInfValues.put(KEY_KIND, theCourseInf.getKind());
 		newCourseInfValues.put(KEY_NOTE, theCourseInf.getNote());
+		newCourseInfValues.put(KEY_USER_NAME, theUserName);
 		
 		db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues);
 	}
@@ -268,14 +288,15 @@ public class StudentInfDBAdapter {
 	/**
 	 *  判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然如果 没有就会掉用insertCourseToCourseInf1方法和insertCourseToCourseInf2。
 	 *  insertCourseInf:这个课程插入的方法是一次插入一门课程及相关成绩的初始化，
-	 * @param theCourseInf
+	 * @param theCourseInf Course类型
+	 * @param theUserName  String类型
 	 */
-	public void autoInsertCourseInf(Course theCourseInf){
+	public void autoInsertCourseInf(Course theCourseInf, String theUserName){
 		String code = theCourseInf.getCode();
 		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
 		if(cursor.getCount() == 0)
 		{
-			insertCourseToCourseInf1(theCourseInf);
+			insertCourseToCourseInf1(theCourseInf, theUserName);
 			insertCourseToCourseInf2(theCourseInf);
 		}
 	}
@@ -548,10 +569,16 @@ public class StudentInfDBAdapter {
     /**
      * 从数据库中一次获得courseInf1和courseInf2中的在where条件下的所有记录，也就是所有课程信息包括每门课程的成绩。  
      * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_YEAR + "=" + 2011, StudentInfDBAdapter.KEY_CODE + " DESC"。
+     * @param theUsername
      * @return ArrayList<Course>
      * @throws CourseException
      */
-	public ArrayList<Course> getCoursesFromDB(String where,String order) throws SQLException{
+	public ArrayList<Course> getCoursesFromDB(String where,String order, String theUserName) throws SQLException{
+		 Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
+		 if(cursor.getCount() == 0)
+		 {
+			 throw new SQLException("no this user data");
+		 }
 		 ArrayList<Course> courses = new ArrayList<Course>();
 		 Course course = new Course();
 		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, where, null, null, null, order);
@@ -631,10 +658,16 @@ public class StudentInfDBAdapter {
 	
 	/**
 	 * 从数据库中的courseInf1和courseInf2返回本学期的所有课程也包括成绩。
+	 * @param theUserName
 	 * @return ArrayList<Course>
 	 * @throws SQLException
 	 */
-	public ArrayList<Course> getThisTermCoursesFromDB() throws SQLException{
+	public ArrayList<Course> getThisTermCoursesFromDB(String theUserName) throws SQLException{
+		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
+		 if(cursor.getCount() == 0)
+		 {
+			 throw new SQLException("no this user data");
+		 }
 		 ArrayList<Course> courses = new ArrayList<Course>();
 		 Course course = new Course();
 		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
@@ -715,10 +748,16 @@ public class StudentInfDBAdapter {
 	/**
 	 * 从数据库中的courseInf1和courseInf2返回一门课程和成绩。
 	 * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_NAME + "=" + 营销学.
+	 * @param theUserName
 	 * @return Course.
 	 * @throws CourseException
 	 */
-	public Course getCourseFromDB(String where) throws SQLException{
+	public Course getCourseFromDB(String where, String theUserName) throws SQLException{
+		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
+		 if(cursor.getCount() == 0)
+		 {
+			 throw new SQLException("no this user data");
+		 }
 		 Course course = new Course();
 		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, where, null, null, null, null);
 		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){

@@ -14,7 +14,6 @@ public class InsertDBFragmentActivity extends FragmentActivity{
         SharedPreferences shareData = getSharedPreferences("data", 0);
         userName = shareData.getString("userName", null);
         password = shareData.getString("password", null);
-        System.out.println(userName + password);
         getSupportFragmentManager().beginTransaction().add(android.R.id.content,new InsertDBFragment(userName, password)).commit();
 	}
 	

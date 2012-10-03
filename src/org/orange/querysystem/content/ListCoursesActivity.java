@@ -26,29 +26,38 @@ import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import android.annotation.TargetApi;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int mYear = 0;
 	private int mMonth = 0;
 	private int mDay = 0;
-	private int mHour = 0;
-	private int mMinute = 0;
-	private int mSecond = 0;
 	private int mWeek = 0;
 	private int mDayOfWeek = 0;
+	private int year_get = 0;
+	private int month_get = 0;
+	private int day_get = 0;
+	private int calculate_week = 0;
+	
+	private TextView currentTime;
 	
 	protected static final int COURSE_NUMBER = 6;
 	public static final String ARRAYLIST_OF_COURSES_KEY
 		= ListCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
+	static final int DATE_DIALOG_ID = 1;
 	
 	TabHost mTabHost;
     ViewPager  mViewPager;
@@ -79,17 +88,23 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 		mYear = calendar.get(Calendar.YEAR);
 		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
 		mDay = calendar.get(Calendar.DAY_OF_MONTH);
-        mHour = calendar.get(Calendar.HOUR_OF_DAY);
-        mMinute = calendar.get(Calendar.MINUTE);
-        mSecond = calendar.get(Calendar.SECOND);
         mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
         mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
-		readDB();
-		
+        readDB();
 	}
+    
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                ((DatePickerDialog) dialog).updateDate(mYear, mMonth, mDay);
+                break;
+        }
+    }    
 		
 	public void readDB(){
-    	new ReadDB(this, this).execute();
+		SharedPreferences shareData = getSharedPreferences("data", 0);
+    	new ReadDB(this, this).execute(shareData.getString("userName", null));
     }
     
     @Override
@@ -98,6 +113,13 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){
+    	SharedPreferences shareData = getSharedPreferences("data", 0);
+    	Calendar calendar_2 = Calendar.getInstance();
+        calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null)));
+        calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
+        currentTime = (TextView)findViewById(R.id.currentTime);
+        currentTime.setText(mYear + "-" + (mMonth+1) + "-" + mDay + "    " + "第" + (calculate_week+1) + "周");
+        
     	Bundle[] args = new Bundle[7]; 
     	
     	/*String[星期几][第几大节]*/
@@ -110,7 +132,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
 					for(int period = 1; period<=13; period++)
 						try{
-							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(1)){
+							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(calculate_week + 1)){
 								lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period),time.getAddress()));
 							}
 						} catch(BitOperateException e){
@@ -147,6 +169,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				child.getLayoutParams().height = 80;
 			}
 		}
+		mTabHost.setCurrentTab(mDayOfWeek-1);
     }
 	
 

@@ -6,10 +6,18 @@
     android:padding="30dp"
     android:background="@drawable/pic">
     <TextView 
+        android:id="@+id/start_time"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="10dp"
+        android:textColor="#111111"/>
+    <TextView 
         android:id="@+id/title"
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/start_time"
         android:textSize="8pt"
         android:textColor="#00aaaa"/>
     <TextView 

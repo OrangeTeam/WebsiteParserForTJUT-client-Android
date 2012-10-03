@@ -2,8 +2,13 @@ package org.orange.querysystem;
 
 import java.io.IOException;
 
+import org.orange.querysystem.content.AllCourseListActivity;
+
+import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,8 +18,6 @@ import android.content.res.Resources.NotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,18 +27,15 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.orange.querysystem.R;
-import org.orange.querysystem.content.AllCourseListActivity;
-
-import util.webpage.SchoolWebpageParser;
-
 public class LoginActivity extends Activity{
 		private EditText userNameBox;
 		private EditText passwordBox;
+		private TextView startTime;
 		private TextView title;
 		private TextView userName;
 		private TextView password;
@@ -44,6 +44,7 @@ public class LoginActivity extends Activity{
 		private CheckBox autoDengLu;
 		
 		public static final String TAG = "org.orange.querysystem";
+		static final int DATE_DIALOG_ID = 1;
 	   
 	   @Override
 	   public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,8 @@ public class LoginActivity extends Activity{
 	        ApplicationExit appExit = (ApplicationExit)getApplication();
 	        appExit.setExit(false);
 	        
-	        SharedPreferences shareData = getSharedPreferences("data", 0);	        
+	        
+	        startTime = (TextView)findViewById(R.id.start_time);
 	        userNameBox = (EditText)findViewById(R.id.userNameBox);
 	        passwordBox = (EditText)findViewById(R.id.passwordBox);
 	        title = (TextView)findViewById(R.id.title);
@@ -66,6 +68,7 @@ public class LoginActivity extends Activity{
 	        userName.setText(R.string.userName);
 	        password.setText(R.string.password);
 	        
+	        SharedPreferences shareData = getSharedPreferences("data", 0);
 	        userNameBox.setText(shareData.getString("userName", null));
 	        if(shareData.getBoolean("logIn_auto", true)){
 	        	autoDengLu.setChecked(true);
@@ -76,8 +79,48 @@ public class LoginActivity extends Activity{
 	        	passwordBox.setText(shareData.getString("password", null));
 	        }else{
 	        	passwordBox.setText("");
-	        }	        
+	        }	    
+	        if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
+	        	showDialog(DATE_DIALOG_ID);
+	        }
+	        else{
+	        	startTime.setText("开学时间：" + shareData.getString("start_year", null) + "年" + shareData.getString("start_month", null) + "月" + shareData.getString("start_day", null) + "日");
+	        }
 	    }
+	   
+	   @Override
+	    protected Dialog onCreateDialog(int id) {
+	        switch (id) {
+	            case DATE_DIALOG_ID:
+	                return new DatePickerDialog(this,
+	                            mDateSetListener,
+	                            1992, 1, 22);
+	        }
+	        return null;
+	    }
+	    
+	    @Override
+	    protected void onPrepareDialog(int id, Dialog dialog) {
+	        switch (id) {
+	            case DATE_DIALOG_ID:
+	                ((DatePickerDialog) dialog).updateDate(1992, 1, 22);
+	                break;
+	        }
+	    }    
+
+	    private DatePickerDialog.OnDateSetListener mDateSetListener =
+	            new DatePickerDialog.OnDateSetListener() {
+
+	                public void onDateSet(DatePicker view, int year_choice, int month_choice,
+	                        int day_choice) {
+	                	Editor editor = getSharedPreferences("data", 0).edit();
+	                    editor.putString("start_year", Integer.toString(year_choice));
+	                    editor.putString("start_month", Integer.toString(month_choice+1));
+	                    editor.putString("start_day", Integer.toString(day_choice));
+	                    editor.commit();
+	                    startTime.setText("开学时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
+	                }
+	            };
 	   
 	   @Override
 	   protected void onPause(){

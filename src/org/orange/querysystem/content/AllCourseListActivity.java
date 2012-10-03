@@ -13,6 +13,7 @@ import util.webpage.Course;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -93,7 +94,8 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
     }
     
     public void readDB(){
-    	new ReadDB(this, this).execute();
+    	SharedPreferences shareData = getSharedPreferences("data", 0);
+    	new ReadDB(this, this).execute(shareData.getString("userName", null));
     }
     
     @Override

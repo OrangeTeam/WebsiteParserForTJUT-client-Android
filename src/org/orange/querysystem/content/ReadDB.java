@@ -15,7 +15,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-public class ReadDB extends AsyncTask<Void,Void,ArrayList<Course>>{
+public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 	protected interface OnPostExcuteListerner{
 		public void onPostReadFromDB(ArrayList<Course> courses);
 	}
@@ -31,12 +31,13 @@ public class ReadDB extends AsyncTask<Void,Void,ArrayList<Course>>{
 	}
 
 	@Override
-	protected ArrayList<Course> doInBackground(Void... args) {
+	protected ArrayList<Course> doInBackground(String... args) {
 		ArrayList<Course> result = null;
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try {
 			studentInfDBAdapter.open();
-			result = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0, null);
+//			System.out.println(args[0]);
+			result = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0, null, args[0]);
 		} catch(SQLException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,7 +60,6 @@ public class ReadDB extends AsyncTask<Void,Void,ArrayList<Course>>{
 		if(courses != null)
 			listener.onPostReadFromDB(courses);	
 		else{
-			System.out.println("no");
 			Toast.makeText(context, "no data in the database!", Toast.LENGTH_LONG).show();			
 		}
 	}

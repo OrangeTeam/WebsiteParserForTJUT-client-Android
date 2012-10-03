@@ -49,7 +49,6 @@ public class InsertDBFragment extends Fragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-//		Student student = new Student();
 		(new InsertDB()).execute(this.userName, this.password);
 		
 	}
@@ -67,10 +66,10 @@ public class InsertDBFragment extends Fragment{
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(getActivity());
 			try {
 				parser = new SchoolWebpageParser(new MyParserListener(), args[0], args[1]);
+				System.out.println(args[0]+args[1]);
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.本学期修读课程));
+				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.本学期修读课程),args[0]);
 				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.个人全部成绩));
-//				studentInfDBAdapter.insertScoreInf(parser.parseScores(Constant.url.个人全部成绩));
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -89,7 +88,6 @@ public class InsertDBFragment extends Fragment{
 		
 		@Override
 		protected void onPostExecute(Void course){
-			System.out.println("刷新成功");
 			progressBar.setVisibility( ProgressBar.GONE);
 			refresh.setText("数据库刷新成功！");
 		}

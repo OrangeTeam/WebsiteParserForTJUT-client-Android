@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -177,9 +179,9 @@ public class SchoolWebpageParser {
 	 * @throws IOException 链接超时等IO异常
 	 * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
 	 */
-    public ArrayList<Post> parsePosts(byte postSource, String[] categories, Date start, 
+    public List<Post> parsePosts(byte postSource, String[] categories, Date start, 
     		Date end, int max) throws UnsupportedEncodingException, IOException{
-    	ArrayList<Post> result = new ArrayList<Post>();
+    	LinkedList<Post> result = new LinkedList<Post>();
     	switch(postSource){
     	case Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS:
     		if(categories==null || categories.length==0 || categories[0]==null)
@@ -272,7 +274,7 @@ public class SchoolWebpageParser {
      * @throws IOException 链接超时等IO异常
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
      */
-    public ArrayList<Post> parsePosts(String[] categories, Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    public List<Post> parsePosts(String[] categories, Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
     	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, categories, start, end, max);
     }
     /**
@@ -285,7 +287,7 @@ public class SchoolWebpageParser {
      * @throws IOException 链接超时等IO异常
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
      */
-    public ArrayList<Post> parsePosts(String aCategory, Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    public List<Post> parsePosts(String aCategory, Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
     	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, aCategory, start, end, max);
     }
     /**
@@ -297,7 +299,7 @@ public class SchoolWebpageParser {
      * @throws IOException 链接超时等IO异常
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
      */
-    public ArrayList<Post> parsePosts(Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    public List<Post> parsePosts(Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
     	return parsePosts(Post.SOURCES.UNKNOWN_SOURCE, start, end, max);
     }
     /**
@@ -309,8 +311,8 @@ public class SchoolWebpageParser {
      * @throws IOException 链接超时等IO异常
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
      */
-    public ArrayList<Post> parseCommonPosts(Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
-    	ArrayList<Post> result = new ArrayList<Post>();
+    public List<Post> parseCommonPosts(Date start, Date end, int max) throws UnsupportedEncodingException, IOException{
+    	LinkedList<Post> result = new LinkedList<Post>();
     	if(max>=0 && result.size()>=max)
 			return result;;
 		result.addAll(parsePosts(Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS,Post.CATEGORYS.IN_TEACHING_AFFAIRS_WEBSITE_COMMON, start, end, max));
@@ -332,7 +334,7 @@ public class SchoolWebpageParser {
      * @throws IOException 
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
 	 */
-    public ArrayList<Post> parsePosts(byte postSource, Date start, 
+    public List<Post> parsePosts(byte postSource, Date start, 
     		Date end, int max) throws UnsupportedEncodingException, IOException{
     	String[] categories = null;
     	return parsePosts(postSource, categories, start, end, max);
@@ -348,7 +350,7 @@ public class SchoolWebpageParser {
      * @throws IOException 
      * @throws UnsupportedEncodingException 为解析教务处信息设置URL时，GB2312编码异常
      */
-	public ArrayList<Post> parsePosts(byte postSource, String aCategory, Date start, Date end, 
+	public List<Post> parsePosts(byte postSource, String aCategory, Date start, Date end, 
 			int max) throws UnsupportedEncodingException, IOException {
 		String[] categories = new String[]{aCategory};
 		return parsePosts(postSource, categories, start, end, max);
@@ -364,14 +366,14 @@ public class SchoolWebpageParser {
 	 * @throws UnsupportedEncodingException 设置URL时，GB2312编码异常
 	 * @throws IOException
 	 */
-	public ArrayList<Post> parsePostsFromTeachingAffairs(String aCategory, Date start, Date end, int max) throws UnsupportedEncodingException, IOException {
+	public List<Post> parsePostsFromTeachingAffairs(String aCategory, Date start, Date end, int max) throws UnsupportedEncodingException, IOException {
 		ReadPageHelper readHelper = getCurrentHelper();
 		if(aCategory == null)
 			return parsePosts(Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS, start, end, max);
 		String url = null;
 		Document doc = null;
 		int page = 0;
-		ArrayList<Post> result = new ArrayList<Post>();
+		LinkedList<Post> result = new LinkedList<Post>();
 		if(max == 0) return result;
 		try {
 			url = "http://59.67.148.66:8080/getRecords.jsp?url=list.jsp&pageSize=100&name=" 
@@ -415,9 +417,9 @@ public class SchoolWebpageParser {
 	 * @param doc 要解析的网页的Document文档对象模型
 	 * @return 符合条件的posts
 	 */
-	public ArrayList<Post> parsePostsFromTeachingAffairs(String aCategory, Date start, Date end, 
+	public List<Post> parsePostsFromTeachingAffairs(String aCategory, Date start, Date end, 
 			int max, Document doc) {
-		ArrayList<Post> result = new ArrayList<Post>();
+		LinkedList<Post> result = new LinkedList<Post>();
 		Elements posts = doc.body().select("table table table table").get(0).getElementsByTag("tr");
 		Element link = null;
 		Post aPost = null;
@@ -453,12 +455,12 @@ public class SchoolWebpageParser {
 	 * @return 符合条件的posts
 	 * @throws IOException 
 	 */
-	public ArrayList<Post> parsePostsFromSCCE(String[] categories, Date start, Date end, 
+	public List<Post> parsePostsFromSCCE(String[] categories, Date start, Date end, 
 			int max, String baseURL) throws IOException{
 		ReadPageHelper readHelper = getCurrentHelper();
 		Document doc = null;
 		int page = 0;
-		ArrayList<Post> result = new ArrayList<Post>();
+		LinkedList<Post> result = new LinkedList<Post>();
 		if(max == 0) return result;
 		if(baseURL == null){
 			if(categories == null)
@@ -520,13 +522,13 @@ public class SchoolWebpageParser {
 	 * @param doc 包含post列表的 某计算机学院网页的 Document
 	 * @return 符合条件的posts
 	 */
-	public ArrayList<Post> parsePostsFromSCCE(
+	public List<Post> parsePostsFromSCCE(
 			String[] categories, Date start, Date end, int max, Document doc) {
 		Post post;
 		Elements cols = null;
 		Pattern pattern = Pattern.compile("openwin\\('(.*)'\\)");
 		Matcher matcher = null;
-		ArrayList<Post> result = new ArrayList<Post>();
+		LinkedList<Post> result = new LinkedList<Post>();
 		Elements posts = doc.select("form table table").first().getElementsByTag("tr");
 		posts.remove(0);
 		for(Element postTr:posts){
@@ -579,17 +581,17 @@ public class SchoolWebpageParser {
 	 * @param start 用于限制返回的Posts的范围，只返回start之后（包括start）的Post
 	 * @param end 用于限制返回的Posts的范围，只返回end之前（包括end）的Post
 	 * @param max 用于限制返回的Posts的数量，最多返回max条Post
-	 * @return 符合条件的posts；如果aCategory不可识别，返回空ArrayList
+	 * @return 符合条件的posts；如果aCategory不可识别，返回空List
 	 * @throws IOException 
 	 */
-	public ArrayList<Post> parsePostsFromSCCEStudent(String aCategory, Date start, Date end, int max) throws IOException{
+	public List<Post> parsePostsFromSCCEStudent(String aCategory, Date start, Date end, int max) throws IOException{
 		ReadPageHelper readHelper = getCurrentHelper();
 		if(aCategory == null)
 			return parsePosts(Post.SOURCES.STUDENT_WEBSITE_OF_SCCE, start, end, max);
 		int page = 0;
 		Document doc = null;
 		String url = "http://59.67.152.6/Channels/";
-		ArrayList<Post> result = new ArrayList<Post>();
+		LinkedList<Post> result = new LinkedList<Post>();
 		if(max == 0) return result;
 		if(aCategory.equals(Post.CATEGORYS.SCCE_STUDENT_NEWS))
 			url += "7";
@@ -647,11 +649,11 @@ public class SchoolWebpageParser {
 	 * @param doc 包含post列表的 某计算机学院学生网站网页的 Document
 	 * @return 符合条件的posts
 	 */
-	public ArrayList<Post> parsePostsFromSCCEStudent(
+	public List<Post> parsePostsFromSCCEStudent(
 			String aCategory, Date start, Date end, int max, Document doc){
 		Post post = null;
 		Element link = null;
-		ArrayList<Post> result = new ArrayList<Post>();
+		LinkedList<Post> result = new LinkedList<Post>();
 		Elements posts = doc.select(".oright .orbg ul li");
 		for(Element postLi:posts){
 			if(max>=0 && result.size()>=max)

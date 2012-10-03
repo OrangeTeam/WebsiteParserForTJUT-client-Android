@@ -2,6 +2,8 @@ package org.orange.studentinformationdatabase;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
@@ -280,20 +282,20 @@ public class StudentInfDBAdapter {
 	
 	/**
 	 * 解析出的通知通过此插入操作方法存入到数据库的post表中。
-	 * @param thePostInf 类型为ArrayList<Post>类型
+	 * @param thePostInf 类型为List<Post>类型
 	 */
-	private void insertArrayPostsInf(ArrayList<Post> thePostInf){
+	private void insertArrayPostsInf(List<Post> thePostInf){
 		ContentValues newPostInfValues = new ContentValues();
 		
-		for(int i = 0; i < thePostInf.size(); i++){
-			newPostInfValues.put(KEY_SOURCE, thePostInf.get(i).getSource());
-			newPostInfValues.put(KEY_CATEGORY, thePostInf.get(i).getCategory());
-			newPostInfValues.put(KEY_TITLE, thePostInf.get(i).getTitle());
-			newPostInfValues.put(KEY_URL, thePostInf.get(i).getUrl());
-			newPostInfValues.put(KEY_AUTHOR, thePostInf.get(i).getAuthor());
-			newPostInfValues.put(KEY_DATE, thePostInf.get(i).getDate().getTime());
-			newPostInfValues.put(KEY_MAINBODY, thePostInf.get(i).getMainBody());
-			//thePostInf.get(i).getDate().getTime()获取date字段并进行转换为长整型数据。
+		for(Post aPost:thePostInf){
+			newPostInfValues.put(KEY_SOURCE, aPost.getSource());
+			newPostInfValues.put(KEY_CATEGORY, aPost.getCategory());
+			newPostInfValues.put(KEY_TITLE, aPost.getTitle());
+			newPostInfValues.put(KEY_URL, aPost.getUrl());
+			newPostInfValues.put(KEY_AUTHOR, aPost.getAuthor());
+			newPostInfValues.put(KEY_DATE, aPost.getDate().getTime());
+			newPostInfValues.put(KEY_MAINBODY, aPost.getMainBody());
+			//aPost.getDate().getTime()获取date字段并进行转换为长整型数据。
 			
 			db.insert(DATABASE_POST_TABLE,null, newPostInfValues);
 		}
@@ -305,7 +307,7 @@ public class StudentInfDBAdapter {
 	 * insertArrayPostsInf:解析出的通知通过此插入操作方法存入到数据库的post表中。
 	 * @param thePostInf
 	 */
-	public void autoInsertArrayPostsInf(ArrayList<Post> thePostInf){
+	public void autoInsertArrayPostsInf(List<Post> thePostInf){
 		String title = thePostInf.get(0).getTitle();
 		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_TITLE + "= '" + title + "'", null, null, null, null);
 		if(cursor.getCount() == 0)

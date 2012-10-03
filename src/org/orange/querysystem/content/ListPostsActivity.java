@@ -17,6 +17,7 @@ package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListPostsFragment.SimplePost;
@@ -238,7 +239,7 @@ public class ListPostsActivity extends FragmentActivity{
 			try {
 				SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener());
 				parser.setOnReadPageListener(readPageListener);
-				ArrayList<Post> posts = null;
+				List<Post> posts = null;
 				if(params[0] == COMMON_POSTS)
 					posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
 				else

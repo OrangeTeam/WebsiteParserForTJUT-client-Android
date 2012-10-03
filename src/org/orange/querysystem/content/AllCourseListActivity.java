@@ -184,7 +184,7 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
-    		
+    		startActivity(new Intent(this, AllListCoursesActivity.class));
     	}
     	else if(item.getItemId() == 4){
     		readDB();

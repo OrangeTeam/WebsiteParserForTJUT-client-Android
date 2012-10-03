@@ -89,7 +89,7 @@ public class StudentInfDBAdapter {
 	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key autoincrement,"
 	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(15)," + KEY_TEACHERS + " varchar(15)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
 	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " integer,"
-	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_USER_NAME + " varchar(8) unique);";
+	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_USER_NAME + " varchar(8));";
 	    
 	    private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2 + "(" + KEY_LINK + " integer," + KEY_VICEID + " varchar(5) unique,"
 	    + KEY_WEEK + " integer," + KEY_DAY + " integer," + KEY_PERIOD + " integer," + KEY_ADDRESS + " varchar(5));";
@@ -229,7 +229,7 @@ public class StudentInfDBAdapter {
 				insertArrayCoursesToCourseInf2(theCourseInf);
 			}
 		}else{
-			db.delete(DATABASE_COURSE_TABLE1, KEY_USER_NAME + "= '" + theUserName + "'", null);
+			db.delete(DATABASE_COURSE_TABLE1, null, null);
 			db.delete(DATABASE_COURSE_TABLE2, null, null);
 			
 			String code = theCourseInf.get(0).getCode();
@@ -505,6 +505,10 @@ public class StudentInfDBAdapter {
 		for(Course aScore:theScoreInf){
 			Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + " = '" + aScore.getCode() + "'", null, null, null, null);
 			//getCode()得到课程代码实现成绩插入到相应的课程中。getCode()是字符串所以两边要加单引号。
+			if(cursor1.getCount() == 0)
+			{
+				continue;
+			}
 			cursor1.moveToFirst();
 			if(cursor1.getInt(7) != aScore.getYear())//判断数据库的内容和ArrayList的成绩对象的相关字段是否想等
 				if(aScore.getYear() <= 1900)
@@ -639,13 +643,13 @@ public class StudentInfDBAdapter {
 				 course.setIsFirstSemester(reconvert(newIsFirstSemester));
 				 course.setKind(newKind);
 				 course.setNote(newNote);
+				 course.setTimeAndAddresse(timeAndAddresses);
+				 course.setTeachers(newTeachers);
 				 try{
-					 course.setTimeAndAddresse(timeAndAddresses);
-					 course.setTeachers(newTeachers);
 					 course.setCredit(newCredit);
 					 if(newYear != 0)course.setYear(newYear);
 					 if(newTestScore != -1)course.setTestScore(newTestScore);
-					 if(newYear != -1)course.setTotalScore(newTotalScore);
+					 if(newTotalScore != -1)course.setTotalScore(newTotalScore);
 				 }catch(NullPointerException e){
 					 e.printStackTrace();
 				 }catch(CourseException e){
@@ -728,13 +732,13 @@ public class StudentInfDBAdapter {
 				 course.setIsFirstSemester(reconvert(newIsFirstSemester));
 				 course.setKind(newKind);
 				 course.setNote(newNote);
+				 course.setTimeAndAddresse(timeAndAddresses);
+				 course.setTeachers(newTeachers);
 				 try{
-					 course.setTimeAndAddresse(timeAndAddresses);
-					 course.setTeachers(newTeachers);
 					 course.setCredit(newCredit);
 					 if(newYear != 0)course.setYear(newYear);
 					 if(newTestScore != -1)course.setTestScore(newTestScore);
-					 if(newYear != -1)course.setTotalScore(newTotalScore);
+					 if(newTotalScore != -1)course.setTotalScore(newTotalScore);
 				 }catch(NullPointerException e){
 					 e.printStackTrace();
 				 }catch(CourseException e){
@@ -814,12 +818,13 @@ public class StudentInfDBAdapter {
 			 course.setIsFirstSemester(reconvert(newIsFirstSemester));
 			 course.setKind(newKind);
 			 course.setNote(newNote);
+			 course.setTimeAndAddresse(timeAndAddresses);
+			 course.setTeachers(newTeachers);
 			 try{
-				 course.setTeachers(newTeachers);
 				 course.setCredit(newCredit);
 				 if(newYear != 0)course.setYear(newYear);
 				 if(newTestScore != -1)course.setTestScore(newTestScore);
-				 if(newYear != -1)course.setTotalScore(newTotalScore);
+				 if(newTotalScore != -1)course.setTotalScore(newTotalScore);
 				 course.setTimeAndAddresse(timeAndAddresses);
 			 }catch(NullPointerException e){
 				 e.printStackTrace();

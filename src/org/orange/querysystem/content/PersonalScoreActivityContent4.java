@@ -2,6 +2,7 @@ package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.orange.querysystem.ApplicationExit;
 import org.orange.querysystem.LoginActivity;
@@ -97,7 +98,7 @@ public class PersonalScoreActivityContent4 extends ListActivity implements Parse
     	new ParseWebPage().execute(ParseWebPage.PARSE_SCORE, Constant.url.个人全部成绩, this);
     }
     
-    public void coursesInfo(ArrayList<Course> courses){
+    public void coursesInfo(List<Course> courses){
 //    	courseListTitle = (TextView)findViewById(R.id.course_list_title);
 //        courseListTitle.setText("期末成绩单");
         

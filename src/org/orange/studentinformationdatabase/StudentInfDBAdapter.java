@@ -157,24 +157,24 @@ public class StudentInfDBAdapter {
 	
 	/**
 	 * 一次性插入多门课程及每门课程成绩的初始化（成绩与课程在同一张表中），之所以成绩要初始化是因为读取课程时并没有读取成绩，
-	 * @param theCourseInf 类型为 ArrayList<Course>
+	 * @param theCourseInf 类型为 List<Course>
 	 */
-	private void insertArrayCoursesToCourseInf1(ArrayList<Course> theCourseInf, String theUserName){
+	private void insertArrayCoursesToCourseInf1(List<Course> theCourseInf, String theUserName){
 		ContentValues newCourseInfValues = new ContentValues();
 		
-		for(int i = 0; i < theCourseInf.size(); i++){
-			newCourseInfValues.put(KEY_CODE, theCourseInf.get(i).getCode());
-			newCourseInfValues.put(KEY_NAME, theCourseInf.get(i).getName());
-			newCourseInfValues.put(KEY_TEACHERS, theCourseInf.get(i).getTeacherString());
-			newCourseInfValues.put(KEY_CREDIT, theCourseInf.get(i).getCredit());
-			newCourseInfValues.put(KEY_CLASS_NUMBER, theCourseInf.get(i).getClassNumber());
-			newCourseInfValues.put(KEY_TEACHING_MATERIAL, theCourseInf.get(i).getTeachingMaterial());
-			newCourseInfValues.put(KEY_YEAR, theCourseInf.get(i).getYear());
-			newCourseInfValues.put(KEY_ISFIRSTSEMESTER, convert(theCourseInf.get(i).isFirstSemester()));
-			newCourseInfValues.put(KEY_TEST_SCORE, theCourseInf.get(i).getTestScore());
-			newCourseInfValues.put(KEY_TOTAL_SCORE, theCourseInf.get(i).getTotalScore());
-			newCourseInfValues.put(KEY_KIND, theCourseInf.get(i).getKind());
-			newCourseInfValues.put(KEY_NOTE, theCourseInf.get(i).getNote());
+		for(Course aCourse:theCourseInf){
+			newCourseInfValues.put(KEY_CODE, aCourse.getCode());
+			newCourseInfValues.put(KEY_NAME, aCourse.getName());
+			newCourseInfValues.put(KEY_TEACHERS, aCourse.getTeacherString());
+			newCourseInfValues.put(KEY_CREDIT, aCourse.getCredit());
+			newCourseInfValues.put(KEY_CLASS_NUMBER, aCourse.getClassNumber());
+			newCourseInfValues.put(KEY_TEACHING_MATERIAL, aCourse.getTeachingMaterial());
+			newCourseInfValues.put(KEY_YEAR, aCourse.getYear());
+			newCourseInfValues.put(KEY_ISFIRSTSEMESTER, convert(aCourse.isFirstSemester()));
+			newCourseInfValues.put(KEY_TEST_SCORE, aCourse.getTestScore());
+			newCourseInfValues.put(KEY_TOTAL_SCORE, aCourse.getTotalScore());
+			newCourseInfValues.put(KEY_KIND, aCourse.getKind());
+			newCourseInfValues.put(KEY_NOTE, aCourse.getNote());
 			newCourseInfValues.put(KEY_USER_NAME, theUserName);
 			//theCourseInf为ArrayList对象，get(i)顺序找到其中的一门课程。getCode()等方法得到相应实例变量的值。
 			
@@ -185,24 +185,26 @@ public class StudentInfDBAdapter {
 	
 	/**
 	 * 课程的时间地点是另一张表，这是对时间地点的插入操作。courseInf2为时间地点的存储与courseInf1相关联。
-	 * @param theCourseInf  ArrayList<Course>类型
+	 * @param theCourseInf  List<Course>类型
 	 */
-	private void insertArrayCoursesToCourseInf2(ArrayList<Course> theCourseInf){
+	private void insertArrayCoursesToCourseInf2(List<Course> theCourseInf){
 		ContentValues newCourseInfTAValues = new ContentValues();
-		for(int i = 0; i < theCourseInf.size(); i++){
-			Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + theCourseInf.get(i).getCode() + "'", null, null, null, null);
+		int counter = 0;
+		for(Course aCourse:theCourseInf){
+			Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + aCourse.getCode() + "'", null, null, null, null);
 			cursor.moveToFirst();
 			//这里对courseInf1表的查询是为了获得cuorseInf1表的id字段值，用来存储到courseInf2中的link字段。
-			for(int j=0; j < theCourseInf.get(i).getTimeAndAddress().size(); j++){
+			counter = 0;
+			for(TimeAndAddress aTimeAndAddress:aCourse.getTimeAndAddress()){
 				newCourseInfTAValues.put(KEY_LINK, cursor.getInt(0));
 				//link列是courseInf1和courseInf2相‘连接’的字段以执行相应的操作，所以link列须和_id列值相等。cursor.getInt(0)是得到id字段值。
-				newCourseInfTAValues.put(KEY_VICEID, Integer.toString(cursor.getInt(0)) + Integer.toString(j));
+				newCourseInfTAValues.put(KEY_VICEID, Integer.toString(cursor.getInt(0)) + Integer.toString(counter++));
 				//一门课有多个TimeAndAddress与之相对应，viceid列是为了对其中一个TimeAndAddress进行操作。例如当link列为1时viceid就为11、12、、、等
 				//当然link的1是整数型的而viceid的11、12为字符串类型的。
-				newCourseInfTAValues.put(KEY_WEEK, theCourseInf.get(i).getTimeAndAddress().get(j).getWeek());
-				newCourseInfTAValues.put(KEY_DAY, theCourseInf.get(i).getTimeAndAddress().get(j).getDay());
-				newCourseInfTAValues.put(KEY_PERIOD, theCourseInf.get(i).getTimeAndAddress().get(j).getPeriod());
-				newCourseInfTAValues.put(KEY_ADDRESS, theCourseInf.get(i).getTimeAndAddress().get(j).getAddress());
+				newCourseInfTAValues.put(KEY_WEEK, aTimeAndAddress.getWeek());
+				newCourseInfTAValues.put(KEY_DAY, aTimeAndAddress.getDay());
+				newCourseInfTAValues.put(KEY_PERIOD, aTimeAndAddress.getPeriod());
+				newCourseInfTAValues.put(KEY_ADDRESS, aTimeAndAddress.getAddress());
 				
 				db.insert(DATABASE_COURSE_TABLE2,null,newCourseInfTAValues);
 			}
@@ -212,10 +214,10 @@ public class StudentInfDBAdapter {
 	/**
 	 * 先判断数据库课程的记录是否为当前用户的，如果不是就清空课程的记录，建立当前用户的课程信息记录。是当前用户的就继续操作。
 	 *  判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然没有时就会调用insertArrayCoursesToCourseInf1方法和insertArrayCoursesToCourseInf2。
-	 * @param theCourseInf ArrayList<Course>类型
+	 * @param theCourseInf List<Course>类型
 	 * @param theUserName String类型
 	 */
-	public void autoInsertArrayCoursesInf(ArrayList<Course> theCourseInf, String theUserName){
+	public void autoInsertArrayCoursesInf(List<Course> theCourseInf, String theUserName){
 		Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		if(cursor1.getCount() != 0)
 		{
@@ -495,73 +497,73 @@ public class StudentInfDBAdapter {
 	
 	/**
 	 * 成绩只有更新，因为在课程插入时就已经对成绩进行了初始化。
-	 * @param theScoreInf 类型为ArrayList<Course>,当出一门课程成绩时生成一个成员的ArrrayList类型，就可以调用此方法进行更新。
+	 * @param theScoreInf 类型为List<Course>,当出一门课程成绩时生成一个成员的ArrrayList类型，就可以调用此方法进行更新。
 	 */
-	public void updateScoreInf(ArrayList<Course> theScoreInf){
+	public void updateScoreInf(List<Course> theScoreInf){
 		ContentValues newCourseInfValues1 = new ContentValues();
 		
-		for(int i = 0; i < theScoreInf.size(); i ++){
-			Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null, null, null, null);
+		for(Course aScore:theScoreInf){
+			Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + " = '" + aScore.getCode() + "'", null, null, null, null);
 			//getCode()得到课程代码实现成绩插入到相应的课程中。getCode()是字符串所以两边要加单引号。
 			cursor1.moveToFirst();
-			if(cursor1.getInt(7) != theScoreInf.get(i).getYear())//判断数据库的内容和ArrayList的成绩对象的相关字段是否想等
-				if(theScoreInf.get(i).getYear() <= 1900)
+			if(cursor1.getInt(7) != aScore.getYear())//判断数据库的内容和ArrayList的成绩对象的相关字段是否想等
+				if(aScore.getYear() <= 1900)
 				{
 					newCourseInfValues1.put(KEY_YEAR, 0);
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
-					newCourseInfValues1.put(KEY_YEAR, theScoreInf.get(i).getYear());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					newCourseInfValues1.put(KEY_YEAR, aScore.getYear());
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			
-			if(cursor1.getString(8) != convert(theScoreInf.get(i).isFirstSemester()))
+			if(cursor1.getString(8) != convert(aScore.isFirstSemester()))
 			{
-				newCourseInfValues1.put(KEY_ISFIRSTSEMESTER, convert(theScoreInf.get(i).isFirstSemester()));
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+				newCourseInfValues1.put(KEY_ISFIRSTSEMESTER, convert(aScore.isFirstSemester()));
+				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
 			
-			if(cursor1.getInt(9) != theScoreInf.get(i).getTestScore())
-				if(theScoreInf.get(i).getTestScore() < 0)
+			if(cursor1.getInt(9) != aScore.getTestScore())
+				if(aScore.getTestScore() < 0)
 				{
 					newCourseInfValues1.put(KEY_TEST_SCORE, -1);
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
-					newCourseInfValues1.put(KEY_TEST_SCORE, theScoreInf.get(i).getTestScore());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					newCourseInfValues1.put(KEY_TEST_SCORE, aScore.getTestScore());
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			
-			if(cursor1.getInt(10) != theScoreInf.get(i).getTotalScore())
-				if(theScoreInf.get(i).getTotalScore() < 0)
+			if(cursor1.getInt(10) != aScore.getTotalScore())
+				if(aScore.getTotalScore() < 0)
 				{
 					newCourseInfValues1.put(KEY_TOTAL_SCORE, -1);
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
-					newCourseInfValues1.put(KEY_TOTAL_SCORE, theScoreInf.get(i).getTotalScore());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					newCourseInfValues1.put(KEY_TOTAL_SCORE, aScore.getTotalScore());
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			
 			if(cursor1.getString(11) != null)//成绩这一块已经在课程的表courseInf1建立时就已经初始化了，初始化时字符串是空的，所以这里要判断是否为空
 			{
-				if(!(cursor1.getString(11).equals(theScoreInf.get(i).getKind())))
+				if(!(cursor1.getString(11).equals(aScore.getKind())))
 				{
-					newCourseInfValues1.put(KEY_KIND, theScoreInf.get(i).getKind());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					newCourseInfValues1.put(KEY_KIND, aScore.getKind());
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			}else{
-				newCourseInfValues1.put(KEY_KIND, theScoreInf.get(i).getKind());
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+				newCourseInfValues1.put(KEY_KIND, aScore.getKind());
+				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
 			
 			if(cursor1.getString(12) != null)
 			{
-				if(!(cursor1.getString(12).equals(theScoreInf.get(i).getNote())))
+				if(!(cursor1.getString(12).equals(aScore.getNote())))
 				{
-					newCourseInfValues1.put(KEY_NOTE, theScoreInf.get(i).getNote());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+					newCourseInfValues1.put(KEY_NOTE, aScore.getNote());
+					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			}else{
-				newCourseInfValues1.put(KEY_NOTE, theScoreInf.get(i).getNote());
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + theScoreInf.get(i).getCode() + "'", null);
+				newCourseInfValues1.put(KEY_NOTE, aScore.getNote());
+				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
 		}
 	}

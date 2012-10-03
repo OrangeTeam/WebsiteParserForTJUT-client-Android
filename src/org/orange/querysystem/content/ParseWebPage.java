@@ -1,7 +1,7 @@
 package org.orange.querysystem.content;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import util.webpage.Course;
 import util.webpage.SchoolWebpageParser;
@@ -9,9 +9,9 @@ import util.webpage.SchoolWebpageParser.ParserException;
 import android.os.AsyncTask;
 import android.util.Log;
 /**Please use ParseWebPage.execute(Interger targetContent, String url, CoursesInfo classHasCoursesInfo)*/
-public class ParseWebPage extends AsyncTask<Object,Void,ArrayList<Course>>{
+public class ParseWebPage extends AsyncTask<Object,Void,List<Course>>{
 	interface CoursesInfo{
-		void coursesInfo(ArrayList<Course> coursers);
+		void coursesInfo(List<Course> coursers);
 	}
 	
 	public static final String TAG = "org.orange.querysystem";
@@ -21,9 +21,9 @@ public class ParseWebPage extends AsyncTask<Object,Void,ArrayList<Course>>{
 	CoursesInfo coursesInfo = null;
 
 	@Override
-	protected ArrayList<Course> doInBackground(Object... args) {
+	protected List<Course> doInBackground(Object... args) {
 		coursesInfo = (CoursesInfo) args[2];
-		ArrayList<Course> result = null;
+		List<Course> result = null;
 		SchoolWebpageParser parser = null;
 		try {
 			parser = new SchoolWebpageParser(
@@ -44,7 +44,7 @@ public class ParseWebPage extends AsyncTask<Object,Void,ArrayList<Course>>{
 		return result;
 	}
 	@Override
-	protected void onPostExecute(ArrayList<Course> courses){
+	protected void onPostExecute(List<Course> courses){
 		coursesInfo.coursesInfo(courses);
 	}
 	

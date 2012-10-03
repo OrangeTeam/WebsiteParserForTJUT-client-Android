@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -197,8 +196,8 @@ public class SchoolWebpageParser {
 	    		if(max<0 || result.size()<max)
 	    			result.addAll(parsePostsFromSCCE(null, start, end, max-result.size(), Post.SOURCES.NEWS_IN_SCCE_URL));
     		}else{
-    			ArrayList<String> categoriesInNotices = new ArrayList<String>();
-    			ArrayList<String> categoriesInNews = new ArrayList<String>();
+    			LinkedList<String> categoriesInNotices = new LinkedList<String>();
+    			LinkedList<String> categoriesInNews = new LinkedList<String>();
     			for(String aCategory:categories){
     				if(aCategory.matches(".*通知.*"))
     					categoriesInNotices.add(aCategory);
@@ -738,12 +737,12 @@ public class SchoolWebpageParser {
 	 * @throws ParserException 不能正确读取课程表表头时
 	 * @throws IOException 网络连接出现异常
 	 */
-	public ArrayList<Course> parseCourse(String url, 
+	public List<Course> parseCourse(String url, 
 			Student studentInfoToReturn) throws ParserException, IOException{
 		try{
 			Document doc = this.getCurrentHelperAfterLogin().getWithDocument(url);
 			if(doc == null || doc.getElementsByTag("table").isEmpty())
-				return new ArrayList<Course>(0);
+				return new LinkedList<Course>();
 			//student
 			if(studentInfoToReturn != null){
 				Pattern pattern = Pattern.compile
@@ -772,7 +771,7 @@ public class SchoolWebpageParser {
 	 * @throws ParserException 不能正确读取课程表表头时
 	 * @throws IOException 网络连接出现异常
 	 */
-	public ArrayList<Course> parseCourse(String url) throws ParserException, IOException{
+	public List<Course> parseCourse(String url) throws ParserException, IOException{
 		return parseCourse(url, null);
 	}
 	/**
@@ -783,12 +782,12 @@ public class SchoolWebpageParser {
 	 * @throws ParserException 不能正确读取课程表表头时
 	 * @throws IOException 网络连接出现异常
 	 */
-	public ArrayList<Course> parseScores(String url, 
+	public List<Course> parseScores(String url, 
 			Student studentInfoToReturn) throws ParserException, IOException{
 		try{
 			Document doc = getCurrentHelperAfterLogin().getWithDocument(url);
 			if(doc == null || doc.getElementsByTag("table").isEmpty())
-				return new ArrayList<Course>(0);
+				return new LinkedList<Course>();
 			//student
 			if(studentInfoToReturn != null){
 				if(url.equals(Constant.url.ALL_PERSONAL_GRADES)){
@@ -821,7 +820,7 @@ public class SchoolWebpageParser {
 	 * @throws ParserException 不能正确读取课程表表头时
 	 * @throws IOException 网络连接出现异常
 	 */
-	public ArrayList<Course> parseScores(String url) throws ParserException, IOException{
+	public List<Course> parseScores(String url) throws ParserException, IOException{
 		return parseScores(url, null);
 	}
 	private void setStudentInformation(Element studentInfoTable, Student studentInfoToReturn){
@@ -853,8 +852,8 @@ public class SchoolWebpageParser {
 		studentInfoToReturn.setMajorName(rows.get(2).getElementsByTag("td").get(3).text().replaceAll("[\u3000\u00a0]", " ").trim());
 		studentInfoToReturn.setClassName(rows.get(2).getElementsByTag("td").get(5).text().replaceAll("[\u3000\u00a0]", " ").trim());
 	}
-	private ArrayList<Course> readCourseTable(Element table) throws ParserException {
-	    ArrayList<Course> result = new ArrayList<Course>();
+	private List<Course> readCourseTable(Element table) throws ParserException {
+	    LinkedList<Course> result = new LinkedList<Course>();
 	    Elements courses = table.getElementsByTag("tr");
 	    
 	    HashMap<Integer, Integer> headingMap = null;
@@ -868,7 +867,6 @@ public class SchoolWebpageParser {
 	    	else
 	    		listener.onInformation(ParserListener.INFO_SKIP, "Skip: "+course.text());
 	    }
-	    result.trimToSize();
 		return result;
 	}
 	private Course readCourse(Element course, HashMap<Integer, Integer> headingMap){
@@ -1011,7 +1009,7 @@ public class SchoolWebpageParser {
 	}
 	private static String[] splitTimeOrAddress(String timeOrAddress){
 		String[] first;
-		ArrayList<String> second = new ArrayList<String>();
+		LinkedList<String> second = new LinkedList<String>();
 		first = timeOrAddress.split("<[^><]*>");
 		for(String s:first){
 			s.trim();

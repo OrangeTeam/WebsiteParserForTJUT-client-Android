@@ -99,7 +99,6 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	@Override
 	protected void onResume(){
 		super.onResume();
-		readDB();
 	}
 		
 	public void readDB(){
@@ -113,6 +112,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){
+    	mTabHost.clearAllTabs();
     	SharedPreferences shareData = getSharedPreferences("data", 0);
     	Calendar calendar_2 = Calendar.getInstance();
         calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null)));

@@ -71,7 +71,7 @@ public class LoginActivity extends Activity{
         
         SharedPreferences shareData = getSharedPreferences("data", 0);
         userNameBox.setText(shareData.getString("userName", null));
-        if(shareData.getBoolean("logIn_auto", true)){
+        if(shareData.getBoolean("logIn_auto", false)){
         	autoDengLu.setChecked(true);
         	startActivity(new Intent(this, AllCourseListActivity.class));
         }

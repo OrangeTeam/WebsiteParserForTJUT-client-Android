@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 
+import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
@@ -28,11 +29,15 @@ import util.webpage.Course;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -177,6 +182,32 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("tab", mTabHost.getCurrentTabTag());
+    }
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 1, R.string.main_menu);
+        menu.add(0, 2, 2, R.string.change_number);
+        menu.add(0, 3, 3, R.string.settings);
+        
+        return super.onCreateOptionsMenu(menu); 
+    }
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	// TODO Auto-generated method stub\
+    	if(item.getItemId() == 1){
+    		startActivity(new Intent(this, MainMenuActivity.class));
+    	}
+    	else if(item.getItemId() == 2){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+    		editor.putBoolean("logIn_auto", false);
+    		editor.commit();
+    		startActivity(new Intent(this, LoginActivity.class));
+    	}
+    	else if(item.getItemId() == 3){
+//    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    	}
+    	return super.onMenuItemSelected(featureId, item);
     }
 
 }

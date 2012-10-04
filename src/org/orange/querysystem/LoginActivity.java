@@ -3,6 +3,7 @@ package org.orange.querysystem;
 import java.io.IOException;
 
 import org.orange.querysystem.content.AllCourseListActivity;
+import org.orange.querysystem.content.ListCoursesActivity;
 
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
@@ -51,10 +52,7 @@ public class LoginActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-        ApplicationExit appExit = (ApplicationExit)getApplication();
-        appExit.setExit(false);
-        
-        
+       
         startTime = (TextView)findViewById(R.id.start_time);
         userNameBox = (EditText)findViewById(R.id.userNameBox);
         passwordBox = (EditText)findViewById(R.id.passwordBox);
@@ -210,7 +208,7 @@ public class LoginActivity extends Activity{
 				Toast.makeText(LoginActivity.this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
 			}
 			else{
-				Intent intent = new Intent(LoginActivity.this, AllCourseListActivity.class);
+				Intent intent = new Intent(LoginActivity.this, ListCoursesActivity.class);
 				startActivity(intent);		
 			}
 		}	

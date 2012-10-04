@@ -21,6 +21,8 @@
     <string name="exit">退出</string>
     <string name="change_number">切换账号</string>
     <string name="about">关于</string>
+    <string name="main_menu">主菜单</string>
+    <string name="settings">设置</string>
 
     <string name="course_query">课程表</string>
     <string name="score_query">成绩单</string>

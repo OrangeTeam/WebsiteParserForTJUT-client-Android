@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListPostsFragment.SimplePost;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -28,7 +29,9 @@ import util.webpage.ReadPageHelper.OnReadPageListener;
 import util.webpage.SchoolWebpageParser;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
@@ -38,6 +41,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -53,6 +58,7 @@ public class ListPostsActivity extends FragmentActivity{
 	private static final String TAG = ListPostsActivity.class.getName();
 	private static final String LAST_UPDATED_TIME_KEY = "LAST_UPDATED_TIME_KEY";
 	
+	private TextView currentTime;
 	TabHost mTabHost;
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
@@ -75,6 +81,8 @@ public class ListPostsActivity extends FragmentActivity{
 //			finish();
 		
 		setContentView(R.layout.fragment_tabs_pager);
+		currentTime = (TextView)findViewById(R.id.currentTime);
+		currentTime.setText("通知");
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -311,4 +319,30 @@ public class ListPostsActivity extends FragmentActivity{
 			}
 		}
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 1, R.string.main_menu);
+        menu.add(0, 2, 2, R.string.change_number);
+        menu.add(0, 3, 3, R.string.settings);
+        
+        return super.onCreateOptionsMenu(menu); 
+    }
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	// TODO Auto-generated method stub\
+    	if(item.getItemId() == 1){
+    		startActivity(new Intent(this, MainMenuActivity.class));
+    	}
+    	else if(item.getItemId() == 2){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+    		editor.putBoolean("logIn_auto", false);
+    		editor.commit();
+    		startActivity(new Intent(this, LoginActivity.class));
+    	}
+    	else if(item.getItemId() == 3){
+//    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    	}
+    	return super.onMenuItemSelected(featureId, item);
+    }
 }

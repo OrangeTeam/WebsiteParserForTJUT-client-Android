@@ -190,7 +190,7 @@ public class AllCourseListActivity extends ListActivity implements OnPostExcuteL
     		readDB();
     	}
     	else if(item.getItemId() == 5){
-    		startActivity(new Intent(this, TerminalScoreActivity.class));
+    		startActivity(new Intent(this, MainMenuActivity.class));
     	}
     	else if(item.getItemId() == 6){
     		startActivity(new Intent(this, ListPostsActivity.class));

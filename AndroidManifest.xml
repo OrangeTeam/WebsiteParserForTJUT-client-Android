@@ -85,6 +85,7 @@
 -       <activity android:name=".content.ShowOnePostActivity" />
 -       <activity android:name=".content.StudentInfoActivity" />
 		<activity android:name=".content.AllListCoursesActivity" />
+		<activity android:name=".content.MainMenuActivity" />
 
     </application>
 

@@ -17,6 +17,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Resources.NotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,172 +34,187 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity{
-		private EditText userNameBox;
-		private EditText passwordBox;
-		private TextView startTime;
-		private TextView title;
-		private TextView userName;
-		private TextView password;
-		private Button denglu;
-		private CheckBox rememberPS;
-		private CheckBox autoDengLu;
+	private EditText userNameBox;
+	private EditText passwordBox;
+	private TextView startTime;
+	private TextView title;
+	private TextView userName;
+	private TextView password;
+	private Button denglu;
+	private CheckBox rememberPS;
+	private CheckBox autoDengLu;	
 		
-		public static final String TAG = "org.orange.querysystem";
-		static final int DATE_DIALOG_ID = 1;
+	public static final String TAG = "org.orange.querysystem";
+	static final int DATE_DIALOG_ID = 1;	
 	   
-	   @Override
-	   public void onCreate(Bundle savedInstanceState) {
-	        super.onCreate(savedInstanceState);
-	        setContentView(R.layout.login_activity);
-	        ApplicationExit appExit = (ApplicationExit)getApplication();
-	        appExit.setExit(false);
-	        
-	        
-	        startTime = (TextView)findViewById(R.id.start_time);
-	        userNameBox = (EditText)findViewById(R.id.userNameBox);
-	        passwordBox = (EditText)findViewById(R.id.passwordBox);
-	        title = (TextView)findViewById(R.id.title);
-	        userName = (TextView)findViewById(R.id.userName);
-	        password = (TextView)findViewById(R.id.password);
-	        denglu = (Button)findViewById(R.id.denglu);
-	        rememberPS = (CheckBox)findViewById(R.id.rememberPS);
-	        autoDengLu = (CheckBox)findViewById(R.id.autoDengLu);
-	       	     
-	        title.setText(R.string.title);
-	        userName.setText(R.string.userName);
-	        password.setText(R.string.password);
-	        
-	        SharedPreferences shareData = getSharedPreferences("data", 0);
-	        userNameBox.setText(shareData.getString("userName", null));
-	        if(shareData.getBoolean("logIn_auto", false)){
-	        	autoDengLu.setChecked(true);
-	        	startActivity(new Intent(this, AllCourseListActivity.class));
-	        }
-	        if(shareData.getBoolean("rememberPS", false)){
-	        	rememberPS.setChecked(true);
-	        	passwordBox.setText(shareData.getString("password", null));
-	        }else{
-	        	passwordBox.setText("");
-	        }	    
-	        if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
-	        	showDialog(DATE_DIALOG_ID);
-	        }
-	        else{
-	        	startTime.setText("开学时间：" + shareData.getString("start_year", null) + "年" + shareData.getString("start_month", null) + "月" + shareData.getString("start_day", null) + "日");
-	        }
-	    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login_activity);
+        ApplicationExit appExit = (ApplicationExit)getApplication();
+        appExit.setExit(false);
+        
+        
+        startTime = (TextView)findViewById(R.id.start_time);
+        userNameBox = (EditText)findViewById(R.id.userNameBox);
+        passwordBox = (EditText)findViewById(R.id.passwordBox);
+        title = (TextView)findViewById(R.id.title);
+        userName = (TextView)findViewById(R.id.userName);
+        password = (TextView)findViewById(R.id.password);
+        denglu = (Button)findViewById(R.id.denglu);
+        rememberPS = (CheckBox)findViewById(R.id.rememberPS);
+        autoDengLu = (CheckBox)findViewById(R.id.autoDengLu);
+       	     
+        title.setText(R.string.title);
+        userName.setText(R.string.userName);
+        password.setText(R.string.password);
+        
+        SharedPreferences shareData = getSharedPreferences("data", 0);
+        userNameBox.setText(shareData.getString("userName", null));
+        if(shareData.getBoolean("logIn_auto", true)){
+        	autoDengLu.setChecked(true);
+        	startActivity(new Intent(this, AllCourseListActivity.class));
+        }
+        if(shareData.getBoolean("rememberPS", true)){
+        	rememberPS.setChecked(true);
+        	passwordBox.setText(shareData.getString("password", null));
+        }else{
+        	passwordBox.setText("");
+        }	    
+        if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
+        	showDialog(DATE_DIALOG_ID);
+        }
+        else{
+        	startTime.setText("开学时间：" + shareData.getString("start_year", null) + "年" + shareData.getString("start_month", null) + "月" + shareData.getString("start_day", null) + "日");
+        }
+    }      
 	   
-	   @Override
-	    protected Dialog onCreateDialog(int id) {
-	        switch (id) {
-	            case DATE_DIALOG_ID:
-	                return new DatePickerDialog(this,
-	                            mDateSetListener,
-	                            1992, 1, 22);
-	        }
-	        return null;
-	    }
+	@Override   
+	protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                return new DatePickerDialog(this,
+                            mDateSetListener,
+                            1992, 1, 22);
+        }
+        return null;
+    }    
 	    
-	    @Override
-	    protected void onPrepareDialog(int id, Dialog dialog) {
-	        switch (id) {
-	            case DATE_DIALOG_ID:
-	                ((DatePickerDialog) dialog).updateDate(1992, 1, 22);
-	                break;
-	        }
-	    }    
+	@Override    
+	protected void onPrepareDialog(int id, Dialog dialog) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                ((DatePickerDialog) dialog).updateDate(1992, 1, 22);
+                break;
+        }
+    }        
 
-	    private DatePickerDialog.OnDateSetListener mDateSetListener =
-	            new DatePickerDialog.OnDateSetListener() {
+	private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
 
-	                public void onDateSet(DatePicker view, int year_choice, int month_choice,
-	                        int day_choice) {
-	                	Editor editor = getSharedPreferences("data", 0).edit();
-	                    editor.putString("start_year", Integer.toString(year_choice));
-	                    editor.putString("start_month", Integer.toString(month_choice+1));
-	                    editor.putString("start_day", Integer.toString(day_choice));
-	                    editor.commit();
-	                    startTime.setText("开学时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
-	                }
-	            };
+                public void onDateSet(DatePicker view, int year_choice, int month_choice,
+                        int day_choice) {
+                	Editor editor = getSharedPreferences("data", 0).edit();
+                    editor.putString("start_year", Integer.toString(year_choice));
+                    editor.putString("start_month", Integer.toString(month_choice+1));
+                    editor.putString("start_day", Integer.toString(day_choice));
+                    editor.commit();
+                    startTime.setText("开学时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
+                }
+            };    
 	   
-	   @Override
-	   protected void onPause(){
-		   super.onPause();
-		   Editor editor = getSharedPreferences("data", 0).edit();
+    @Override        
+    protected void onPause(){
+    	super.onPause();
+		Editor editor = getSharedPreferences("data", 0).edit();
 
-		   if(autoDengLu.isChecked()){
-	    	   editor.putBoolean("logIn_auto", true); 
-	       }
-	       else{
-	    	   editor.putBoolean("logIn_auto", false);
-	       }
-		   if(rememberPS.isChecked()){
-	        	editor.putBoolean("rememberPS", true);
-			}
-	        else{
-	        	editor.putBoolean("rememberPS", false);
-	        }
+		if(autoDengLu.isChecked()){
+			editor.putBoolean("logIn_auto", true); 
+	    }
+	    else{
+	        editor.putBoolean("logIn_auto", false);
+	    }
+		if(rememberPS.isChecked()){
+	       	editor.putBoolean("rememberPS", true);
+	    }
+	    else{
+	        editor.putBoolean("rememberPS", false);
+	    }
 		   
-	       editor.putString("userName", userNameBox.getText().toString()); 
-	       editor.putString("password", passwordBox.getText().toString());
-	       editor.commit();
+	    editor.putString("userName", userNameBox.getText().toString()); 
+	    editor.putString("password", passwordBox.getText().toString());
+	    editor.commit();
 //		  
-	   }
+	}   	    
 	   
-	  @Override
-	  public boolean onCreateOptionsMenu(Menu menu) {
-	    	menu.add(0, 1, 1, R.string.exit);
-	    	menu.add(0, 2, 2, R.string.about);
-	    	return super.onCreateOptionsMenu(menu);
-	       
-	  }
+    @Override  
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	menu.add(0, 1, 1, R.string.exit);
+    	menu.add(0, 2, 2, R.string.about);
+    	return super.onCreateOptionsMenu(menu);
+       
+    }  
 	   
-	  @Override
-	  public boolean onOptionsItemSelected(MenuItem item) {
-			if(item.getItemId() == 1){
-				ApplicationExit appExit = (ApplicationExit)getApplication();
-				appExit.setExit(true);
-				finish();
-			}
-			return super.onOptionsItemSelected(item);
-	  }
+    @Override  
+    public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getItemId() == 1){
+			ApplicationExit appExit = (ApplicationExit)getApplication();
+			appExit.setExit(true);
+			finish();
+		}
+		return super.onOptionsItemSelected(item);
+    }  
 	        
 	    
-	    //通过Intent方法对登陆信息进行获取和传递
-	  public void dengLu(View view){
-		  ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-		  NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		  if(networkInfo !=null && networkInfo.isConnected()){
-			  try {
-					SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener(), userNameBox.getText().toString(), passwordBox.getText().toString());
-					if(!parser.getCurrentHelper().doLogin()){
-						passwordBox.setText("");
-						Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-						userNameBox.startAnimation(shake);
-						passwordBox.startAnimation(shake);
-						Toast.makeText(this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
-						
-					}
-					else{
-						Intent intent = new Intent(this, AllCourseListActivity.class);
-						startActivity(intent);
-					}
-				} catch (NotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();	
-				} catch (CloneNotSupportedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+    //通过Intent方法对登陆信息进行获取和传递
+    public void dengLu(View view){
+		ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		if(networkInfo !=null && networkInfo.isConnected())
+			new LogIn().execute();
+		else{
+			Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();  
+		}
+	}  
+	  
+    public class LogIn extends AsyncTask<Void,Void, Boolean>{
+		protected Boolean doInBackground(Void... args) {
+			Boolean isLogIn = false;
+			try {
+				SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener(), userNameBox.getText().toString(), passwordBox.getText().toString());
+				if(!parser.getCurrentHelper().doLogin()){
+					isLogIn = false;
 				}
-		  }
-		  else{
-			  Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();  
-		  }
-	    }
+				else{
+					isLogIn = true;
+				}
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();	
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return isLogIn;
+		}  
+
+		protected void onPostExecute(Boolean isLogIn){
+			if(!isLogIn){
+				passwordBox.setText("");
+				Animation shake = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.shake);
+				userNameBox.startAnimation(shake);
+				passwordBox.startAnimation(shake);
+				Toast.makeText(LoginActivity.this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
+			}
+			else{
+				Intent intent = new Intent(LoginActivity.this, AllCourseListActivity.class);
+				startActivity(intent);		
+			}
+		}	
+	  
 	    
 	    private class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
 
@@ -226,38 +242,39 @@ public class LoginActivity extends Activity{
 				Log.i(TAG, message);
 			}
 		}
+	}
 	    
-	    @Override
-		public boolean onKeyDown(int keyCode, KeyEvent event) {
-			if(keyCode == KeyEvent.KEYCODE_BACK){
-				new AlertDialog.Builder(LoginActivity.this)
-					.setTitle(R.string.menu_activity_title)
-					.setIcon(R.drawable.ic_action_refresh)
-					.setMessage(R.string.menu_activity_inform)
-					.setPositiveButton(R.string.alert_dialog_ok, 
-							new DialogInterface.OnClickListener() {
-								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									// TODO Auto-generated method stub
-									ApplicationExit appExit = (ApplicationExit)getApplication();
-									appExit.setExit(true);
-									finish();
-								}
+    @Override    
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			new AlertDialog.Builder(LoginActivity.this)
+				.setTitle(R.string.menu_activity_title)
+				.setIcon(R.drawable.ic_action_refresh)
+				.setMessage(R.string.menu_activity_inform)
+				.setPositiveButton(R.string.alert_dialog_ok, 
+						new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								ApplicationExit appExit = (ApplicationExit)getApplication();
+								appExit.setExit(true);
+								finish();
 							}
-					)
-					.setNegativeButton(R.string.alert_dialog_cancel, 
-							new DialogInterface.OnClickListener() {
+						}
+				)
+				.setNegativeButton(R.string.alert_dialog_cancel, 
+						new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
 								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									// TODO Auto-generated method stub
-									
-								}
 							}
-					).show();
-			}
-			return super.onKeyDown(keyCode, event);
+						}
+				).show();
 		}
+		return super.onKeyDown(keyCode, event);
+	}	
 }
 	    

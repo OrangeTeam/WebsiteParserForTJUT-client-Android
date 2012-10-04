@@ -29,9 +29,12 @@ import util.webpage.Course;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -43,6 +46,7 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AllListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int mYear = 0;
@@ -89,6 +93,12 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
         mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
         mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         readDB();
+	}
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		readDB();
 	}
 		
 	public void readDB(){
@@ -189,7 +199,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
         menu.add(0, 1, 1, R.string.main_menu);
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.settings);
-        
+        menu.add(0, 4, 4, R.string.refresh);
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
@@ -207,7 +217,28 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     	else if(item.getItemId() == 3){
 //    		startActivity(new Intent(this, AllListCoursesActivity.class));
     	}
+    	else if(item.getItemId() == 4){
+    		if(isNetworkConnected()){
+        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
+        		//TODO startActivity后不会继续运行
+//        		readDB();
+            }
+            else{
+            	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+            }
+    	}
     	return super.onMenuItemSelected(featureId, item);
+    }
+    
+    public boolean isNetworkConnected(){
+    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		if(networkInfo !=null && networkInfo.isConnected()){
+			return true;
+		}
+		else{
+		    return false;
+		}
     }
 
 }

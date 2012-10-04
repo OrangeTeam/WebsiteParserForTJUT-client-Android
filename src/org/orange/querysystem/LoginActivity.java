@@ -1,15 +1,12 @@
 package org.orange.querysystem;
 
 import java.io.IOException;
-import org.orange.querysystem.content.AllCourseListActivity;
 import org.orange.querysystem.content.ListCoursesActivity;
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -19,9 +16,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -69,7 +64,7 @@ public class LoginActivity extends Activity{
         userNameBox.setText(shareData.getString("userName", null));
         if(shareData.getBoolean("logIn_auto", false)){
         	autoDengLu.setChecked(true);
-        	startActivity(new Intent(this, AllCourseListActivity.class));
+        	startActivity(new Intent(this, ListCoursesActivity.class));
         }
         if(shareData.getBoolean("rememberPS", true)){
         	rememberPS.setChecked(true);
@@ -149,18 +144,7 @@ public class LoginActivity extends Activity{
     	menu.add(0, 2, 2, R.string.about);
     	return super.onCreateOptionsMenu(menu);
        
-    }  
-	   
-    @Override  
-    public boolean onOptionsItemSelected(MenuItem item) {
-		if(item.getItemId() == 1){
-			ApplicationExit appExit = (ApplicationExit)getApplication();
-			appExit.setExit(true);
-			finish();
-		}
-		return super.onOptionsItemSelected(item);
-    }  
-	        
+    } 	        
 	    
     //通过Intent方法对登陆信息进行获取和传递
     public void dengLu(View view){

@@ -331,6 +331,7 @@ public class StudentInfDBAdapter {
 	 * @param thePostInf
 	 */
 	public void autoInsertArrayPostsInf(List<Post> thePostInf){
+		//TODO 防止空表越界
 		String title = thePostInf.get(0).getTitle();
 		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_TITLE + "= '" + title + "'", null, null, null, null);
 		if(cursor.getCount() == 0)

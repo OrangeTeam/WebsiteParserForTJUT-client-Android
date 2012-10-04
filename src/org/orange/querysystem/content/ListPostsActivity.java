@@ -248,6 +248,7 @@ public class ListPostsActivity extends FragmentActivity{
 				else
 					posts = parser.parsePosts(lastUpdatedTime, null, -1);
 				database.open();
+				//TODO 防止空posts
 				database.autoInsertArrayPostsInf(posts);
 				mPreferences.edit().putLong(LAST_UPDATED_TIME_KEY, new Date().getTime()).commit();
 				Log.i(TAG, "共 "+posts.size()+" 条， "+readPageListener.pageNumber+" 页 "+readPageListener.totalSize/1024.0+" KB");

@@ -1,6 +1,8 @@
 package org.orange.querysystem;
 
 import java.io.IOException;
+import java.util.Calendar;
+
 import org.orange.querysystem.content.ListCoursesActivity;
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
@@ -37,6 +39,9 @@ public class LoginActivity extends Activity{
 	private Button denglu;
 	private CheckBox rememberPS;
 	private CheckBox autoDengLu;	
+	private int mYear = 0;
+	private int mMonth = 0;
+	private int mDay = 0;
 		
 	public static final String TAG = "org.orange.querysystem";
 	static final int DATE_DIALOG_ID = 1;	
@@ -55,6 +60,10 @@ public class LoginActivity extends Activity{
         denglu = (Button)findViewById(R.id.denglu);
         rememberPS = (CheckBox)findViewById(R.id.rememberPS);
         autoDengLu = (CheckBox)findViewById(R.id.autoDengLu);
+        Calendar calendar = Calendar.getInstance();
+		mYear = calendar.get(Calendar.YEAR);
+		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
+		mDay = calendar.get(Calendar.DAY_OF_MONTH);
        	     
         title.setText(R.string.title);
         userName.setText(R.string.userName);
@@ -73,6 +82,7 @@ public class LoginActivity extends Activity{
         	passwordBox.setText("");
         }	    
         if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
+        	//TODO 时间选择时判断有效的日期
         	showDialog(DATE_DIALOG_ID);
         }
         else{
@@ -86,7 +96,7 @@ public class LoginActivity extends Activity{
             case DATE_DIALOG_ID:
                 return new DatePickerDialog(this,
                             mDateSetListener,
-                            1992, 1, 22);
+                            mYear, mMonth, mDay);
         }
         return null;
     }    

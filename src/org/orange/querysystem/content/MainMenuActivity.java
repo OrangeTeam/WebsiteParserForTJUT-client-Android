@@ -1,14 +1,19 @@
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import org.orange.querysystem.R;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -16,6 +21,11 @@ import android.widget.TextView;
 public class MainMenuActivity extends Activity{
 	private GridView gridView;
 	private TextView title;
+	private int mYear = 0;
+	private int mMonth = 0;
+	private int mDay = 0;
+	
+	static final int DATE_DIALOG_ID = 1;	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -25,6 +35,10 @@ public class MainMenuActivity extends Activity{
 		title = (TextView)findViewById(R.id.title);
 		gridView = (GridView)findViewById(R.id.gridView);
 		title.setText("主菜单");
+		Calendar calendar = Calendar.getInstance();
+		mYear = calendar.get(Calendar.YEAR);
+		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
+		mDay = calendar.get(Calendar.DAY_OF_MONTH);
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
@@ -68,8 +82,44 @@ public class MainMenuActivity extends Activity{
 			if(args3 == 4){
 				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
 			}
+			if(args3 == 5){
+				showDialog(DATE_DIALOG_ID);
+			}
 		}
 	}
+	
+	@Override   
+	protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                return new DatePickerDialog(this,
+                            mDateSetListener,
+                            mYear, mMonth, mDay);
+        }
+        return null;
+    }    
+	    
+	@Override    
+	protected void onPrepareDialog(int id, Dialog dialog) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                ((DatePickerDialog) dialog).updateDate(1992, 1, 22);
+                break;
+        }
+    }        
+
+	private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+
+                public void onDateSet(DatePicker view, int year_choice, int month_choice,
+                        int day_choice) {
+                	Editor editor = getSharedPreferences("data", 0).edit();
+                    editor.putString("start_year", Integer.toString(year_choice));
+                    editor.putString("start_month", Integer.toString(month_choice+1));
+                    editor.putString("start_day", Integer.toString(day_choice));
+                    editor.commit();
+                }
+            };    
 	
 	private static Integer[] imgs = {};
 	

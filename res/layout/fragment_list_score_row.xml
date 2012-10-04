@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <!-- line 1: -->
+    <TextView
+        android:id="@+id/course_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/label_of_test_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/course_test_score"
+        android:text="@string/course_test_score" />
+    <TextView
+        android:id="@id/course_test_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/label_of_total_score"
+        android:gravity="center"
+        android:ems="2" />
+    <TextView
+        android:id="@id/label_of_total_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/course_total_score"
+        android:text="@string/course_total_score" />
+    <TextView
+        android:id="@id/course_total_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:ems="2" />
+    <!-- line 2: -->
+    <TextView
+        android:id="@+id/label_of_grade_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/course_name"
+        android:layout_alignParentLeft="true"
+        android:text="@string/course_grade_point" />
+    <TextView
+        android:id="@+id/course_grade_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/label_of_grade_point"
+        android:gravity="center"
+        android:ems="2" />
+    <TextView
+        android:id="@+id/label_of_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/course_grade_point"
+        android:text="@string/course_credit" />
+    <TextView
+        android:id="@+id/course_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/label_of_credit"
+        android:gravity="center"
+        android:ems="2" />
+    <TextView
+        android:id="@+id/label_of_course_kind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/course_credit"
+        android:text="@string/course_kind" />
+    <TextView
+        android:id="@+id/course_kind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/label_of_course_kind"
+        android:gravity="center"
+        android:ems="5" />
+    <TextView
+        android:id="@+id/label_of_semester"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/course_kind"
+        android:text="@string/course_semester" />
+    <TextView
+        android:id="@+id/course_semester"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/label_of_semester"
+        android:ems="5" />
+
+</RelativeLayout>

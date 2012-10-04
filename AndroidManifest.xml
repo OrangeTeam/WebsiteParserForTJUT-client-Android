@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.orange.querysystem"
     android:versionCode="1"
@@ -32,6 +33,14 @@
 -       <activity android:name=".content.StudentInfoActivity" />
 		<activity android:name=".content.AllListCoursesActivity" />
 		<activity android:name=".content.MainMenuActivity" />
+        <activity
+            android:label="成绩表"
+            android:name=".content.ListScoresActivity" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+		</activity>
 
     </application>
 

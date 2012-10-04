@@ -188,7 +188,7 @@ public class ListPostsActivity extends FragmentActivity{
 		}else if(now - lastUpdatedTime > updateInterval){
 			new UpdatePostsListToDatabase().execute(UpdatePostsListToDatabase.COMMON_POSTS);
 		}
-		
+		//TODO 这里是读取的旧的
 		new LoadPostsListFromDatabase().execute("");
 	}
 

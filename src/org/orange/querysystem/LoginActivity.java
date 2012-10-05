@@ -17,7 +17,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
@@ -45,7 +44,8 @@ public class LoginActivity extends Activity{
 	private int mDayOfYear = 0;
 		
 	public static final String TAG = "org.orange.querysystem";
-	static final int DATE_DIALOG_ID = 1;	
+	static final int DATE_DIALOG_ID = 1;
+	private static final int LOGIN_TIME_OUT = 3000;//3s
 	   
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -178,70 +178,41 @@ public class LoginActivity extends Activity{
 		else{
 			Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();  
 		}
-	}  
-	  
-    public class LogIn extends AsyncTask<Void,Void, Boolean>{
+	}
+
+	private class LogIn extends AsyncTask<Void,Void, Boolean>{
 		protected Boolean doInBackground(Void... args) {
-			Boolean isLogIn = false;
+			Boolean hasLogined = null;
 			try {
-				SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener(), userNameBox.getText().toString(), passwordBox.getText().toString());
-				if(!parser.getCurrentHelper().doLogin()){
-					isLogIn = false;
-				}
-				else{
-					isLogIn = true;
-				}
+				SchoolWebpageParser parser = new SchoolWebpageParser();
+				parser.setUser(userNameBox.getText().toString(), passwordBox.getText().toString());
+				parser.setTimeout(LOGIN_TIME_OUT);
+				hasLogined = parser.getCurrentHelper().doLogin();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();	
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println(e);
 			}
-			return isLogIn;
+			return hasLogined;
 		}  
 
-		protected void onPostExecute(Boolean isLogIn){
-			if(!isLogIn){
+		protected void onPostExecute(Boolean hasLogined){
+			if(hasLogined == null){
+				//TODO 之后放到R.string
+				Toast.makeText(LoginActivity.this, "登录失败，请检查网络连通性并重试。", Toast.LENGTH_LONG).show();
+				return;
+			}
+			if(!hasLogined){
 				passwordBox.setText("");
 				Animation shake = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.shake);
 				userNameBox.startAnimation(shake);
 				passwordBox.startAnimation(shake);
+				//TODO 之后放到R.string
 				Toast.makeText(LoginActivity.this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
 			}
 			else{
 				Intent intent = new Intent(LoginActivity.this, ListCoursesActivity.class);
-				startActivity(intent);		
-			}
-		}	
-	  
-	    
-	    private class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
-			 */
-			@Override
-			public void onError(int code, String message) {
-				Log.e(TAG, message);
-			}
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onWarn(int, java.lang.String)
-			 */
-			@Override
-			public void onWarn(int code, String message) {
-				Log.w(TAG, message);
-			}
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onInformation(int, java.lang.String)
-			 */
-			@Override
-			public void onInformation(int code, String message) {
-				Log.i(TAG, message);
+				startActivity(intent);
 			}
 		}
 	}
 }
-	    
+

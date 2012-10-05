@@ -53,7 +53,7 @@ public class ListScoresActivity extends FragmentActivity{
 		for(int semester = 1;semester<=6;semester++){
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
 			for(int counter = 0;counter<=semester;counter++)
-				scores.add(new SimpleScore(semester+counter, "课程名称"+semester+" "+counter, (short)(counter*semester), (short)(counter*semester), (float)counter, (byte)counter, "课程性质"+counter, "学年+学期"+counter));
+				scores.add(new SimpleScore(semester+counter, "课程名称加长加长加长加长加长加长再加长"+semester+" "+counter, (short)(counter*semester), (short)(counter*semester), (float)counter, (byte)counter, "课程性质"+counter));
 			Bundle arg = new Bundle();
 			arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);
 			args.add(arg);

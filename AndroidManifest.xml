@@ -33,9 +33,7 @@
 -       <activity android:name=".content.StudentInfoActivity" />
 		<activity android:name=".content.AllListCoursesActivity" />
 		<activity android:name=".content.MainMenuActivity" />
-		<activity
-            android:name=".content.CourseInfoActivity"
-            android:theme="@android:style/Theme.Dialog"/>
+		<activity android:name=".content.CourseInfoActivity"/>
         <activity
             android:label="成绩表"
             android:name=".content.ListScoresActivity" >

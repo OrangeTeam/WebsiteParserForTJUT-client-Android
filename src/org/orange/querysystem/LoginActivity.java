@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import org.orange.querysystem.content.ListCoursesActivity;
+
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -12,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Resources.NotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;

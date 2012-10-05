@@ -1,28 +1,45 @@
 package org.orange.querysystem.content;
 
-import java.util.ArrayList;
-
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
 import util.webpage.SchoolWebpageParser;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class CourseInfoActivity extends Activity{
-	private TextView course_info;
+	private TextView course_code;
+	private TextView course_class_number;
+	private TextView course_teacher;
+	private TextView course_credit;
+	private TextView course_kind;
+	private TextView course_test_score;
+	private TextView course_total_score;
+	private TextView course_grade_point;
+	private TextView course_time_and_adress;
+	private EditText course_code_input;
+	private EditText course_class_number_input;
+	private EditText course_teacher_input;
+	private EditText course_credit_input;
+	private EditText course_kind_input;
+	private EditText course_test_score_input;
+	private EditText course_total_score_input;
+	private EditText course_grade_point_input;
+	private EditText course_time_and_adress_input;
+	private Button change_info;
+	private Button submit;
 	private int course_id;
 	
 	@Override
@@ -30,7 +47,31 @@ public class CourseInfoActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.course_info);
         
-        course_info = (TextView)findViewById(R.id.course_info);
+        course_code = (TextView)findViewById(R.id.course_code);
+        course_class_number = (TextView)findViewById(R.id.course_class_number);
+        course_teacher = (TextView)findViewById(R.id.course_teacher);
+        course_credit = (TextView)findViewById(R.id.course_credit);
+        course_kind = (TextView)findViewById(R.id.course_kind);
+        course_test_score = (TextView)findViewById(R.id.course_test_score);
+        course_total_score = (TextView)findViewById(R.id.course_total_score);
+        course_grade_point = (TextView)findViewById(R.id.course_grade_point);
+        course_time_and_adress = (TextView)findViewById(R.id.course_time_and_adress);
+        
+        course_code_input = (EditText)findViewById(R.id.course_code_input);
+        course_class_number_input = (EditText)findViewById(R.id.course_class_number_input);
+        course_teacher_input = (EditText)findViewById(R.id.course_teacher_input);
+        course_credit_input = (EditText)findViewById(R.id.course_credit_input);
+        course_kind_input = (EditText)findViewById(R.id.course_kind_input);
+        course_test_score_input = (EditText)findViewById(R.id.course_test_score_input);
+        course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
+        course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
+        course_time_and_adress_input = (EditText)findViewById(R.id.course_time_and_adress_input);
+        
+        change_info = (Button)findViewById(R.id.change_info);
+        submit = (Button)findViewById(R.id.submit);
+        change_info.setText("    修改    ");
+        submit.setText("    提交    ");
+        
         SharedPreferences shareData = getSharedPreferences("data", 0);
     	new ReadCourseInfo().execute(shareData.getString("userName", null));
         
@@ -39,27 +80,31 @@ public class CourseInfoActivity extends Activity{
 	}
 	
 	public void showCourse(Course course){
+		course_code.setText("课程代码：");
+		course_class_number.setText("教学班号：");
+		course_teacher.setText("任课老师：");
+		course_credit.setText( "学        分：");
+		course_kind.setText("课程性质：");
+		course_test_score.setText("结课成绩：");
+		course_total_score.setText("期末总评：");
+		course_grade_point.setText("绩        点：");
+		course_time_and_adress.setText("时间地点：");
+		course_code_input.setText(course.getCode());
+		course_class_number_input.setText(course.getClassNumber());
+		course_teacher_input.setText(course.getTeacherString());
+		course_credit_input.setText(String.valueOf(course.getCredit()));
+		course_kind_input.setText(course.getKind());
+		course_test_score_input.setText(String.valueOf(course.getTestScore()));
+		course_total_score_input.setText(String.valueOf(course.getTotalScore()));
+		course_time_and_adress_input.setText(course.getTimeAndAddressString());
 		try {
-			course_info.setText("课程代码：    " + course.getCode() + "\n" +
-								"教学班号：    " + course.getClassNumber() + "\n" + 
-								"任课老师：    " + course.getTeacherString() + "\n" +
-								"学         分：    " + course.getCredit() + "\n" +
-								"课程性质：    " + course.getKind() + "\n" +
-								"结课考核成绩：" + course.getTestScore() + "\n" +
-								"总评成绩：     " + course.getTotalScore() + "\n" + 
-								"绩         点：    " + course.getGradePoint());
+			course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
 		} catch (CourseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			course_info.setText("课程代码：    " + course.getCode() + "\n" +
-					"教学班号：    " + course.getClassNumber() + "\n" + 
-					"任课老师：    " + course.getTeacherString() + "\n" +
-					"学         分：    " + course.getCredit() + "\n" +
-					"课程性质：    " + course.getKind() + "\n" +
-					"结课考核成绩：" + course.getTestScore() + "\n" +
-					"总评成绩：     " + course.getTotalScore() + "\n" + 
-					"绩         点：    " + "-1");
+			course_grade_point_input.setText("-1");
 		}
+		
 	}
 	
 	public class ReadCourseInfo extends AsyncTask<String,Void,Course>{
@@ -134,5 +179,22 @@ public class CourseInfoActivity extends Activity{
 				Log.i(TAG, message);
 			}
 		}	
+	}
+	
+	public void changeInfo(View view){
+		course_code_input.setEnabled(true);
+		course_class_number_input.setEnabled(true);
+		course_teacher_input.setEnabled(true);
+		course_credit_input.setEnabled(true);
+		course_kind_input.setEnabled(true);
+		course_test_score_input.setEnabled(true);
+		course_total_score_input.setEnabled(true);
+		course_grade_point_input.setEnabled(true);
+		course_time_and_adress_input.setEnabled(true);
+		
+	}
+	
+	public void submit(View view){
+		
 	}
 }

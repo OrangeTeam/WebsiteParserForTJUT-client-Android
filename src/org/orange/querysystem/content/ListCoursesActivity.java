@@ -167,6 +167,8 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
 				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
 
+				//TODO Do not use hard-coded pixel values in your application code
+				//{@link http://developer.android.com/intl/zh-CN/guide/practices/screens_support.html#screen-independence}
 				child.getLayoutParams().height = 80;
 			}
 		}

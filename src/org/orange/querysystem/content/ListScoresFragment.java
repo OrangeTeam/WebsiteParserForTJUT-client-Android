@@ -37,19 +37,19 @@ public class ListScoresFragment extends ListFragment {
 	}
 
 	/**
-	 * 应用{@link #setArguments(Bundle arg)}设置的Scores，{@link #onCreate(Bundle)}会自动调用此方法<br />
+	 * 应用{@link #setArguments(Bundle args)}设置的Scores，{@link #onCreate(Bundle)}会自动调用此方法<br />
 	 * 使用方法：<br />
-	 * 先用{@link #setArguments(Bundle arg)}方法传递成绩列表，再用此方法应用传递过来的列表
+	 * 先用{@link #setArguments(Bundle args)}方法传递成绩列表，再用此方法应用传递过来的列表
 	 * <code>
 	 * ArrayList<SimpleScore> scores;
 	 * ...
 	 * Bundle arg = new Bundle();
 	 * arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);
 	 * thisFragment.setArguments(arg);
-	 * thisFragment.applyScores();
+	 * thisFragment.applyArguments();
 	 * </code>
 	 */
-	public void applyScores(){
+	public void applyArguments(){
 		Bundle args = getArguments();
 		if(args != null){
 			ArrayList<SimpleScore> scores = args.getParcelableArrayList(SCORES_KEY);
@@ -59,7 +59,7 @@ public class ListScoresFragment extends ListFragment {
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		applyScores();
+		applyArguments();
 		super.onCreate(savedInstanceState);
 	}
 

@@ -4,6 +4,7 @@
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.orange.querysystem.R;
@@ -25,7 +26,9 @@ import android.widget.TextView;
  */
 public class ListCoursesFragment extends ListFragment {
 	public static final String COURSES_KEY = "org.orange.querysystem.simplecourses.key";
-	
+
+	private boolean hasRemovedRepeated = false;
+
 	public static ListCoursesFragment newInstance(ArrayList<SimpleCourse> courses){
 		ListCoursesFragment listADay = new ListCoursesFragment();
 		Bundle args = new Bundle();
@@ -33,18 +36,60 @@ public class ListCoursesFragment extends ListFragment {
 		listADay.setArguments(args);
 		return listADay;
 	}
-	
+
+	@Override
+	public void setArguments(Bundle args) {
+		super.setArguments(args);
+		hasRemovedRepeated = false;
+	}
+
+	/**
+	 * 应用{@link #setArguments(Bundle args)}设置的Courses，{@link #onCreate(Bundle)}会自动调用此方法<br />
+	 * 使用方法：<br />
+	 * 先用{@link #setArguments(Bundle args)}方法传递课程列表，再用此方法应用传递过来的列表
+	 * <code>
+	 * ArrayList<SimpleCourse> courses;
+	 * ...
+	 * Bundle arg = new Bundle();
+	 * arg.putParcelableArrayList(ListCoursesFragment.COURSES_KEY, courses);
+	 * thisFragment.setArguments(arg);
+	 * thisFragment.applyArguments();
+	 * </code>
+	 */
+	public void applyArguments(){
+		Bundle args = getArguments();
+		if(args != null){
+			ArrayList<SimpleCourse> courses = args.getParcelableArrayList(COURSES_KEY);
+			if(!hasRemovedRepeated) mergeRepeatedCourses(courses);
+			setListAdapter(new CoursesAdapter(getActivity(), courses));
+		}
+	}
+	/**合并课程列表中重复的项目*/
+	public void mergeRepeatedCourses(List<SimpleCourse> courses){
+		SimpleCourse lastCourse = null, currentCourse = null;
+		Iterator<SimpleCourse> iterator = courses.iterator();
+		while(iterator.hasNext()){
+			currentCourse = iterator.next();
+			if(lastCourse == null){
+				lastCourse = currentCourse;
+				continue;
+			}
+			if(lastCourse.id==currentCourse.id && lastCourse.otherInfo==currentCourse.otherInfo){
+				lastCourse.time += ", "+currentCourse.time;
+				iterator.remove();
+			}else
+				lastCourse = currentCourse;
+		}
+		hasRemovedRepeated = true;
+	}
+
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.Fragment#onCreate(android.os.Bundle)
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		applyArguments();
 		super.onCreate(savedInstanceState);
-		Bundle args = getArguments();
-		if(args != null){
-			ArrayList<SimpleCourse> courses = args.getParcelableArrayList(COURSES_KEY);
-			setListAdapter(new CoursesAdapter(getActivity(), courses));
-		}
 	}
 
 	public static class SimpleCourse implements Parcelable{

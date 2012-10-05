@@ -34,22 +34,35 @@ public class ListPostsFragment extends ListFragment {
 		listADay.setArguments(args);
 		return listADay;
 	}
-	
+
+	/**
+	 * 应用{@link #setArguments(Bundle args)}设置的Posts，{@link #onCreate(Bundle)}会自动调用此方法<br />
+	 * 使用方法：<br />
+	 * 先用{@link #setArguments(Bundle args)}方法传递通知列表，再用此方法应用传递过来的列表
+	 * <code>
+	 * ArrayList<SimplePost> posts;
+	 * ...
+	 * Bundle arg = new Bundle();
+	 * arg.putParcelableArrayList(ListPostsFragment.POSTS_KEY, posts);
+	 * thisFragment.setArguments(arg);
+	 * thisFragment.applyArguments();
+	 * </code>
+	 */
+	public void applyArguments(){
+		Bundle args = getArguments();
+		if(args != null){
+			ArrayList<SimplePost> posts = args.getParcelableArrayList(POSTS_KEY);
+			setListAdapter(new PostsAdapter(getActivity(), posts));
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.Fragment#onCreate(android.os.Bundle)
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContent();
-	}
-	/**设置内容。需提前setArguments(args)*/
-	public void setContent(){
-		Bundle args = getArguments();
-		if(args != null){
-			ArrayList<SimplePost> posts = args.getParcelableArrayList(POSTS_KEY);
-			setListAdapter(new PostsAdapter(getActivity(), posts));
-		}
+		applyArguments();
 	}
 
 	/* (non-Javadoc)

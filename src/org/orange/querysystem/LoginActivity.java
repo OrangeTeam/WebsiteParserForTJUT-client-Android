@@ -182,11 +182,9 @@ public class LoginActivity extends Activity{
 	private class LogIn extends AsyncTask<Void,Void, Boolean>{
 		protected Boolean doInBackground(Void... args) {
 			Boolean hasLogined = null;
-			String userName = userNameBox.getText().toString();
-			String password = passwordBox.getText().toString();
 			try {
 				SchoolWebpageParser parser = new SchoolWebpageParser();
-				parser.setUser(userName, password);
+				parser.setUser(userNameBox.getText().toString(), passwordBox.getText().toString());
 				parser.setTimeout(LOGIN_TIME_OUT);
 				hasLogined = parser.getCurrentHelper().doLogin();
 			} catch (IOException e) {

@@ -9,6 +9,7 @@ import java.util.List;
 import org.orange.querysystem.R;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -46,7 +48,14 @@ public class ListCoursesFragment extends ListFragment {
 			setListAdapter(new CoursesAdapter(getActivity(), courses));
 		}
 	}
-
+	
+	@Override
+	public void onListItemClick(ListView l, View view, int position, long id){
+		Intent intent = new Intent(getActivity(), CourseInfoActivity.class);
+		intent.putExtra("course_info", (int)id);
+		startActivity(intent);
+	}
+	
 	public static class SimpleCourse implements Parcelable{
 		private int id;
 		private String name;

@@ -191,9 +191,6 @@ public class LoginActivity extends Activity{
 				else{
 					isLogIn = true;
 				}
-			} catch (NotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();	

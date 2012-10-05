@@ -115,7 +115,8 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     	mTabHost.clearAllTabs();
     	SharedPreferences shareData = getSharedPreferences("data", 0);
     	Calendar calendar_2 = Calendar.getInstance();
-        calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null)));
+    	//解决在周日会跳到下一周的问题
+        calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null))+1);
         calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
         currentTime = (TextView)findViewById(R.id.currentTime);
         currentTime.setText("本周课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay + "    " + "第" + (calculate_week+1) + "周");

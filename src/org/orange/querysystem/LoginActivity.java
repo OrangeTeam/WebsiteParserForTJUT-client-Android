@@ -41,7 +41,8 @@ public class LoginActivity extends Activity{
 	private CheckBox autoDengLu;	
 	private int mYear = 0;
 	private int mMonth = 0;
-	private int mDay = 0;
+	private int mDayOfMonth = 0;
+	private int mDayOfYear = 0;
 		
 	public static final String TAG = "org.orange.querysystem";
 	static final int DATE_DIALOG_ID = 1;	
@@ -63,7 +64,9 @@ public class LoginActivity extends Activity{
         Calendar calendar = Calendar.getInstance();
 		mYear = calendar.get(Calendar.YEAR);
 		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
-		mDay = calendar.get(Calendar.DAY_OF_MONTH);
+		mDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+		mDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+		
        	     
         title.setText(R.string.title);
         userName.setText(R.string.userName);
@@ -96,7 +99,7 @@ public class LoginActivity extends Activity{
             case DATE_DIALOG_ID:
                 return new DatePickerDialog(this,
                             mDateSetListener,
-                            mYear, mMonth, mDay);
+                            mYear, mMonth, mDayOfMonth);
         }
         return null;
     }    
@@ -105,7 +108,8 @@ public class LoginActivity extends Activity{
 	protected void onPrepareDialog(int id, Dialog dialog) {
         switch (id) {
             case DATE_DIALOG_ID:
-                ((DatePickerDialog) dialog).updateDate(1992, 1, 22);
+            	//设置初始时间为当前时间
+                ((DatePickerDialog) dialog).updateDate(mYear, mMonth, mDayOfMonth);
                 break;
         }
     }        
@@ -115,12 +119,21 @@ public class LoginActivity extends Activity{
 
                 public void onDateSet(DatePicker view, int year_choice, int month_choice,
                         int day_choice) {
-                	Editor editor = getSharedPreferences("data", 0).edit();
-                    editor.putString("start_year", Integer.toString(year_choice));
-                    editor.putString("start_month", Integer.toString(month_choice+1));
-                    editor.putString("start_day", Integer.toString(day_choice));
-                    editor.commit();
-                    startTime.setText("开学时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
+                	Calendar calendar_2 = Calendar.getInstance();
+                	calendar_2.set(year_choice, month_choice, day_choice);
+                	if(calendar_2.get(Calendar.YEAR) > mYear || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) < 0 || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) > 22*7){
+                		Toast.makeText(LoginActivity.this, "此为不恰当的开学日期，请重新设置！", Toast.LENGTH_LONG).show();
+                		startTime.setText("开学时间：请登录后进入主菜单设置！");
+                	}
+                	else{
+                		Editor editor = getSharedPreferences("data", 0).edit();
+                        editor.putString("start_year", Integer.toString(year_choice));
+                        editor.putString("start_month", Integer.toString(month_choice+1));
+                        editor.putString("start_day", Integer.toString(day_choice));
+                        editor.commit();
+                        startTime.setText("开学时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
+                	}
+                	
                 }
             };    
 	   

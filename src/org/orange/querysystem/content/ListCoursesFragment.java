@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +85,7 @@ public class ListCoursesFragment extends ListFragment {
 				lastCourse = currentCourse;
 				continue;
 			}
-			if(lastCourse.id==currentCourse.id && lastCourse.otherInfo==currentCourse.otherInfo){
+			if(lastCourse.equalsExceptTime(currentCourse)){
 				lastCourse.time += ", "+currentCourse.time;
 				iterator.remove();
 			}else
@@ -139,6 +140,31 @@ public class ListCoursesFragment extends ListFragment {
 		 */
 		public String getOtherInfo() {
 			return otherInfo;
+		}
+		public boolean equalsExceptTime(Object otherObject){
+			if(otherObject == null)
+				return false;
+			if(this.getClass() != otherObject.getClass())
+				return false;
+			SimpleCourse otherCourse = (SimpleCourse) otherObject;
+			if(this.id != otherCourse.id)
+				return false;
+			//ID、名称一样，不考虑时间，只剩otherInfo了
+			if(this.otherInfo==null)
+				return otherCourse.otherInfo==null;
+			else
+				return this.otherInfo.equals(otherCourse.otherInfo);
+		}
+		@Override
+		public boolean equals(Object otherObject) {
+			if(!equalsExceptTime(otherObject))
+				return false;
+			SimpleCourse otherCourse = (SimpleCourse) otherObject;
+			//只剩时间了
+			if(this.time==null)
+				return otherCourse.time==null;
+			else
+				return this.time.equals(otherCourse.time);
 		}
 		@Override
 		public int describeContents() {

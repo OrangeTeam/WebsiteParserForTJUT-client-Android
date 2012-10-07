@@ -121,9 +121,6 @@ public class TabsAdapter extends FragmentPagerAdapter
     		return;
         HorizontalScrollView hsv = (HorizontalScrollView)mTabHost.findViewById(R.id.tabs_scroll);
         hsv.smoothScrollTo(currentTab.getLeft()+(currentTab.getWidth()-hsv.getWidth())/2, 0);
-        Log.i("BaiJie",mTabHost.getCurrentTabTag());
-        Log.i("BaiJie",currentTab.getLeft()+" "+currentTab.getWidth()+" "+hsv.getWidth());
-        Log.i("BaiJie",currentTab.getLeft()+(currentTab.getWidth()-hsv.getWidth())/2+"");
     }
 
     @Override

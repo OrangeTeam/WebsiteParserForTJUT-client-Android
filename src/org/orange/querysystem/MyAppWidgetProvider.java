@@ -68,6 +68,8 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		} finally{
 			closeDatabase();
 		}
+		if(courses==null)
+			return;
 		int thePeriod = getTime();
 		Calendar calendar = Calendar.getInstance();
 		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);

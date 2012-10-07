@@ -13,9 +13,14 @@ import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +33,6 @@ public class CourseInfoActivity extends Activity{
 	private TextView course_test_score;
 	private TextView course_total_score;
 	private TextView course_grade_point;
-	private TextView course_time_and_adress;
 	private EditText course_code_input;
 	private EditText course_class_number_input;
 	private EditText course_teacher_input;
@@ -37,10 +41,10 @@ public class CourseInfoActivity extends Activity{
 	private EditText course_test_score_input;
 	private EditText course_total_score_input;
 	private EditText course_grade_point_input;
-	private EditText course_time_and_adress_input;
-	private Button change_info;
-	private Button submit;
+//	private Button change_info;
+//	private Button submit;
 	private int course_id;
+	private int time_and_adress_counter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +59,6 @@ public class CourseInfoActivity extends Activity{
         course_test_score = (TextView)findViewById(R.id.course_test_score);
         course_total_score = (TextView)findViewById(R.id.course_total_score);
         course_grade_point = (TextView)findViewById(R.id.course_grade_point);
-        course_time_and_adress = (TextView)findViewById(R.id.course_time_and_adress);
         
         course_code_input = (EditText)findViewById(R.id.course_code_input);
         course_class_number_input = (EditText)findViewById(R.id.course_class_number_input);
@@ -65,12 +68,11 @@ public class CourseInfoActivity extends Activity{
         course_test_score_input = (EditText)findViewById(R.id.course_test_score_input);
         course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
-        course_time_and_adress_input = (EditText)findViewById(R.id.course_time_and_adress_input);
         
-        change_info = (Button)findViewById(R.id.change_info);
-        submit = (Button)findViewById(R.id.submit);
-        change_info.setText("    修改    ");
-        submit.setText("    提交    ");
+//        change_info = (Button)findViewById(R.id.change_info);
+//        submit = (Button)findViewById(R.id.submit);
+//        change_info.setText("    修改    ");
+//        submit.setText("    提交    ");
         
         SharedPreferences shareData = getSharedPreferences("data", 0);
     	new ReadCourseInfo().execute(shareData.getString("userName", null));
@@ -88,7 +90,6 @@ public class CourseInfoActivity extends Activity{
 		course_test_score.setText("结课成绩：");
 		course_total_score.setText("期末总评：");
 		course_grade_point.setText("绩        点：");
-		course_time_and_adress.setText("时间地点：");
 		course_code_input.setText(course.getCode());
 		course_class_number_input.setText(course.getClassNumber());
 		course_teacher_input.setText(course.getTeacherString());
@@ -96,7 +97,32 @@ public class CourseInfoActivity extends Activity{
 		course_kind_input.setText(course.getKind());
 		course_test_score_input.setText(String.valueOf(course.getTestScore()));
 		course_total_score_input.setText(String.valueOf(course.getTotalScore()));
-		course_time_and_adress_input.setText(course.getTimeAndAddressString());
+		for(time_and_adress_counter=0; time_and_adress_counter<course.getTimeAndAddress().size(); time_and_adress_counter++){
+			TextView textView = new TextView(this);
+			textView.setText("时间地点" + (time_and_adress_counter+1) + ": ");
+			textView.setId(time_and_adress_counter*2 + 1);
+			textView.setTextSize(18);
+			EditText editText = new EditText(this);
+			editText.setText(course.getTimeAndAddress().get(time_and_adress_counter).toString());
+			editText.setId(time_and_adress_counter*2 + 2);
+			editText.setEnabled(false);
+			
+			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			if(time_and_adress_counter == 0){
+				tvlp.addRule(RelativeLayout.BELOW, R.id.course_grade_point_input);
+				etlp.addRule(RelativeLayout.BELOW, R.id.course_grade_point_input);
+			}
+			else{
+				tvlp.addRule(RelativeLayout.BELOW, time_and_adress_counter*2 - 1);
+				etlp.addRule(RelativeLayout.BELOW, time_and_adress_counter*2);
+			}
+			tvlp.addRule(RelativeLayout.ALIGN_BASELINE, time_and_adress_counter*2 + 2);
+			etlp.addRule(RelativeLayout.RIGHT_OF, time_and_adress_counter*2 + 1);
+			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(textView, tvlp);
+			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(editText, etlp);
+		}
+		
 		try {
 			course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
 		} catch (CourseException e) {
@@ -181,20 +207,43 @@ public class CourseInfoActivity extends Activity{
 		}	
 	}
 	
-	public void changeInfo(View view){
-		course_code_input.setEnabled(true);
-		course_class_number_input.setEnabled(true);
-		course_teacher_input.setEnabled(true);
-		course_credit_input.setEnabled(true);
-		course_kind_input.setEnabled(true);
-		course_test_score_input.setEnabled(true);
-		course_total_score_input.setEnabled(true);
-		course_grade_point_input.setEnabled(true);
-		course_time_and_adress_input.setEnabled(true);
-		
-	}
-	
-	public void submit(View view){
-		
-	}
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 1, R.string.course_info_change);
+        menu.add(0, 2, 2, R.string.course_info_submit);
+        
+        return super.onCreateOptionsMenu(menu); 
+    }
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	// TODO Auto-generated method stub\
+    	if(item.getItemId() == 1){
+    		course_code_input.setEnabled(true);
+    		course_class_number_input.setEnabled(true);
+    		course_teacher_input.setEnabled(true);
+    		course_credit_input.setEnabled(true);
+    		course_kind_input.setEnabled(true);
+    		course_test_score_input.setEnabled(true);
+    		course_total_score_input.setEnabled(true);
+    		course_grade_point_input.setEnabled(true);
+//    		for(int i=0; i < time_and_adress_counter; i++){
+//    			findViewById(i*2 + 2).setEnabled(true);
+//    		}
+    		for(int i=0; i < time_and_adress_counter; i++){
+//    			findViewById(i*2 + 2).setEnabled(true);
+    			findViewById(i*2 + 2).setOnClickListener(new EditText.OnClickListener(){
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("我能行！");
+						
+					}
+    			});
+    		}
+    	}
+    	else if(item.getItemId() == 2){
+    		
+    	}
+    	return super.onMenuItemSelected(featureId, item);
+    }
 }

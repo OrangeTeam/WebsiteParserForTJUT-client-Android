@@ -119,6 +119,10 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
         calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null))+1);
         calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
         currentTime = (TextView)findViewById(R.id.currentTime);
+        //解决周日会变成下一周问题
+        if(mDayOfWeek == 1){
+        	calculate_week = calculate_week - 1;
+        }
         currentTime.setText("本周课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay + "    " + "第" + (calculate_week+1) + "周");
         
     	Bundle[] args = new Bundle[7]; 

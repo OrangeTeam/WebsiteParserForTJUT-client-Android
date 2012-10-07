@@ -11,10 +11,11 @@
 
     <application 
         android:label="@string/app_name"
-        android:icon="@drawable/logo_3"
+        android:icon="@drawable/app_pic"
         android:theme="@style/AppTheme">
         <receiver
-            android:name=".MyAppWidgetProvider">
+            android:name=".MyAppWidgetProvider"
+            android:exported="false">
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/myappwidgetprovider"/>
@@ -24,13 +25,14 @@
         </receiver>
 		<activity
             android:screenOrientation="portrait"
-            android:label="天津理工大学信息查询系统"
+            android:label="学生查询系统"
             android:name=".LoginActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AboutActivity"></activity>
         <activity
             android:screenOrientation="sensor"
             android:name=".content.InsertDBFragmentActivity"
@@ -43,15 +45,6 @@
 		<activity android:name=".content.AllListCoursesActivity" />
 		<activity android:name=".content.MainMenuActivity" />
 		<activity android:name=".content.CourseInfoActivity"/>
-        <activity
-            android:label="成绩表"
-            android:name=".content.ListScoresActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-		</activity>
-
     </application>
 
 </manifest>

@@ -49,9 +49,9 @@ public class MainMenuActivity extends Activity{
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
-		for(int i=0; i<6; i++){
+		for(int i=0; i<3; i++){
 			HashMap<String ,Object> map = new HashMap<String, Object>();
-			map.put("ItemImage", R.drawable.logo_3);//添加图像资源的ID
+			map.put("ItemImage", R.drawable.week_course_list);//添加图像资源的ID
 			map.put("ItemText", texts[i]);//按序号做ItemText
 			lstImageItem.add(map);
 		}
@@ -74,6 +74,24 @@ public class MainMenuActivity extends Activity{
 								int args2, //The position of the view in the adapter
 								long args3 //The row id of the item that was clicked
 								){
+//			if(args3 == 0){
+//				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+//			}
+//			if(args3 == 1){
+//				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
+//			}
+//			if(args3 == 2){
+//				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+//			}
+//			if(args3 == 3){
+//				startActivity(new Intent(MainMenuActivity.this, ListPostsActivity.class));
+//			}
+//			if(args3 == 4){
+//				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
+//			}
+//			if(args3 == 5){
+//				showDialog(DATE_DIALOG_ID);
+//			}
 			if(args3 == 0){
 				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
 			}
@@ -81,15 +99,6 @@ public class MainMenuActivity extends Activity{
 				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
 			}
 			if(args3 == 2){
-				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
-			}
-			if(args3 == 3){
-				startActivity(new Intent(MainMenuActivity.this, ListPostsActivity.class));
-			}
-			if(args3 == 4){
-				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
-			}
-			if(args3 == 5){
 				showDialog(DATE_DIALOG_ID);
 			}
 		}
@@ -139,6 +148,7 @@ public class MainMenuActivity extends Activity{
 	
 	private static Integer[] imgs = {};
 	
-	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置"};
+//	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置"};
+	private static String[] texts = {"本周课程表", "总课程表","开学时间设置"};
 
 }

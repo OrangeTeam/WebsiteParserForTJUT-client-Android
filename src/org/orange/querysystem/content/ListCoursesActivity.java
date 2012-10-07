@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 
+import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
@@ -54,6 +55,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	private int mWeek = 0;
 	private int mDayOfWeek = 0;
 	private int calculate_week = 0;
+	private int start_resume = 0;
 	
 	private TextView currentTime;
 	
@@ -99,6 +101,12 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	@Override
 	protected void onResume(){
 		super.onResume();
+		if(start_resume == 0){
+			
+		}
+		else if(start_resume == 1){
+			readDB();
+		}
 	}
 		
 	public void readDB(){
@@ -212,6 +220,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.settings);
         menu.add(0, 4, 4, R.string.refresh);
+        menu.add(0, 5, 5, R.string.about);
         
         return super.onCreateOptionsMenu(menu); 
     }
@@ -232,6 +241,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     	}
     	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
+    			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
 //        		readDB();
@@ -239,6 +249,9 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
             else{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
             }
+    	}
+    	else if(item.getItemId() == 5){
+    		startActivity(new Intent(this, AboutActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

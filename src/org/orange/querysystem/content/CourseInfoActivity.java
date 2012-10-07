@@ -207,43 +207,43 @@ public class CourseInfoActivity extends Activity{
 		}	
 	}
 	
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.course_info_change);
-        menu.add(0, 2, 2, R.string.course_info_submit);
-        
-        return super.onCreateOptionsMenu(menu); 
-    }
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	// TODO Auto-generated method stub\
-    	if(item.getItemId() == 1){
-    		course_code_input.setEnabled(true);
-    		course_class_number_input.setEnabled(true);
-    		course_teacher_input.setEnabled(true);
-    		course_credit_input.setEnabled(true);
-    		course_kind_input.setEnabled(true);
-    		course_test_score_input.setEnabled(true);
-    		course_total_score_input.setEnabled(true);
-    		course_grade_point_input.setEnabled(true);
+//	@Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        menu.add(0, 1, 1, R.string.course_info_change);
+//        menu.add(0, 2, 2, R.string.course_info_submit);
+//        
+//        return super.onCreateOptionsMenu(menu); 
+//    }
+//    @Override
+//    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+//    	// TODO Auto-generated method stub\
+//    	if(item.getItemId() == 1){
+//    		course_code_input.setEnabled(true);
+//    		course_class_number_input.setEnabled(true);
+//    		course_teacher_input.setEnabled(true);
+//    		course_credit_input.setEnabled(true);
+//    		course_kind_input.setEnabled(true);
+//    		course_test_score_input.setEnabled(true);
+//    		course_total_score_input.setEnabled(true);
+//    		course_grade_point_input.setEnabled(true);
+////    		for(int i=0; i < time_and_adress_counter; i++){
+////    			findViewById(i*2 + 2).setEnabled(true);
+////    		}
 //    		for(int i=0; i < time_and_adress_counter; i++){
-//    			findViewById(i*2 + 2).setEnabled(true);
+////    			findViewById(i*2 + 2).setEnabled(true);
+//    			findViewById(i*2 + 2).setOnClickListener(new EditText.OnClickListener(){
+//					@Override
+//					public void onClick(View arg0) {
+//						// TODO Auto-generated method stub
+//						System.out.println("我能行！");
+//						
+//					}
+//    			});
 //    		}
-    		for(int i=0; i < time_and_adress_counter; i++){
-//    			findViewById(i*2 + 2).setEnabled(true);
-    			findViewById(i*2 + 2).setOnClickListener(new EditText.OnClickListener(){
-					@Override
-					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("我能行！");
-						
-					}
-    			});
-    		}
-    	}
-    	else if(item.getItemId() == 2){
-    		
-    	}
-    	return super.onMenuItemSelected(featureId, item);
-    }
+//    	}
+//    	else if(item.getItemId() == 2){
+//    		
+//    	}
+//    	return super.onMenuItemSelected(featureId, item);
+//    }
 }

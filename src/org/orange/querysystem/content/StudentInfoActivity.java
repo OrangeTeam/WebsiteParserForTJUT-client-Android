@@ -72,7 +72,7 @@ public class StudentInfoActivity extends Activity{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-                studentInfo.setUser("20106200","991~&~bhu");
+                studentInfo.setUser("","");
 				studentInfo.parseScores(Constant.url.个人全部成绩, student);
 			} catch (ParserException e) {
 				// TODO Auto-generated catch block

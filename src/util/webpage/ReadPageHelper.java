@@ -1,6 +1,7 @@
 package util.webpage;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -8,10 +9,13 @@ import java.util.Map;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.UnsupportedMimeTypeException;
 import org.jsoup.nodes.Document;
 
 public class ReadPageHelper implements Cloneable{
+	private static final String DefaultCharset = "GB2312";
 	private OnReadPageListener listener = null;
 	
 	/**网络连接的超时时间，单位milliseconds*/
@@ -138,24 +142,37 @@ public class ReadPageHelper implements Cloneable{
 	 * do login<br />登录
 	 * @param loginPageURL send login request to this page 向此网址发送登录请求 
 	 * @return true for success, false for failure 成功登录返回真，失败返回假
+	 * @throws java.net.MalformedURLException if the request URL is not a HTTP or HTTPS URL, or is otherwise malformed
+	 * @throws HttpStatusException 若响应状态不可识别，可能与教务处网站的连通性出现问题，或教务网站改版。
+	 * @throws UnsupportedMimeTypeException if the response mime type is not supported and those errors are not ignored
+	 * @throws java.net.SocketTimeoutException if the connection times out
 	 * @throws IOException encounter error when make post request 进行post请求时遇到error
 	 */
 	public boolean doLogin(String loginPageURL) throws IOException{
+		//是旧用户且上次认证未过期
 		if(!isNewUser && teachingAffairsSession!=null 
 				&& teachingAffairsSession.isModifiedWithIn(expire))
 			return true;
+		//用户名或密码为空
+		if(userName.length()==0 || password.length()==0)
+			return false;
 		Response res = Jsoup
-				.connect(loginPageURL).timeout(timeout).followRedirects(false)
+				.connect(loginPageURL).timeout(timeout).followRedirects(false).ignoreHttpErrors(true)
 				.data("name",userName,"pswd", password)
 				.method(Method.POST).execute();
 		if(listener != null)
 			listener.onRequest(loginPageURL, res.statusCode(), res.statusMessage(), res.bodyAsBytes().length);
-		if(res.statusCode() != 302)
+		String body = new String(res.bodyAsBytes(), charset!=null?charset:DefaultCharset);
+		int status = res.statusCode();
+		//用户名或密码错误
+		if(status==HttpURLConnection.HTTP_INTERNAL_ERROR || (status==HttpURLConnection.HTTP_OK && body.contains("密码错误")))
 			return false;
 		this.teachingAffairsSession = getCookie1FromMap(res.cookies());
-		if(this.teachingAffairsSession == null)
-			return false;
-		return true;
+		if(this.teachingAffairsSession != null && (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER))
+			return true;
+		else{
+			throw new HttpStatusException("收到未知的服务器响应，请确认与教务处网站的连通性。Header:\n"+res.headers()+"\nBody:\n"+body, status, loginPageURL);
+		}
 	}
 	/**
 	 * do login with default login page<br />登录,使用默认登录页
@@ -194,7 +211,7 @@ public class ReadPageHelper implements Cloneable{
 	 * @return 成功返回Cookie；失败返回null
 	 */
 	private Cookie getCookie1FromMap(Map<String, String> cookies){
-		if(cookies == null)
+		if(cookies == null || cookies.isEmpty())
 			return null;
 		String key = (String)cookies.keySet().toArray()[0];
 		if(key == null || key.length() == 0)

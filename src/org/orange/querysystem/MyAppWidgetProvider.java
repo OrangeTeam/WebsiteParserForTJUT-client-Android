@@ -68,12 +68,14 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		} finally{
 			closeDatabase();
 		}
+		if(courses==null)
+			return;
 		int thePeriod = getTime();
 		Calendar calendar = Calendar.getInstance();
 		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
 		mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-Calendar.MONDAY+1;
 		Calendar calendar_2 = Calendar.getInstance();
-		calendar_2.set(Integer.parseInt(shareData.getString("start_year", 2012)), Integer.parseInt(shareData.getString("start_month", 9))-1, Integer.parseInt(shareData.getString("start_day", 24)));
+		calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null)));
 		calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
 		LinkedList<SimpleCourse>[][] lesson = new LinkedList[7][14];
     	for(int day=0;day<=6;day++)
@@ -89,11 +91,8 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 					e.printStackTrace();
 				}
     	ArrayList<SimpleCourse> coursesInADay = new ArrayList<SimpleCourse>();
-    	if(lesson[mDayOfWeek][thePeriod] != null)
-    	{
-    		for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
+    	for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
 			coursesInADay.add(course);
-    	}
 		
 		String str = " ";
 		if(coursesInADay.size() != 0){

@@ -28,8 +28,6 @@ import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import android.annotation.TargetApi;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;

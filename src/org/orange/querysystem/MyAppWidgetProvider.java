@@ -91,8 +91,9 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 					e.printStackTrace();
 				}
     	ArrayList<SimpleCourse> coursesInADay = new ArrayList<SimpleCourse>();
-    	for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
-			coursesInADay.add(course);
+		if(lesson[mDayOfWeek][thePeriod]!=null)
+			for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
+				coursesInADay.add(course);
 		
 		String str = " ";
 		if(coursesInADay.size() != 0){

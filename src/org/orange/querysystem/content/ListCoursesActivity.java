@@ -75,6 +75,11 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
+		SharedPreferences shareData = getSharedPreferences("data", 0);
+    	//判断是否第一次登陆
+    	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){
+        	startActivity(new Intent(this, LoginActivity.class));
+        }
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 

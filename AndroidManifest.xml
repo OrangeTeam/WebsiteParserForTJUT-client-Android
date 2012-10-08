@@ -23,10 +23,11 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
         </receiver>
+        <activity android:name=".LoginActivity"/>
 		<activity
             android:screenOrientation="portrait"
             android:label="学生查询系统"
-            android:name=".LoginActivity" >
+            android:name=".content.ListCoursesActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -38,7 +39,6 @@
             android:name=".content.InsertDBFragmentActivity"
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@android:style/Theme.Dialog"/>
-        <activity android:name=".content.ListCoursesActivity" />
         <activity android:name=".content.ListPostsActivity" />
 -       <activity android:name=".content.ShowOnePostActivity" />
 -       <activity android:name=".content.StudentInfoActivity" />

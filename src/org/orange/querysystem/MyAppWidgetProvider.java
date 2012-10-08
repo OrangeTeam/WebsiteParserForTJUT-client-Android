@@ -73,7 +73,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
 		mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-Calendar.MONDAY+1;
 		Calendar calendar_2 = Calendar.getInstance();
-		calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null)));
+		calendar_2.set(Integer.parseInt(shareData.getString("start_year", 2012)), Integer.parseInt(shareData.getString("start_month", 9))-1, Integer.parseInt(shareData.getString("start_day", 24)));
 		calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
 		LinkedList<SimpleCourse>[][] lesson = new LinkedList[7][14];
     	for(int day=0;day<=6;day++)

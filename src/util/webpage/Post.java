@@ -3,6 +3,7 @@
  */
 package util.webpage;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,7 +16,8 @@ import java.util.TimeZone;
  * @author Bai Jie
  *
  */
-public class Post implements Cloneable{
+public class Post implements Cloneable, Serializable {
+	private static final long serialVersionUID = -7066298867597165622L;
 	/**和Post来源相关的常量*/
 	public static final class SOURCES{
 		public static final byte UNKNOWN_SOURCE = -1;
@@ -93,7 +95,7 @@ public class Post implements Cloneable{
 		super();
 		id = 0;
 		source = SOURCES.UNKNOWN_SOURCE; 
-		title = url = mainBody = category = null;
+		title = url = mainBody = category = author = null;
 		date = new Date(0);
 	}
 	/**全参构造方法*/
@@ -106,12 +108,14 @@ public class Post implements Cloneable{
 		this.url = url;
 		this.mainBody = mainBody;
 		this.author = author;
-		try {
-			setDate(date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Can't parse date normally. "+e.getMessage());
-			e.printStackTrace();
+		if(date != null && date.length() != 0){
+			try {
+				setDate(date);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Can't parse date normally. "+e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 	/**拷贝构造方法*/
@@ -253,6 +257,8 @@ public class Post implements Cloneable{
 	 * @throws ParseException if the beginning of the specified string cannot be parsed.
 	 */
 	public Post setDate(String date) throws ParseException{
+		if(date == null)
+			throw new NullPointerException("date shouldn't have been null.");
 		this.date = convertToDate(date);
 		return this;
 	}

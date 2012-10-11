@@ -75,7 +75,7 @@ public class Post implements Cloneable, Serializable {
 	}
 	
 
-	private int id; 
+	private Long id; 
 	/**来源，见{@link Post.SOURCES}*/
 	private byte source;
 	/**类别，见{@link Post.CATEGORYS}*/
@@ -93,13 +93,13 @@ public class Post implements Cloneable, Serializable {
 
 	public Post() {
 		super();
-		id = 0;
+		id = 0l;
 		source = SOURCES.UNKNOWN_SOURCE; 
 		title = url = mainBody = category = author = null;
 		date = new Date(0);
 	}
 	/**全参构造方法*/
-	public Post(int id, byte source, String category, String title, String url, String mainBody, String author, String date) {
+	public Post(Long id, byte source, String category, String title, String url, String mainBody, String author, String date) {
 		this();
 		this.id = id;
 		this.source = source;
@@ -134,13 +134,13 @@ public class Post implements Cloneable, Serializable {
 	/**
 	 * @return 通知ID
 	 */
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 	/**
 	 * @param ID 通知ID
 	 */
-	public void setId(int ID) {
+	public void setId(Long ID) {
 		this.id = ID;
 	}
 	/**

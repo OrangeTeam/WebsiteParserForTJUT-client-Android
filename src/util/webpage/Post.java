@@ -93,7 +93,7 @@ public class Post implements Cloneable, Serializable {
 
 	public Post() {
 		super();
-		id = 0l;
+		id = null;
 		source = SOURCES.UNKNOWN_SOURCE; 
 		title = url = mainBody = category = author = null;
 		date = new Date(0);

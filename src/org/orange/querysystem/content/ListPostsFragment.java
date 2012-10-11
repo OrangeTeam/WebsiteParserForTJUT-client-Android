@@ -76,12 +76,12 @@ public class ListPostsFragment extends ListFragment {
 	}
 
 	public static class SimplePost implements Parcelable{
-		private int id;
+		private long id;
 		private String title;
 		private String category;
 		private String date;
 		private String author;
-		public SimplePost(int id, String title, String category, String author, String date){
+		public SimplePost(long id, String title, String category, String author, String date){
 			this.id = id;
 			this.title = title;
 			this.category = category;
@@ -89,9 +89,9 @@ public class ListPostsFragment extends ListFragment {
 			this.author = author;
 		}
 		public SimplePost(Parcel in){
-			this(in.readInt(), in.readString(), in.readString(), in.readString(), in.readString());
+			this(in.readLong(), in.readString(), in.readString(), in.readString(), in.readString());
 		}
-		public int getId() {
+		public long getId() {
 			return id;
 		}
 		public String getTitle() {
@@ -112,7 +112,7 @@ public class ListPostsFragment extends ListFragment {
 		}
 		@Override
 		public void writeToParcel(Parcel out, int flags) {
-			out.writeInt(id);
+			out.writeLong(id);
 			out.writeString(title);
 			out.writeString(category);
 			out.writeString(author);

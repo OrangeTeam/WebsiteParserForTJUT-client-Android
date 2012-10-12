@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -51,7 +51,7 @@ public class MainMenuActivity extends Activity{
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
 		for(int i=0; i<6; i++){
 			HashMap<String ,Object> map = new HashMap<String, Object>();
-			map.put("ItemImage", R.drawable.logo_3);//添加图像资源的ID
+			map.put("ItemImage", R.drawable.week_course_list);//添加图像资源的ID
 			map.put("ItemText", texts[i]);//按序号做ItemText
 			lstImageItem.add(map);
 		}
@@ -92,6 +92,15 @@ public class MainMenuActivity extends Activity{
 			if(args3 == 5){
 				showDialog(DATE_DIALOG_ID);
 			}
+//			if(args3 == 0){
+//				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+//			}
+//			if(args3 == 1){
+//				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
+//			}
+//			if(args3 == 2){
+//				showDialog(DATE_DIALOG_ID);
+//			}
 		}
 	}
 	
@@ -140,5 +149,6 @@ public class MainMenuActivity extends Activity{
 	private static Integer[] imgs = {};
 	
 	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置"};
+//	private static String[] texts = {"本周课程表", "总课程表","开学时间设置"};
 
 }

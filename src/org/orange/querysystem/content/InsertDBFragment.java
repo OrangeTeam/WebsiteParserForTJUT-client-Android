@@ -8,8 +8,6 @@ import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 import util.webpage.Constant;
 import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 
+import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
@@ -35,7 +36,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Contacts.Intents.Insert;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -54,6 +54,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	private int mWeek = 0;
 	private int mDayOfWeek = 0;
 	private int calculate_week = 0;
+	private int start_resume = 0;
 	
 	private TextView currentTime;
 	
@@ -74,6 +75,11 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
+		SharedPreferences shareData = getSharedPreferences("data", 0);
+    	//判断是否第一次登陆
+    	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){
+        	startActivity(new Intent(this, LoginActivity.class));
+        }
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -99,6 +105,12 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	@Override
 	protected void onResume(){
 		super.onResume();
+		if(start_resume == 0){
+			
+		}
+		else if(start_resume == 1){
+			readDB();
+		}
 	}
 		
 	public void readDB(){
@@ -119,6 +131,10 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
         calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null))+1);
         calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
         currentTime = (TextView)findViewById(R.id.currentTime);
+        //解决周日会变成下一周问题
+        if(mDayOfWeek == 1){
+        	calculate_week = calculate_week - 1;
+        }
         currentTime.setText("本周课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay + "    " + "第" + (calculate_week+1) + "周");
         
     	Bundle[] args = new Bundle[7]; 
@@ -208,6 +224,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.settings);
         menu.add(0, 4, 4, R.string.refresh);
+        menu.add(0, 5, 5, R.string.about);
         
         return super.onCreateOptionsMenu(menu); 
     }
@@ -228,6 +245,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     	}
     	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
+    			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
 //        		readDB();
@@ -235,6 +253,9 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
             else{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
             }
+    	}
+    	else if(item.getItemId() == 5){
+    		startActivity(new Intent(this, AboutActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">天津理工大学信息查询系统</string>
+    <string name="app_name">学生查询系统</string>
     <string name="menu_refresh">refresh</string>
 	<string name="menu_settings">setting</string>    
     <string name="userName">用户名： </string>
@@ -32,6 +32,8 @@
     <string name="course_grade_point">绩点</string>
     <string name="course_credit">学分</string>
     <string name="course_kind">课程性质</string>
+    <string name="course_info_change">修改</string>
+    <string name="course_info_submit">提交</string>
     
     <string name="student_number">学号</string>
     <string name="name">姓名</string>

@@ -5,6 +5,7 @@
     android:scrollbarStyle="outsideOverlay"
     android:scrollbars="horizontal">
     <RelativeLayout 
+        android:id="@+id/relativeLayout"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:orientation="vertical"
@@ -22,7 +23,6 @@
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_marginTop="15dp"
 	   	 	android:layout_toRightOf="@+id/course_code"
-	   	 	android:alpha="100"
 	   	 	android:enabled="false"/>
 	    <TextView 
 	        android:id="@+id/course_class_number"
@@ -136,37 +136,5 @@
 	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_toRightOf="@+id/course_grade_point"
 	   	 	android:enabled="false"/>
-	    <TextView 
-	        android:id="@+id/course_time_and_adress"
-	        android:layout_width="wrap_content"
-	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_below="@+id/course_grade_point_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_alignBaseline="@+id/course_time_and_adress_input"
-	   	 	android:textSize="18dp"/>
-	    <EditText 
-	        android:id="@+id/course_time_and_adress_input"
-	        android:layout_width="fill_parent"
-	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_below="@+id/course_grade_point_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_grade_point"
-	   	 	android:enabled="false"/>
-	    
-	    <Button 
-	        android:id="@+id/change_info"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:onClick="changeInfo"
-	        android:layout_below="@+id/course_time_and_adress_input"/>
-	    <Button 
-	        android:id="@+id/submit"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_toRightOf="@+id/change_info"
-	        android:layout_below="@+id/course_time_and_adress_input"
-	        android:onClick="submit"/>
-	    
-	
 	</RelativeLayout>
 </ScrollView>

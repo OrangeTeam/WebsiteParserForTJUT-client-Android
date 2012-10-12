@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 public class MyAppWidgetProvider extends AppWidgetProvider {
@@ -49,7 +48,6 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			Bundle extras = intent.getExtras();
 			if(extras != null){
 				int[] appWidgetIds = extras.getIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-				Log.w("extras", "" + appWidgetIds.length);
 				if(appWidgetIds != null && appWidgetIds.length > 0){
 					this.onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds);
 				}
@@ -70,6 +68,8 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		} finally{
 			studentInfDBAdapter.close();
 		}
+		if(courses==null)
+			return;
 		int thePeriod = getTime();
 		Calendar calendar = Calendar.getInstance();
 		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
@@ -91,8 +91,9 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 					e.printStackTrace();
 				}
     	ArrayList<SimpleCourse> coursesInADay = new ArrayList<SimpleCourse>();
-    	for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
-			coursesInADay.add(course);
+		if(lesson[mDayOfWeek][thePeriod]!=null)
+			for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
+				coursesInADay.add(course);
 		
 		String str = " ";
 		if(coursesInADay.size() != 0){

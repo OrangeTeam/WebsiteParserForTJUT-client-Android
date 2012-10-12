@@ -6,13 +6,13 @@
     android:background="#000" 
     android:alpha="70">  
     <TextView 
-        android:text="hahafsadfasdf"
+        android:text="此时无课程！"
         android:id="@+id/appWidgetTextView"
         android:layout_width="146dp"
         android:layout_height="fill_parent"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:textColor="#fff"
-        android:background="#0f0"
+        android:background="#050"
         android:gravity="center"/>
     <Button 
         android:id="@+id/widgetButton"

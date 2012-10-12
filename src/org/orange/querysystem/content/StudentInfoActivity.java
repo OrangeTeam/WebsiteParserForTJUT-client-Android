@@ -72,7 +72,7 @@ public class StudentInfoActivity extends Activity{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-                studentInfo.setUser("20106200","991~&~bhu");
+                studentInfo.setUser("","");
 				studentInfo.parseScores(Constant.url.个人全部成绩, student);
 			} catch (ParserException e) {
 				// TODO Auto-generated catch block
@@ -135,6 +135,7 @@ public class StudentInfoActivity extends Activity{
         menu.add(0, 1, 1, R.string.main_menu);
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.settings);
+        menu.addSubMenu(0, 4, 4, R.string.about);
         
         return super.onCreateOptionsMenu(menu); 
     }
@@ -152,6 +153,9 @@ public class StudentInfoActivity extends Activity{
     	}
     	else if(item.getItemId() == 3){
 //    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    	}
+    	else if(item.getItemId() == 4){
+    		
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

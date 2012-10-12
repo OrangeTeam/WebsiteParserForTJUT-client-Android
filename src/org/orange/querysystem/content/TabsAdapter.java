@@ -25,7 +25,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
@@ -121,9 +120,6 @@ public class TabsAdapter extends FragmentPagerAdapter
     		return;
         HorizontalScrollView hsv = (HorizontalScrollView)mTabHost.findViewById(R.id.tabs_scroll);
         hsv.smoothScrollTo(currentTab.getLeft()+(currentTab.getWidth()-hsv.getWidth())/2, 0);
-        Log.i("BaiJie",mTabHost.getCurrentTabTag());
-        Log.i("BaiJie",currentTab.getLeft()+" "+currentTab.getWidth()+" "+hsv.getWidth());
-        Log.i("BaiJie",currentTab.getLeft()+(currentTab.getWidth()-hsv.getWidth())/2+"");
     }
 
     @Override

@@ -4,10 +4,7 @@ import java.util.ArrayList;
 
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
-import util.BitOperate.BitOperateException;
 import util.webpage.Course;
-import util.webpage.Course.CourseException;
-import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.SchoolWebpageParser;
 import android.content.Context;
 import android.database.SQLException;

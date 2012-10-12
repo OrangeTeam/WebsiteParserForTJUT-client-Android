@@ -3,7 +3,6 @@ package org.orange.querysystem.content;
 import java.io.IOException;
 
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.InsertDBFragment.InsertDB.MyParserListener;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Constant;

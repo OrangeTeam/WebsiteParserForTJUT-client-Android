@@ -68,7 +68,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally{
-			closeDatabase();
+			studentInfDBAdapter.close();
 		}
 		int thePeriod = getTime();
 		Calendar calendar = Calendar.getInstance();
@@ -110,15 +110,6 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			views.setTextViewText(R.id.appWidgetTextView, str);
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
-	}
-	
-	private void closeDatabase(){
-		if(studentInfDBAdapter != null)
-			try{
-				studentInfDBAdapter.close();
-			}catch(NullPointerException e){
-				e.printStackTrace();
-			}
 	}
 	
 	private int getTime(){

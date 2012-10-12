@@ -128,13 +128,7 @@ public class ShowOnePostActivity extends Activity {
 				Log.e(TAG, "从数据库读取Post列表时遇到异常！");
 				e.printStackTrace();
 			} finally{
-				try{
-					if(database!=null)
-						database.close();
-				} catch(Exception e){
-					Log.e(TAG, "关闭数据库时遇到异常！");
-					e.printStackTrace();
-				}
+				database.close();
 			}
 			return post;
 		}
@@ -177,13 +171,7 @@ public class ShowOnePostActivity extends Activity {
 				Log.e(TAG, "从数据库读取Post列表时遇到异常！");
 				e.printStackTrace();
 			} finally{
-				try{
-					if(database!=null)
-						database.close();
-				} catch(Exception e){
-					Log.e(TAG, "关闭数据库时遇到异常！");
-					e.printStackTrace();
-				}
+				database.close();
 			}
 			return result;
 		}

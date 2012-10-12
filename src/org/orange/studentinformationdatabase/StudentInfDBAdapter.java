@@ -127,9 +127,16 @@ public class StudentInfDBAdapter {
 			db = dbHelper.getReadableDatabase();
 		}
 	}
-	
+	/**
+	 * Returns true if the database is currently open.
+	 * @return True if the database is currently open (has not been closed).
+	 */
+	public boolean isOpen(){
+		return (db!=null && db.isOpen());
+	}
 	public void close(){
-		db.close();
+		if(isOpen())
+			db.close();
 	}
 	
 	/*在数据库中isFirstSemester存储形式为字符串，而Course类中的isFirstSemester存储形式为Boolean对象。

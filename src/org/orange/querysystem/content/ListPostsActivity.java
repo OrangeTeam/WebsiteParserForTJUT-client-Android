@@ -208,13 +208,7 @@ public class ListPostsActivity extends FragmentActivity{
 				Log.e(TAG, "从数据库读取Post列表时遇到异常！");
 				e.printStackTrace();
 			} finally{
-				try{
-					if(database!=null)
-						database.close();
-				} catch(Exception e){
-					Log.e(TAG, "关闭数据库时遇到异常！");
-					e.printStackTrace();
-				}
+				database.close();
 			}
 			return result;
 		}
@@ -262,13 +256,7 @@ public class ListPostsActivity extends FragmentActivity{
 				Log.e(TAG, "打开数据库异常！");
 				e.printStackTrace();
 			} finally{
-				try{
-					if(database!=null)
-						database.close();
-				} catch (Exception e){
-					Log.e(TAG, "关闭数据库时遇到异常！");
-					e.printStackTrace();
-				}
+				database.close();
 			}
 			return null;
 		}

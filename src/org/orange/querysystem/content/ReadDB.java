@@ -41,10 +41,8 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 		} catch(SQLException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			/*新增 此捕获、两个close和
-			 * 79行捕获*/
 		} finally{
-			closeDatabase();
+			studentInfDBAdapter.close();
 		}
 		
 		return result;
@@ -52,7 +50,7 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 
 	@Override
 	protected void onCancelled() {
-		closeDatabase();
+		studentInfDBAdapter.close();
 	}
 
 	@Override
@@ -62,15 +60,6 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 		else{
 			Toast.makeText(context, "no data in the database!", Toast.LENGTH_LONG).show();			
 		}
-	}
-	
-	private void closeDatabase(){
-		if(studentInfDBAdapter != null)
-			try{
-				studentInfDBAdapter.close();
-			}catch(NullPointerException e){
-				e.printStackTrace();
-			}
 	}
 	
 	class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{

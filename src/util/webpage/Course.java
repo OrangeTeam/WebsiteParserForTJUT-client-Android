@@ -47,7 +47,7 @@ public class Course implements Cloneable{
 	 * 无参构造方法，各属性设为默认空值
 	 */
 	public Course(){
-		id = -1;
+		id = 0;
 		code = name = classNumber = teachingMaterial = note = kind= null;
 		credit = 0;
 		year = 0;

@@ -218,6 +218,7 @@ public class StudentInfDBAdapter {
 	 * @param theUserName String类型
 	 */
 	public void autoInsertArrayCoursesInf(List<Course> theCourseInf, String theUserName){
+		if(theCourseInf==null || theCourseInf.isEmpty()) return;
 		Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		if(cursor1.getCount() != 0)
 		{
@@ -294,6 +295,7 @@ public class StudentInfDBAdapter {
 	 * @param theUserName  String类型
 	 */
 	public void autoInsertCourseInf(Course theCourseInf, String theUserName){
+		if(theCourseInf == null) return;
 		String code = theCourseInf.getCode();
 		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
 		if(cursor.getCount() == 0)
@@ -333,7 +335,7 @@ public class StudentInfDBAdapter {
 	 * @param thePostInf
 	 */
 	public void autoInsertArrayPostsInf(List<Post> thePostInf){
-		//TODO 防止空表越界
+		if(thePostInf == null || thePostInf.isEmpty()) return;
 		String title = thePostInf.get(0).getTitle();
 		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_TITLE + "= '" + title + "'", null, null, null, null);
 		if(cursor.getCount() == 0)
@@ -344,9 +346,10 @@ public class StudentInfDBAdapter {
 	 * 删除一门课程的所有信息，也就是一条记录。这调记录为courseInf1和courseInf2的相关的一门课程的信息，
 	 * 如courseInf1的_id为1的行进行删除时courseInf2的link为1的行也要进行删除。
 	 * @param theCourseInf 类型为Course类型
-	 * @return boolean,表示删除是否成功。
+	 * @return boolean,表示删除是否成功。<br />另，若theCourseInf为空，返回false。
 	 */
 	public boolean deleteCourseInf(Course theCourseInf){
+		if(theCourseInf == null) return false;
 		int rowIndex = theCourseInf.getId();
 		return (db.delete(DATABASE_COURSE_TABLE1, KEY_ID + "=" + rowIndex, null) > 0)
 				&&(db.delete(DATABASE_COURSE_TABLE2, KEY_LINK + "=" + rowIndex, null) > 0);
@@ -356,9 +359,10 @@ public class StudentInfDBAdapter {
 	/**
 	 * 删除表post中的一条记录，此删除方法是根据参数传递进来的一个Post对象，获得这条消息的标题，从而根据标题进行删除。
 	 * @param thePostInf 类型为Post类型
-	 * @return boolean，表示删除是否已经成功
+	 * @return boolean，表示删除是否已经成功。<br />另，若thePostInf为空，返回false。
 	 */
 	public boolean deletePostInf(Post thePostInf){
+		if(thePostInf == null) return false;
 		String theTitle = thePostInf.getTitle();
 		return db.delete(DATABASE_POST_TABLE, KEY_TITLE + "= '" + theTitle + "'", null) > 0;
 	}
@@ -369,6 +373,7 @@ public class StudentInfDBAdapter {
 	 * @param theCourseInf 类型为Course类型
 	 */
 	public void updateCourseInf(Course theCourseInf){
+		if(theCourseInf == null) return;
 		ContentValues newCourseInfValues1 = new ContentValues();
 		ContentValues newCourseInfValues2 = new ContentValues();
 		ContentValues newCourseInfValues3 = new ContentValues();
@@ -503,6 +508,7 @@ public class StudentInfDBAdapter {
 	 * @param theScoreInf 类型为List<Course>,当出一门课程成绩时生成一个成员的ArrrayList类型，就可以调用此方法进行更新。
 	 */
 	public void updateScoreInf(List<Course> theScoreInf){
+		if(theScoreInf == null || theScoreInf.isEmpty()) return;
 		ContentValues newCourseInfValues1 = new ContentValues();
 		
 		for(Course aScore:theScoreInf){
@@ -885,6 +891,7 @@ public class StudentInfDBAdapter {
 	 * @param thePost。 Post类型
 	 */
 	public void updatePostInf(Post thePost){
+		if(thePost == null) return;
 		ContentValues newPostValue = new ContentValues();
 		Long rowIndex = thePost.getId();
 		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_POST_ID + "=" + rowIndex, null, null, null, null);

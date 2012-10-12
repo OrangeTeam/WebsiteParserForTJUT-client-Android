@@ -86,7 +86,7 @@ public class StudentInfDBAdapter {
 			super(context, name, factory,version);
 		}
 	
-	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key autoincrement,"
+	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key,"
 	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(15)," + KEY_TEACHERS + " varchar(15)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
 	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " integer,"
 	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_USER_NAME + " varchar(8));";
@@ -94,7 +94,7 @@ public class StudentInfDBAdapter {
 	    private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2 + "(" + KEY_LINK + " integer," + KEY_VICEID + " varchar(5) unique,"
 	    + KEY_WEEK + " integer," + KEY_DAY + " integer," + KEY_PERIOD + " integer," + KEY_ADDRESS + " varchar(5));";
 	    
-	    private static final String POST_TABLE_CREATE = "create table " + DATABASE_POST_TABLE + "(" + KEY_POST_ID + " integer primary key autoincrement," 
+	    private static final String POST_TABLE_CREATE = "create table " + DATABASE_POST_TABLE + "(" + KEY_POST_ID + " integer primary key," 
 	    + KEY_SOURCE + " integer," + KEY_CATEGORY + " varchar(35)," + KEY_TITLE + " varchar(35)," + KEY_URL + " varchar(60)," + KEY_AUTHOR + " varchar(15),"
 	    + KEY_DATE + " integer," + KEY_MAINBODY + " text);"; 
 	
@@ -311,6 +311,8 @@ public class StudentInfDBAdapter {
 		ContentValues newPostInfValues = new ContentValues();
 		
 		for(Post aPost:thePostInf){
+			if(aPost.getId() != null)
+				newPostInfValues.put(KEY_POST_ID, aPost.getId());
 			newPostInfValues.put(KEY_SOURCE, aPost.getSource());
 			newPostInfValues.put(KEY_CATEGORY, aPost.getCategory());
 			newPostInfValues.put(KEY_TITLE, aPost.getTitle());
@@ -853,7 +855,7 @@ public class StudentInfDBAdapter {
 		}else{
 			for(int i = 0; i < cursor.getCount(); i++){
 				cursor.moveToPosition(i);
-				int newId = cursor.getInt(0);
+				Long newId = cursor.getLong(0);
 				int newSource = cursor.getInt(1);
 				String newCategory = cursor.getString(2);
 				String newTitle = cursor.getString(3);
@@ -884,7 +886,7 @@ public class StudentInfDBAdapter {
 	 */
 	public void updatePostInf(Post thePost){
 		ContentValues newPostValue = new ContentValues();
-		int rowIndex = thePost.getId();
+		Long rowIndex = thePost.getId();
 		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_POST_ID + "=" + rowIndex, null, null, null, null);
 		cursor.moveToFirst();
 		if(cursor.getString(7) != null)

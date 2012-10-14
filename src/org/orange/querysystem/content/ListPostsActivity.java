@@ -15,6 +15,7 @@
  */
 package org.orange.querysystem.content;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,10 @@ import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListPostsFragment.SimplePost;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
+import com.caucho.hessian.client.HessianProxyFactory;
+import com.caucho.hessian.client.MyHessianURLConnectionFactory;
+
+import util.GetterInterface;
 import util.webpage.Post;
 import util.webpage.ReadPageHelper.OnReadPageListener;
 import util.webpage.SchoolWebpageParser;
@@ -103,8 +108,8 @@ public class ListPostsActivity extends FragmentActivity{
 			}
 		}
 		mPreferences = getPreferences(MODE_PRIVATE);
-		longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 31*24*60*60*1000);
-		updateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 4*24*60*60*1000);
+		longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 31L*24*60*60*1000);
+		updateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 4L*24*60*60*1000);
 		
 		loadPosts();
 	}
@@ -200,7 +205,7 @@ public class ListPostsActivity extends FragmentActivity{
 			ArrayList<Post> result = null;
 			try{
 				database.open();
-				result = database.getPostsFromDB(where[0], StudentInfDBAdapter.KEY_DATE+" DESC", "500");
+				result = database.getPostsFromDB(where[0], StudentInfDBAdapter.KEY_DATE+" DESC", null);
 			} catch (SQLiteException e){
 				Log.e(TAG, "打开数据库异常！");
 				e.printStackTrace();
@@ -230,33 +235,53 @@ public class ListPostsActivity extends FragmentActivity{
 
 		@Override
 		protected Void doInBackground(Integer... params) {
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
-			MyOnReadPageListener readPageListener = new MyOnReadPageListener();
+			List<Post> posts = null;
 			Date lastUpdatedTime = new Date(mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0));
+
+			//准备用Hessian连接GAE代理
+			String url = "http://baijie1991-hrd.appspot.com/getter";
+			HessianProxyFactory factory = new HessianProxyFactory();
+			MyHessianURLConnectionFactory mHessianURLConnectionFactory =
+					new MyHessianURLConnectionFactory();
+			mHessianURLConnectionFactory.setHessianProxyFactory(factory);
+			factory.setConnectionFactory(mHessianURLConnectionFactory);
+			GetterInterface getter;
+			//用Hessian连接GAE代理
 			try {
-				SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener());
-				parser.setOnReadPageListener(readPageListener);
-				List<Post> posts = null;
-				if(params[0] == COMMON_POSTS)
-					posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
-				else
-					posts = parser.parsePosts(lastUpdatedTime, null, -1);
+				getter = (GetterInterface) factory.create(GetterInterface.class, url);
+				posts = getter.getPosts(lastUpdatedTime, null, -1);
+				System.out.println(posts);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			//备用方案
+			if(posts == null){
+				MyOnReadPageListener readPageListener = new MyOnReadPageListener();
+				try {
+					SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener());
+					parser.setOnReadPageListener(readPageListener);
+					if(params[0] == COMMON_POSTS)
+						posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
+					else
+						posts = parser.parsePosts(lastUpdatedTime, null, -1);
+					
+					Log.i(TAG, "共 "+posts.size()+" 条， "+readPageListener.pageNumber+" 页 "+readPageListener.totalSize/1024.0+" KB");
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				} catch (java.io.UnsupportedEncodingException e){
+					e.printStackTrace();
+				} catch (java.io.IOException e){
+					e.printStackTrace();
+				}
+			}
+			if(posts != null){
+				StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
 				database.open();
-				//TODO 防止空posts
 				database.autoInsertArrayPostsInf(posts);
 				mPreferences.edit().putLong(LAST_UPDATED_TIME_KEY, new Date().getTime()).commit();
-				Log.i(TAG, "共 "+posts.size()+" 条， "+readPageListener.pageNumber+" 页 "+readPageListener.totalSize/1024.0+" KB");
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			} catch (java.io.UnsupportedEncodingException e){
-				e.printStackTrace();
-			} catch (java.io.IOException e){
-				e.printStackTrace();
-			} catch (SQLiteException e){
-				Log.e(TAG, "打开数据库异常！");
-				e.printStackTrace();
-			} finally{
 				database.close();
+			}else{
+				Log.e("BaiJie", "更新posts失败");
 			}
 			return null;
 		}

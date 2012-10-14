@@ -80,7 +80,7 @@ public class MyHessianURLConnectionFactory implements HessianConnectionFactory {
     if (log.isLoggable(Level.FINER))
       log.finer(this + " open(" + url + ")");
 
-    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("203.208.46.7", 80));
+    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("203.208.46."+(1+(int)(Math.random()*7.9)), 80));
     URLConnection conn = url.openConnection(proxy);
 
     // HttpURLConnection httpConn = (HttpURLConnection) conn;

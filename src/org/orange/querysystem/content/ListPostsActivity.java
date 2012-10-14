@@ -16,6 +16,7 @@
 package org.orange.querysystem.content;
 
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.orange.querysystem.content.ListPostsFragment.SimplePost;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import com.caucho.hessian.client.HessianProxyFactory;
+import com.caucho.hessian.client.HessianRuntimeException;
 import com.caucho.hessian.client.MyHessianURLConnectionFactory;
 
 import util.GetterInterface;
@@ -240,19 +242,29 @@ public class ListPostsActivity extends FragmentActivity{
 
 			//准备用Hessian连接GAE代理
 			String url = "http://baijie1991-hrd.appspot.com/getter";
+			int maxAttempts = 7;
+			int timeout = 2000;
 			HessianProxyFactory factory = new HessianProxyFactory();
 			MyHessianURLConnectionFactory mHessianURLConnectionFactory =
 					new MyHessianURLConnectionFactory();
 			mHessianURLConnectionFactory.setHessianProxyFactory(factory);
 			factory.setConnectionFactory(mHessianURLConnectionFactory);
+			factory.setConnectTimeout(timeout);
 			GetterInterface getter;
 			//用Hessian连接GAE代理
-			try {
-				getter = (GetterInterface) factory.create(GetterInterface.class, url);
-				posts = getter.getPosts(lastUpdatedTime, null, -1);
-				System.out.println(posts);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+			for(int counter = 1;counter <= maxAttempts;counter++){
+				try {
+					getter = (GetterInterface) factory.create(GetterInterface.class, url);
+					posts = getter.getPosts(lastUpdatedTime, null, -1);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (HessianRuntimeException e){
+					if(e.getCause() instanceof SocketTimeoutException)
+						continue;
+					else
+						e.printStackTrace();
+				}
+				break;
 			}
 			//备用方案
 			if(posts == null){

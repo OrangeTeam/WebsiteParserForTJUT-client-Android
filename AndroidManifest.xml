@@ -45,6 +45,8 @@
 		<activity android:name=".content.AllListCoursesActivity" />
 		<activity android:name=".content.MainMenuActivity" />
 		<activity android:name=".content.CourseInfoActivity"/>
+		<activity android:name=".content.AddCourseInfoActivity"/>
+		<activity android:name=".content.ListScoresActivity"/>
     </application>
 
 </manifest>

@@ -29,6 +29,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 	private int mWeek = 0;
 	private int mDayOfWeek = 0;
 	private int calculate_week = 0;
+	private int period = 0;
 	StudentInfDBAdapter studentInfDBAdapter = null;
 	
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){
@@ -107,14 +108,15 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			Intent intent = new Intent(context, ListCoursesActivity.class);
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.myappwidget);
-			views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
+//			views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
 			views.setTextViewText(R.id.appWidgetTextView, str);
+			views.setTextViewText(R.id.widgetPeriod, "第" + String.valueOf(period) + "节");
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
 	}
 	
 	private int getTime(){
-		int period = 0;
+		period = 0;
 		Calendar calendar = Calendar.getInstance();
 		mMinute = calendar.get(Calendar.MINUTE);
 		mHour = calendar.get(Calendar.HOUR_OF_DAY);

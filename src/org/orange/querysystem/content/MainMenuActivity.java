@@ -49,7 +49,7 @@ public class MainMenuActivity extends Activity{
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
-		for(int i=0; i<6; i++){
+		for(int i=0; i<7; i++){
 			HashMap<String ,Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", R.drawable.week_course_list);//添加图像资源的ID
 			map.put("ItemText", texts[i]);//按序号做ItemText
@@ -81,7 +81,7 @@ public class MainMenuActivity extends Activity{
 				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
 			}
 			if(args3 == 2){
-				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, ListScoresActivity.class));
 			}
 			if(args3 == 3){
 				startActivity(new Intent(MainMenuActivity.this, ListPostsActivity.class));
@@ -91,6 +91,9 @@ public class MainMenuActivity extends Activity{
 			}
 			if(args3 == 5){
 				showDialog(DATE_DIALOG_ID);
+			}
+			if(args3 == 6){
+				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
 			}
 //			if(args3 == 0){
 //				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
@@ -148,7 +151,7 @@ public class MainMenuActivity extends Activity{
 	
 	private static Integer[] imgs = {};
 	
-	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置"};
+	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置", "增加课程"};
 //	private static String[] texts = {"本周课程表", "总课程表","开学时间设置"};
 
 }

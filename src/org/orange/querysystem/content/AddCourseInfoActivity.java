@@ -1,22 +1,19 @@
 package org.orange.querysystem.content;
 
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.AddCourseInfoActivity.UpdateCoursesListToDatabase;
-import org.orange.querysystem.content.AddCourseInfoActivity.UpdateCoursesListToDatabase.MyParserListener;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
+import util.webpage.Course.TimeAndAddress;
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,12 +23,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class CourseInfoActivity extends Activity{
+public class AddCourseInfoActivity extends Activity{
+	private TextView course_name;
+	private TextView course_time_and_adress;
 	private TextView course_code;
 	private TextView course_class_number;
 	private TextView course_teacher;
@@ -48,6 +48,8 @@ public class CourseInfoActivity extends Activity{
 	private EditText course_test_score_input;
 	private EditText course_total_score_input;
 	private EditText course_grade_point_input;
+	private EditText course_name_input;
+	private EditText course_time_and_adress_input;
 	private TextView week;
 	private TextView day_of_week;
 	private TextView period;
@@ -56,20 +58,27 @@ public class CourseInfoActivity extends Activity{
 	private EditText day_of_week_input;
 	private EditText period_input;
 	private EditText classroom_input;
-	private int course_id;
-	private int time_and_adress_counter;
-	private String week_get = "";
-	private String day_of_week_get = "";
-	private String period_get = "";
-	private String classroom_get = "";
+	private Button add;
+	private String[] week_get = new String[10];
+	private String[] day_of_week_get = new String[10];
+	private String[] period_get = new String[10];
+	private String[] classroom_get = new String[10];
+	private int add_num = 1;
 	
 	private static final int DIALOG_TEXT_ENTRY = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.course_info);
+        setContentView(R.layout.add_course_info);
         
+        course_name = (TextView)findViewById(R.id.course_name);
+        course_time_and_adress = (TextView)findViewById(R.id.course_time_and_adress);
+        course_name_input = (EditText)findViewById(R.id.course_name_input);
+        course_time_and_adress_input = (EditText)findViewById(R.id.course_time_and_adress_input);
+        
+        course_name.setText("课程名称：");
+        course_time_and_adress.setText("时间地点1：");
         course_code = (TextView)findViewById(R.id.course_code);
         course_class_number = (TextView)findViewById(R.id.course_class_number);
         course_teacher = (TextView)findViewById(R.id.course_teacher);
@@ -88,15 +97,19 @@ public class CourseInfoActivity extends Activity{
         course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
         
-        SharedPreferences shareData = getSharedPreferences("data", 0);
-    	new ReadCourseInfo().execute(shareData.getString("userName", null));
+        add = (Button)findViewById(R.id.add);
+        add.setText("添加");
+        add.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				add_num++;
+				addTimeAndAddress();
+			}
+		});
         
-        Intent intent = getIntent();
-        course_id = intent.getIntExtra("course_info", 0);
-	}
-	
-	public void showCourse(Course course){
-		course_code.setText("课程代码：");
+        course_code.setText("课程代码：");
 		course_class_number.setText("教学班号：");
 		course_teacher.setText("任课老师：");
 		course_credit.setText( "学        分：");
@@ -104,155 +117,52 @@ public class CourseInfoActivity extends Activity{
 		course_test_score.setText("结课成绩：");
 		course_total_score.setText("期末总评：");
 		course_grade_point.setText("绩        点：");
-		course_code_input.setText(course.getCode());
-		course_class_number_input.setText(course.getClassNumber());
-		course_teacher_input.setText(course.getTeacherString());
-		course_credit_input.setText(String.valueOf(course.getCredit()));
-		course_kind_input.setText(course.getKind());
-		course_test_score_input.setText(String.valueOf(course.getTestScore()));
-		course_total_score_input.setText(String.valueOf(course.getTotalScore()));
-		for(time_and_adress_counter=0; time_and_adress_counter<course.getTimeAndAddress().size(); time_and_adress_counter++){
-			TextView textView = new TextView(this);
-			textView.setText("时间地点" + (time_and_adress_counter+1) + ": ");
-			textView.setId(time_and_adress_counter*2 + 1);
-			textView.setTextSize(18);
-			EditText editText = new EditText(this);
-			editText.setText(course.getTimeAndAddress().get(time_and_adress_counter).toString());
-			editText.setId(time_and_adress_counter*2 + 2);
-			editText.setEnabled(false);
-			editText.setCursorVisible(false);
-			editText.setLongClickable(false);
-//			editText.setEditableFactory(null);
-			editText.setFocusable(false);
+		course_time_and_adress_input.setOnClickListener(new OnClickListener() {
 			
-			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-			if(time_and_adress_counter == 0){
-				tvlp.addRule(RelativeLayout.BELOW, R.id.course_grade_point_input);
-				etlp.addRule(RelativeLayout.BELOW, R.id.course_grade_point_input);
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showDialog(DIALOG_TEXT_ENTRY);
 			}
-			else{
-				tvlp.addRule(RelativeLayout.BELOW, time_and_adress_counter*2 - 1);
-				etlp.addRule(RelativeLayout.BELOW, time_and_adress_counter*2);
-			}
-			tvlp.addRule(RelativeLayout.ALIGN_BASELINE, time_and_adress_counter*2 + 2);
-			etlp.addRule(RelativeLayout.RIGHT_OF, time_and_adress_counter*2 + 1);
-			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(textView, tvlp);
-			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(editText, etlp);
-		}
-		
-		try {
-			course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
-		} catch (CourseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			course_grade_point_input.setText("-1");
-		}
-		
+		});
 	}
 	
-	public class ReadCourseInfo extends AsyncTask<String,Void,Course>{
-		StudentInfDBAdapter studentInfDBAdapter = null;
-		public static final String TAG = "org.orange.querysystem";
-
-		@Override
-		protected Course doInBackground(String... args) {
-			Course result = null;
-			studentInfDBAdapter = new StudentInfDBAdapter(CourseInfoActivity.this);
-			try {
-				studentInfDBAdapter.open();
-				result = studentInfDBAdapter.getCourseFromDB(StudentInfDBAdapter.KEY_ID + "=" + course_id, args[0]);
-			} catch(SQLException e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally{
-				studentInfDBAdapter.close();
-			}
-			
-			return result;
-		}
-
-		@Override
-		protected void onCancelled() {
-			studentInfDBAdapter.close();
-		}
-
-		@Override
-		protected void onPostExecute(Course course){
-			if(course != null)
-				showCourse(course);
-			else{
-				Toast.makeText(CourseInfoActivity.this, "no data in the database!", Toast.LENGTH_LONG).show();			
-			}
-		}
+	public void addTimeAndAddress(){
+		TextView textView = new TextView(this);
+		textView.setText("时间地点" + add_num + ":");
+		textView.setId((add_num-2)*2 + 1);
+		textView.setTextSize(18);
+		EditText editText = new EditText(this);
+		editText.setId((add_num-2)*2 + 2);
+		editText.setCursorVisible(false);
+		editText.setLongClickable(false);
+//		editText.setEditableFactory(null);
+		editText.setFocusable(false);
 		
-		class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
-			 */
+		RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		if((add_num-2) == 0){
+			tvlp.addRule(RelativeLayout.BELOW, R.id.course_time_and_adress_input);
+			etlp.addRule(RelativeLayout.BELOW, R.id.course_time_and_adress_input);
+		}
+		else{
+			tvlp.addRule(RelativeLayout.BELOW, (add_num-2)*2 - 1);
+			etlp.addRule(RelativeLayout.BELOW, (add_num-2)*2);
+		}
+		tvlp.addRule(RelativeLayout.ALIGN_BASELINE, (add_num-2)*2 + 2);
+		etlp.addRule(RelativeLayout.RIGHT_OF, (add_num-2)*2 + 1);
+		((RelativeLayout)findViewById(R.id.relativeLayout)).addView(textView, tvlp);
+		((RelativeLayout)findViewById(R.id.relativeLayout)).addView(editText, etlp);
+		findViewById((add_num-2)*2 + 2).setOnClickListener(new OnClickListener() {
+			
 			@Override
-			public void onError(int code, String message) {
-				Log.e(TAG, message);
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showDialog(DIALOG_TEXT_ENTRY);
 			}
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onWarn(int, java.lang.String)
-			 */
-			@Override
-			public void onWarn(int code, String message) {
-				Log.w(TAG, message);
-			}
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onInformation(int, java.lang.String)
-			 */
-			@Override
-			public void onInformation(int code, String message) {
-				Log.i(TAG, message);
-			}
-		}	
+		});
+		
 	}
-	
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.course_info_change);
-        menu.add(0, 2, 2, R.string.course_info_submit);
-        
-        return super.onCreateOptionsMenu(menu); 
-    }
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	// TODO Auto-generated method stub\
-    	if(item.getItemId() == 1){
-    		course_code_input.setEnabled(true);
-    		course_class_number_input.setEnabled(true);
-    		course_teacher_input.setEnabled(true);
-    		course_credit_input.setEnabled(true);
-    		course_kind_input.setEnabled(true);
-    		course_test_score_input.setEnabled(true);
-    		course_total_score_input.setEnabled(true);
-    		course_grade_point_input.setEnabled(true);
-    		for(int i=0; i < time_and_adress_counter; i++){
-    			findViewById(i*2 + 2).setEnabled(true);
-    			findViewById(i*2 + 2).setOnClickListener(new EditText.OnClickListener(){
-					@Override
-					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("我能行！");
-						showDialog(DIALOG_TEXT_ENTRY);
-						
-					}
-    			});
-    		}
-    	}
-    	else if(item.getItemId() == 2){
-    		updateCoursesListToDatabase();
-    		finish();
-    	}
-    	return super.onMenuItemSelected(featureId, item);
-    }
-    
+
     @Override
     protected Dialog onCreateDialog(int id) {
     	switch(id){
@@ -276,11 +186,17 @@ public class CourseInfoActivity extends Activity{
                          day_of_week_input = (EditText)textEntryView.findViewById(R.id.day_of_week_input);
                          period_input = (EditText)textEntryView.findViewById(R.id.period_input);
                          classroom_input = (EditText)textEntryView.findViewById(R.id.classroom_input);
-                         week_get = week_input.getText().toString();
-                         day_of_week_get = day_of_week_input.getText().toString();
-                         period_get = period_input.getText().toString();
-                         classroom_get = classroom_input.getText().toString();
-                         ((EditText) findViewById(2)).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+                         week_get[add_num-1] = week_input.getText().toString();
+                         day_of_week_get[add_num-1] = day_of_week_input.getText().toString();
+                         period_get[add_num-1] = period_input.getText().toString();
+                         classroom_get[add_num-1] = classroom_input.getText().toString();
+                         if(add_num == 1){
+                    		 course_time_and_adress_input.setText(week_get[add_num-1] + "周" + " " + day_of_week_get[add_num-1] + " " + period_get[add_num-1] + "节" + " " + classroom_get[add_num-1]); 
+                    	 }
+                    	 else
+                    	 {
+                    		 ((EditText)findViewById((add_num-2)*2 + 2)).setText(week_get[add_num-1] + "周" + " " + day_of_week_get[add_num-1] + " " + period_get[add_num-1] + "节" + " " + classroom_get[add_num-1]);
+                    	 }	 
                      }
                  })
                  .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -296,8 +212,8 @@ public class CourseInfoActivity extends Activity{
     
     public void updateCoursesListToDatabase(){
     	
-    	Course course = new Course();
-//        course.setName(course_name_input.getText().toString());
+        Course course = new Course();
+        course.setName(course_name_input.getText().toString());
         course.setCode(course_code_input.getText().toString());
         course.setClassNumber(course_class_number_input.getText().toString());
         course.setTeachers(course_teacher_input.getText().toString());
@@ -305,7 +221,14 @@ public class CourseInfoActivity extends Activity{
 //			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
 //			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
 //	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
-	        course.addTimeAndAddress(week_get, day_of_week_get, period_get, classroom_get);
+        	for(int j=0; j<add_num; j++){
+        		TimeAndAddress timeAndAddress = new TimeAndAddress();
+        		timeAndAddress.addDays(day_of_week_get[j]);
+        		timeAndAddress.addPeriods(period_get[j]);
+        		timeAndAddress.addWeeks(week_get[j]);
+        		timeAndAddress.setAddress(classroom_get[j]);
+        		course.addTimeAndAddress(timeAndAddress);
+        	}
 	        
 		} catch (NumberFormatException e1) {
 			// TODO Auto-generated catch block
@@ -319,6 +242,8 @@ public class CourseInfoActivity extends Activity{
 		 } catch (BitOperateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		 } catch (NullPointerException e){
+			 e.printStackTrace();
 		 }
         course.setKind(course_kind_input.getText().toString());
     	SharedPreferences shareData = getSharedPreferences("data", 0);
@@ -337,7 +262,7 @@ public class CourseInfoActivity extends Activity{
 		protected Void doInBackground(Course... args) {
 			
 			SchoolWebpageParser parser = null;
-			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(CourseInfoActivity.this);
+			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
 			try {
 				parser = new SchoolWebpageParser(new MyParserListener(), "20106135", "20106135");
 				studentInfDBAdapter.open();
@@ -384,4 +309,20 @@ public class CourseInfoActivity extends Activity{
 			}
 		}	
 	}
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 1, R.string.course_info_submit);
+        
+        return super.onCreateOptionsMenu(menu); 
+    }
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	// TODO Auto-generated method stub\
+    	if(item.getItemId() == 1){
+    		updateCoursesListToDatabase();
+    		finish();
+    	}
+    	return super.onMenuItemSelected(featureId, item);
+    }
 }

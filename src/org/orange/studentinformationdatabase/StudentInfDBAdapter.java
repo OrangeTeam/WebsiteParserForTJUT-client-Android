@@ -271,7 +271,7 @@ public class StudentInfDBAdapter {
 		newCourseInfValues.put(KEY_NOTE, theCourseInf.getNote());
 		newCourseInfValues.put(KEY_USER_NAME, theUserName);
 		
-		db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues);
+		theCourseInf.setId((int)db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues));
 	}
 	
 	/**
@@ -281,7 +281,9 @@ public class StudentInfDBAdapter {
 	private void insertCourseToCourseInf2(Course theCourseInf){
 		ContentValues newCourseInfTAValues = new ContentValues();
 		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_ID + "=" + theCourseInf.getId(), null, null, null, null);
-		cursor.moveToFirst();
+		
+		System.err.println("count: "+cursor.getCount()+"\nmovetofirst"+cursor.moveToFirst());
+		
 		
 		for(int i=0; i < theCourseInf.getTimeAndAddress().size(); i++){
 			newCourseInfTAValues.put(KEY_LINK, cursor.getInt(0));

@@ -16,6 +16,8 @@
     <string name="main_menu">主菜单</string>
     <string name="settings">设置</string>
     <string name="refresh">刷新</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">Cancel</string>
 
     <string name="course_query">课程表</string>
     <string name="score_query">成绩单</string>

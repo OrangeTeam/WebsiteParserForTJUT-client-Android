@@ -2,22 +2,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="220dp"
     android:layout_height="74dp"
-    android:padding="10dp"
-    android:background="#000" 
-    android:alpha="70">  
+    android:background="@drawable/desk_bg" 
+    android:alpha="100">  
     <TextView 
         android:text="此时无课程！"
         android:id="@+id/appWidgetTextView"
-        android:layout_width="146dp"
+        android:layout_width="130dp"
         android:layout_height="fill_parent"
         android:textSize="15dp"
         android:textColor="#fff"
-        android:background="#050"
+        android:alpha="100"
         android:gravity="center"/>
-    <Button 
+    <!-- <Button 
         android:id="@+id/widgetButton"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_toRightOf="@+id/appWidgetTextView"
-        android:text="进入"/> 	
+        android:textColor="#111"
+        android:textSize="20dp"
+        android:text="进入"/> 	 -->
+    <TextView 
+        android:id="@+id/widgetPeriod"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_toRightOf="@+id/appWidgetTextView"
+        android:gravity="center"
+        android:textColor="#fff"
+        android:textSize="15dp"/>
 </RelativeLayout>

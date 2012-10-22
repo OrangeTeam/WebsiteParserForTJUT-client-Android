@@ -241,8 +241,8 @@ public class ListPostsActivity extends FragmentActivity{
 			Date lastUpdatedTime = new Date(mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0));
 
 			//准备用Hessian连接GAE代理
-			String url = "http://baijie1991-hrd.appspot.com/getter";
-			int maxAttempts = 7;
+			String url = "http://schoolwebpageparser.appspot.com/getter";
+			int maxAttempts = 10;
 			int timeout = 2000;
 			HessianProxyFactory factory = new HessianProxyFactory();
 			MyHessianURLConnectionFactory mHessianURLConnectionFactory =

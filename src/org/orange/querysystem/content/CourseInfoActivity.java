@@ -132,7 +132,7 @@ public class CourseInfoActivity extends Activity{
 			editText.setFocusable(false);
 			
 			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			if(time_and_adress_counter == 0){
 				tvlp.addRule(RelativeLayout.BELOW, R.id.course_grade_point_input);
 				etlp.addRule(RelativeLayout.BELOW, R.id.course_grade_point_input);

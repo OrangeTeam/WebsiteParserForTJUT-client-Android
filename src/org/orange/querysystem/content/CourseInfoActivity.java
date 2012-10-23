@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class CourseInfoActivity extends Activity{
+	private TextView course_name;
 	private TextView course_code;
 	private TextView course_class_number;
 	private TextView course_teacher;
@@ -40,6 +41,7 @@ public class CourseInfoActivity extends Activity{
 	private TextView course_test_score;
 	private TextView course_total_score;
 	private TextView course_grade_point;
+	private EditText course_name_input;
 	private EditText course_code_input;
 	private EditText course_class_number_input;
 	private EditText course_teacher_input;
@@ -70,6 +72,7 @@ public class CourseInfoActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.course_info);
         
+        course_name = (TextView)findViewById(R.id.course_name);
         course_code = (TextView)findViewById(R.id.course_code);
         course_class_number = (TextView)findViewById(R.id.course_class_number);
         course_teacher = (TextView)findViewById(R.id.course_teacher);
@@ -79,6 +82,7 @@ public class CourseInfoActivity extends Activity{
         course_total_score = (TextView)findViewById(R.id.course_total_score);
         course_grade_point = (TextView)findViewById(R.id.course_grade_point);
         
+        course_name_input = (EditText)findViewById(R.id.course_name_input);
         course_code_input = (EditText)findViewById(R.id.course_code_input);
         course_class_number_input = (EditText)findViewById(R.id.course_class_number_input);
         course_teacher_input = (EditText)findViewById(R.id.course_teacher_input);
@@ -96,6 +100,7 @@ public class CourseInfoActivity extends Activity{
 	}
 	
 	public void showCourse(Course course){
+		course_name.setText("课程名称：");
 		course_code.setText("课程代码：");
 		course_class_number.setText("教学班号：");
 		course_teacher.setText("任课老师：");
@@ -104,6 +109,7 @@ public class CourseInfoActivity extends Activity{
 		course_test_score.setText("结课成绩：");
 		course_total_score.setText("期末总评：");
 		course_grade_point.setText("绩        点：");
+		course_name_input.setText(course.getName());
 		course_code_input.setText(course.getCode());
 		course_class_number_input.setText(course.getClassNumber());
 		course_teacher_input.setText(course.getTeacherString());
@@ -225,6 +231,7 @@ public class CourseInfoActivity extends Activity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
+    		course_name_input.setEnabled(true);
     		course_code_input.setEnabled(true);
     		course_class_number_input.setEnabled(true);
     		course_teacher_input.setEnabled(true);
@@ -297,7 +304,7 @@ public class CourseInfoActivity extends Activity{
     public void updateCoursesListToDatabase(){
     	
     	Course course = new Course();
-//        course.setName(course_name_input.getText().toString());
+        course.setName(course_name_input.getText().toString());
         course.setCode(course_code_input.getText().toString());
         course.setClassNumber(course_class_number_input.getText().toString());
         course.setTeachers(course_teacher_input.getText().toString());

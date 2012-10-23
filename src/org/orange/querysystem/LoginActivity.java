@@ -7,9 +7,11 @@ import org.orange.querysystem.content.ListCoursesActivity;
 
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -17,14 +19,19 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +52,7 @@ public class LoginActivity extends Activity{
 		
 	public static final String TAG = "org.orange.querysystem";
 	static final int DATE_DIALOG_ID = 1;
+	static final int DATE_DIALOG_PROMPT = 2;
 	private static final int LOGIN_TIME_OUT = 3000;//3s
 	   
 	@Override
@@ -71,8 +79,15 @@ public class LoginActivity extends Activity{
         title.setText(R.string.title);
         userName.setText(R.string.userName);
         password.setText(R.string.password);
-        
         SharedPreferences shareData = getSharedPreferences("data", 0);
+        if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
+        	Editor editor = getSharedPreferences("data", 0).edit();
+            editor.putString("start_year", "0");
+            editor.putString("start_month", "0");
+            editor.putString("start_day", "0");
+            editor.commit();
+        }
+        
         userNameBox.setText(shareData.getString("userName", null));
         if(shareData.getBoolean("logIn_auto", false)){
         	autoDengLu.setChecked(true);
@@ -84,13 +99,22 @@ public class LoginActivity extends Activity{
         }else{
         	passwordBox.setText("");
         }	    
-        if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
-        	//TODO 时间选择时判断有效的日期
-        	showDialog(DATE_DIALOG_ID);
+        if(shareData.getString("start_year", null) == "0" || shareData.getString("start_month", null) == "0" || shareData.getString("start_day", null) == "0" ){
+//        	//TODO 时间选择时判断有效的日期
+//        	showDialog(DATE_DIALOG_ID);
+        	showDialog(DATE_DIALOG_PROMPT);
+        	startTime.setText("开课时间：请点击此处设置第一天开课日期！");
+        }else{
+        	startTime.setText("开课时间：" + shareData.getString("start_year", null) + "年" + shareData.getString("start_month", null) + "月" + shareData.getString("start_day", null) + "日");
         }
-        else{
-        	startTime.setText("开学时间：" + shareData.getString("start_year", null) + "年" + shareData.getString("start_month", null) + "月" + shareData.getString("start_day", null) + "日");
-        }
+        startTime.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showDialog(DATE_DIALOG_ID);
+			}
+		});
     }      
 	   
 	@Override   
@@ -100,6 +124,33 @@ public class LoginActivity extends Activity{
                 return new DatePickerDialog(this,
                             mDateSetListener,
                             mYear, mMonth, mDayOfMonth);
+            case DATE_DIALOG_PROMPT:
+            	LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
+            	RelativeLayout relativeLayout = new RelativeLayout(LoginActivity.this);
+            	relativeLayout.setLayoutParams(params);
+            	TextView textView = new TextView(LoginActivity.this);
+           	 	textView.setText("请先设置开课时间，以保证日课程和周课程能正常显示！");
+           	 	RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+           	 	relativeLayout.addView(textView, tvlp);
+           	 	return new AlertDialog.Builder(this)
+                 //.setIconAttribute(android.R.attr.alertDialogIcon)
+//                 .setTitle(R.string.alert_dialog_text_entry)
+                 .setView(relativeLayout)
+                 .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                       	 
+                            /* User clicked OK so do some stuff */
+                       	 	
+                       	 	showDialog(DATE_DIALOG_ID);
+                        }
+                    })
+//                    .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int whichButton) {
+//
+//                            /* User clicked cancel so do some stuff */
+//                        }
+//                    })
+                    .create();
         }
         return null;
     }    
@@ -123,7 +174,7 @@ public class LoginActivity extends Activity{
                 	calendar_2.set(year_choice, month_choice, day_choice);
                 	if(calendar_2.get(Calendar.YEAR) > mYear || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) < 0 || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) > 22*7){
                 		Toast.makeText(LoginActivity.this, "此为不恰当的开学日期，请重新设置！", Toast.LENGTH_LONG).show();
-                		startTime.setText("开学时间：请登录后进入主菜单设置！");
+                		startTime.setText("开课时间：请点击此处设置第一天开课日期！");
                 	}
                 	else{
                 		Editor editor = getSharedPreferences("data", 0).edit();
@@ -131,7 +182,7 @@ public class LoginActivity extends Activity{
                         editor.putString("start_month", Integer.toString(month_choice+1));
                         editor.putString("start_day", Integer.toString(day_choice));
                         editor.commit();
-                        startTime.setText("开学时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
+                        startTime.setText("开课时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
                 	}
                 	
                 }

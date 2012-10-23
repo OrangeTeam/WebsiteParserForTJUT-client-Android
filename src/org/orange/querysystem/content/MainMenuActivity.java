@@ -151,7 +151,7 @@ public class MainMenuActivity extends Activity{
 	
 	private static Integer[] imgs = {};
 	
-	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置", "增加课程"};
+	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程"};
 //	private static String[] texts = {"本周课程表", "总课程表","开学时间设置"};
 
 }

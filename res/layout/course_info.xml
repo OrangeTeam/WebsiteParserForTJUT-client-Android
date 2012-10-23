@@ -11,17 +11,33 @@
 	    android:orientation="vertical"
 	    android:layout_margin="20dp" >
 	    <TextView 
-	        android:id="@+id/course_code"
+	        android:id="@+id/course_name"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_marginTop="15dp"
+	   	 	android:layout_alignBaseline="@+id/course_name_input"
+	   	 	android:textSize="18dp"/>
+	    <EditText 
+	        android:id="@+id/course_name_input"
+	        android:layout_width="fill_parent"
+	   	 	android:layout_height="wrap_content"
+	   	 	android:layout_marginTop="15dp"
+	   	 	android:layout_toRightOf="@+id/course_name"
+	   	 	android:enabled="false"/>
+	    <TextView 
+	        android:id="@+id/course_code"
+	        android:layout_width="wrap_content"
+	   	 	android:layout_height="wrap_content"
+	   	 	android:layout_below="@+id/course_name_input"
+	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_code_input"
 	   	 	android:textSize="18dp"/>
 	    <EditText 
 	        android:id="@+id/course_code_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_marginTop="15dp"
+	   	 	android:layout_below="@+id/course_name_input"
+	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_toRightOf="@+id/course_code"
 	   	 	android:enabled="false"/>
 	    <TextView 

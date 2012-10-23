@@ -1,11 +1,11 @@
 package org.orange.querysystem.content;
 
+import org.orange.querysystem.CourseAndUser;
 import org.orange.querysystem.R;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
-import util.webpage.Course.CourseException;
 import util.webpage.Course.TimeAndAddress;
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.SchoolWebpageParser;
@@ -22,8 +22,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -98,7 +98,7 @@ public class AddCourseInfoActivity extends Activity{
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
         
         add = (Button)findViewById(R.id.add);
-        add.setText("添加");
+//        add.setText("添加");
         add.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -128,7 +128,7 @@ public class AddCourseInfoActivity extends Activity{
 	
 	public void addTimeAndAddress(){
 		TextView textView = new TextView(this);
-		textView.setText("时间地点" + add_num + ":");
+		textView.setText("时间地点" + add_num + "：");
 		textView.setId((add_num-2)*2 + 1);
 		textView.setTextSize(18);
 		EditText editText = new EditText(this);
@@ -248,25 +248,26 @@ public class AddCourseInfoActivity extends Activity{
         course.setKind(course_kind_input.getText().toString());
     	SharedPreferences shareData = getSharedPreferences("data", 0);
         String userName = shareData.getString("userName", null);
-//        String password = shareData.getString("password", null);
-        new UpdateCoursesListToDatabase().execute(course);
+        String password = shareData.getString("password", null);
+        CourseAndUser courseAndUser = new CourseAndUser(course, userName, password);
+        new UpdateCoursesListToDatabase().execute(courseAndUser);
     }
     
-    class UpdateCoursesListToDatabase extends AsyncTask<Course,Void,Void>{
+    class UpdateCoursesListToDatabase extends AsyncTask<CourseAndUser,Void,Void>{
 		
 		public static final String TAG = "org.orange.querysystem";
 		public static final int PARSE_COURSE = 1;
 		public static final int PARSE_SCORE = 2;
 
 		@Override
-		protected Void doInBackground(Course... args) {
+		protected Void doInBackground(CourseAndUser... args) {
 			
 			SchoolWebpageParser parser = null;
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
 			try {
-				parser = new SchoolWebpageParser(new MyParserListener(), "20106135", "20106135");
+				parser = new SchoolWebpageParser(new MyParserListener(), args[0].getUserName(), args[0].getPassword());
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertCourseInf(args[0], "20106135");
+				studentInfDBAdapter.autoInsertCourseInf(args[0].getCourse(), args[0].getUserName());
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

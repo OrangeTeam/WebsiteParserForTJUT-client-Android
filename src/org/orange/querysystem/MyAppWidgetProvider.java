@@ -109,8 +109,14 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.myappwidget);
 //			views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
-			views.setTextViewText(R.id.appWidgetTextView, str);
-			views.setTextViewText(R.id.widgetPeriod, "第" + String.valueOf(period) + "节");
+			if(str == " "){
+				views.setTextViewText(R.id.appWidgetTextView, "此时无课程！");
+				views.setTextViewText(R.id.widgetPeriod, "");
+			}else{
+				views.setTextViewText(R.id.appWidgetTextView, str);
+				views.setTextViewText(R.id.widgetPeriod, "第" + String.valueOf(period) + "节");
+			}
+			
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
 	}

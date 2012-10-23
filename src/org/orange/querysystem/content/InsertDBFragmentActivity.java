@@ -71,7 +71,7 @@ public class InsertDBFragmentActivity extends Activity{
 		@Override
 		protected void onPostExecute(Void course){
 			progressBar.setVisibility( ProgressBar.GONE);
-			refresh.setText("数据库刷新成功！");
+			finish();
 		}
 		
 		class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{

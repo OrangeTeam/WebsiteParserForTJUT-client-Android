@@ -33,7 +33,6 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try {
 			studentInfDBAdapter.open();
-//			System.out.println(args[0]);
 			result = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0, null, args[0]);
 		} catch(SQLException e){
 			// TODO Auto-generated catch block
@@ -55,7 +54,7 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 		if(courses != null)
 			listener.onPostReadFromDB(courses);	
 		else{
-			Toast.makeText(context, "no data in the database!", Toast.LENGTH_LONG).show();			
+			Toast.makeText(context, "数据库无数据，请刷新！", Toast.LENGTH_LONG).show();			
 		}
 	}
 	

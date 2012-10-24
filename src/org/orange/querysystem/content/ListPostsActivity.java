@@ -27,7 +27,7 @@ import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.caucho.hessian.client.HessianRuntimeException;
-import com.caucho.hessian.client.MyHessianURLConnectionFactory;
+import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
 
 import util.GetterInterface;
 import util.webpage.Post;
@@ -245,10 +245,10 @@ public class ListPostsActivity extends FragmentActivity{
 			int maxAttempts = 10;
 			int timeout = 2000;
 			HessianProxyFactory factory = new HessianProxyFactory();
-			MyHessianURLConnectionFactory mHessianURLConnectionFactory =
-					new MyHessianURLConnectionFactory();
-			mHessianURLConnectionFactory.setHessianProxyFactory(factory);
-			factory.setConnectionFactory(mHessianURLConnectionFactory);
+			MyHessianSocketConnectionFactory mHessianSocketConnectionFactory =
+					new MyHessianSocketConnectionFactory();
+			mHessianSocketConnectionFactory.setHessianProxyFactory(factory);
+			factory.setConnectionFactory(mHessianSocketConnectionFactory);
 			factory.setConnectTimeout(timeout);
 			GetterInterface getter;
 			//用Hessian连接GAE代理

@@ -250,6 +250,7 @@ public class ListPostsActivity extends FragmentActivity{
 			mHessianSocketConnectionFactory.setHessianProxyFactory(factory);
 			factory.setConnectionFactory(mHessianSocketConnectionFactory);
 			factory.setConnectTimeout(timeout);
+			factory.setReadTimeout(timeout);
 			GetterInterface getter;
 			//用Hessian连接GAE代理
 			for(int counter = 1;counter <= maxAttempts;counter++){
@@ -258,9 +259,11 @@ public class ListPostsActivity extends FragmentActivity{
 					posts = getter.getPosts(lastUpdatedTime, null, -1);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
-				} catch (HessianRuntimeException e){
-					if(e.getCause() instanceof SocketTimeoutException)
+				} catch (Exception e){
+					if(e.getCause() instanceof SocketTimeoutException){
+						System.out.println("SocketTimeoutException"+e.getMessage());
 						continue;
+					}
 					else
 						e.printStackTrace();
 				}

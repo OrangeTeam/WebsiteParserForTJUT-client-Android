@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.orange.querysystem.AboutActivity;
+import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListPostsFragment.SimplePost;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -35,9 +37,14 @@ import util.webpage.ReadPageHelper.OnReadPageListener;
 import util.webpage.SchoolWebpageParser;
 
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,11 +52,15 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author Bai Jie
@@ -60,6 +71,7 @@ public class ListPostsActivity extends FragmentActivity{
 	private static final String TAG = ListPostsActivity.class.getName();
 	private static final String LAST_UPDATED_TIME_KEY = "LAST_UPDATED_TIME_KEY";
 	
+	private int start_resume = 0;
 	private TextView currentTime;
 	TabHost mTabHost;
 	ViewPager  mViewPager;
@@ -339,5 +351,70 @@ public class ListPostsActivity extends FragmentActivity{
 				Log.i(TAG, message);
 			}
 		}
+	}
+	
+	public boolean isNetworkConnected(){
+    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		if(networkInfo !=null && networkInfo.isConnected()){
+			return true;
+		}
+		else{
+		    return false;
+		}
+    }
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 1, R.string.main_menu);
+        menu.add(0, 2, 2, R.string.change_number);
+        menu.add(0, 3, 3, R.string.settings);
+        menu.add(0, 4, 4, R.string.refresh);
+        menu.add(0, 5, 5, R.string.about);
+        return super.onCreateOptionsMenu(menu); 
+    }
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    	// TODO Auto-generated method stub\
+    	if(item.getItemId() == 1){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
+    		startActivity(new Intent(this, MainMenuActivity.class));
+    	}
+    	else if(item.getItemId() == 2){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+    		editor.putBoolean("logIn_auto", false);
+    		editor.commit();
+    		startActivity(new Intent(this, LoginActivity.class));
+    	}
+    	else if(item.getItemId() == 3){
+//    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    	}
+    	else if(item.getItemId() == 4){
+    		if(isNetworkConnected()){
+    			start_resume = 1;
+        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
+        		//TODO startActivity后不会继续运行
+//        		readDB();
+            }
+            else{
+            	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+            }
+    	}
+    	else if(item.getItemId() == 5){
+    		startActivity(new Intent(this, AboutActivity.class));
+    	}
+    	return super.onMenuItemSelected(featureId, item);
+    }
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

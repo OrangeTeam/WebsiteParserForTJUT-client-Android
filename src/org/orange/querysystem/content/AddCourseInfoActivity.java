@@ -14,10 +14,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -321,9 +323,22 @@ public class AddCourseInfoActivity extends Activity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
     		updateCoursesListToDatabase();
     		finish();
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
+    
+    @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

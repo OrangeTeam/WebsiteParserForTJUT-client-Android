@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 
@@ -15,18 +16,24 @@ import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.Student;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class StudentInfoActivity extends Activity{
 	private TextView studentNumber, name, gender, birth, lengthOfSchooling, admissionDate;
 	private TextView schoolName, profession, className, photo;
+	private int start_resume = 0;
 	private static final String FILE_NAME = "student_info.txt";
 	
 	@Override
@@ -135,7 +142,8 @@ public class StudentInfoActivity extends Activity{
         menu.add(0, 1, 1, R.string.main_menu);
         menu.add(0, 2, 2, R.string.change_number);
         menu.add(0, 3, 3, R.string.settings);
-        menu.addSubMenu(0, 4, 4, R.string.about);
+        menu.add(0, 4, 4, R.string.refresh);
+        menu.add(0, 5, 5, R.string.about);
         
         return super.onCreateOptionsMenu(menu); 
     }
@@ -143,6 +151,9 @@ public class StudentInfoActivity extends Activity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();		
     		startActivity(new Intent(this, MainMenuActivity.class));
     	}
     	else if(item.getItemId() == 2){
@@ -155,8 +166,40 @@ public class StudentInfoActivity extends Activity{
 //    		startActivity(new Intent(this, AllListCoursesActivity.class));
     	}
     	else if(item.getItemId() == 4){
-    		
+    		if(isNetworkConnected()){
+    			start_resume = 1;
+        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
+        		//TODO startActivity后不会继续运行
+//        		readDB();
+            }
+            else{
+            	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+            }
+    	}
+    	else if(item.getItemId() == 5){
+    		startActivity(new Intent(this, AboutActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
+    
+    public boolean isNetworkConnected(){
+    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		if(networkInfo !=null && networkInfo.isConnected()){
+			return true;
+		}
+		else{
+		    return false;
+		}
+    }
+    
+    @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

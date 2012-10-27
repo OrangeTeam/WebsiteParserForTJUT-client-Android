@@ -41,6 +41,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -156,6 +157,9 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
+    		Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
     		startActivity(new Intent(this, MainMenuActivity.class));
     	}
     	else if(item.getItemId() == 2){
@@ -195,4 +199,24 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		}
     }
 
+    @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Editor editor = getSharedPreferences("data", 0).edit();
+			editor.putString("passMainMenu", "true");
+            editor.commit();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+    
+    @Override
+	protected void onResume(){
+		super.onResume();
+		if(start_resume == 0){
+			
+		}
+		else if(start_resume == 1){
+			readDB();
+		}
+	}
 }

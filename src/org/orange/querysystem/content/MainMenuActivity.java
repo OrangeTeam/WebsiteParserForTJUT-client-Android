@@ -10,8 +10,10 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -28,15 +30,27 @@ public class MainMenuActivity extends Activity{
 	private int mMonth = 0;
 	private int mDayOfMonth = 0;
 	private int mDayOfYear = 0;
+	private int exit = 0;
 	
 	
 	static final int DATE_DIALOG_ID = 1;	
 	
 	@Override
+	public void onResume(){
+		super.onResume();
+		exit = 0;
+	}
+	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
 		
+		SharedPreferences shareData = getSharedPreferences("data", 0);
+		if(shareData.getString("passMainMenu", null) == null || shareData.getString("passMainMenu", null) == "false"){
+			startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+		}else{
+			
+		}
 		title = (TextView)findViewById(R.id.title);
 		gridView = (GridView)findViewById(R.id.gridView);
 		title.setText("主菜单");
@@ -95,15 +109,6 @@ public class MainMenuActivity extends Activity{
 			if(args3 == 6){
 				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
 			}
-//			if(args3 == 0){
-//				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
-//			}
-//			if(args3 == 1){
-//				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
-//			}
-//			if(args3 == 2){
-//				showDialog(DATE_DIALOG_ID);
-//			}
 		}
 	}
 	
@@ -153,5 +158,21 @@ public class MainMenuActivity extends Activity{
 	
 	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程"};
 //	private static String[] texts = {"本周课程表", "总课程表","开学时间设置"};
-
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			if(exit == 0){
+				Toast.makeText(this, "再一次点击返回键退出程序", Toast.LENGTH_SHORT).show();
+				exit++;
+				return false;
+			}else{
+				Editor editor = getSharedPreferences("data", 0).edit();
+                editor.putString("passMainMenu", "false");
+                editor.commit();
+				finish();
+			}
+			
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

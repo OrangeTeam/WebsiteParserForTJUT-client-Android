@@ -26,8 +26,8 @@
         <activity android:name=".LoginActivity"/>
 		<activity
             android:screenOrientation="portrait"
-            android:label="学生查询系统"
-            android:name=".content.ListCoursesActivity" >
+            android:label="学生信息查询系统"
+            android:name=".content.MainMenuActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -40,10 +40,10 @@
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@android:style/Theme.Dialog"/>
         <activity android:name=".content.ListPostsActivity" />
+        <activity android:name=".content.ListCoursesActivity" />
 -       <activity android:name=".content.ShowOnePostActivity" />
 -       <activity android:name=".content.StudentInfoActivity" />
 		<activity android:name=".content.AllListCoursesActivity" />
-		<activity android:name=".content.MainMenuActivity" />
 		<activity android:name=".content.CourseInfoActivity"/>
 		<activity android:name=".content.AddCourseInfoActivity"/>
 		<activity android:name=".content.ListScoresActivity"/>

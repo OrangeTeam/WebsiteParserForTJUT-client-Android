@@ -82,9 +82,9 @@ public class LoginActivity extends Activity{
         SharedPreferences shareData = getSharedPreferences("data", 0);
         if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
         	Editor editor = getSharedPreferences("data", 0).edit();
-            editor.putString("start_year", "0");
-            editor.putString("start_month", "0");
-            editor.putString("start_day", "0");
+            editor.putString("start_year", String.valueOf(mYear));
+            editor.putString("start_month", String.valueOf(mMonth));
+            editor.putString("start_day", String.valueOf(mDayOfMonth));
             editor.commit();
         }
         

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">学生查询系统</string>
+    <string name="app_name">学生信息查询系统</string>
     <string name="menu_refresh">refresh</string>
 	<string name="menu_settings">setting</string>    
     <string name="userName">学号： </string>

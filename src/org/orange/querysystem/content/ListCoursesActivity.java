@@ -124,7 +124,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){
-    	mTabHost.clearAllTabs();
+		mTabsAdapter.clear();
     	SharedPreferences shareData = getSharedPreferences("data", 0);
     	Calendar calendar_2 = Calendar.getInstance();
     	//解决在周日会跳到下一周的问题

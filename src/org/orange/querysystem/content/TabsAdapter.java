@@ -96,6 +96,14 @@ public class TabsAdapter extends FragmentPagerAdapter
         mTabHost.addTab(tabSpec);
         notifyDataSetChanged();
     }
+	/**
+	 * 清空Tabs
+	 */
+	public void clear(){
+		mTabs.clear();
+		mTabHost.clearAllTabs();
+		notifyDataSetChanged();
+	}
 
     @Override
     public int getCount() {

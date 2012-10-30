@@ -26,7 +26,6 @@ import org.orange.querysystem.content.ListPostsFragment.SimplePost;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import com.caucho.hessian.client.HessianProxyFactory;
-import com.caucho.hessian.client.HessianRuntimeException;
 import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
 
 import util.GetterInterface;
@@ -68,7 +67,8 @@ public class ListPostsActivity extends FragmentActivity{
 	SharedPreferences mPreferences = null;
 	long longUpdateInterval = 0;
 	long updateInterval = 0;
-	
+	LoadPostsListFromDatabase mLoaderFromDB;
+	UpdatePostsListToDatabase mWebUpdaterToDB;
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -112,8 +112,21 @@ public class ListPostsActivity extends FragmentActivity{
 		mPreferences = getPreferences(MODE_PRIVATE);
 		longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 31L*24*60*60*1000);
 		updateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 4L*24*60*60*1000);
-		
+	}
+
+	@Override
+	protected void onStart() {
 		loadPosts();
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		if(mWebUpdaterToDB != null)
+			mWebUpdaterToDB.cancel(false);
+		if(mLoaderFromDB != null)
+			mLoaderFromDB.cancel(false);
+		super.onStop();
 	}
 
 	/* (non-Javadoc)
@@ -183,6 +196,10 @@ public class ListPostsActivity extends FragmentActivity{
 		return;
 	}
 
+	public void clear(){
+		mTabsAdapter.clear();
+	}
+
 	public void loadPosts(){
 		long lastUpdatedTime = mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0);
 		long now = new Date().getTime();
@@ -191,23 +208,33 @@ public class ListPostsActivity extends FragmentActivity{
 				Log.v(TAG, "第一次更新");
 				//警告
 			}
-			new UpdatePostsListToDatabase().execute(UpdatePostsListToDatabase.ALL_POSTS);
+			mWebUpdaterToDB = new UpdatePostsListToDatabase();
+			mWebUpdaterToDB.execute(UpdatePostsListToDatabase.ALL_POSTS);
 		}else if(now - lastUpdatedTime > updateInterval){
-			new UpdatePostsListToDatabase().execute(UpdatePostsListToDatabase.COMMON_POSTS);
+			mWebUpdaterToDB = new UpdatePostsListToDatabase();
+			mWebUpdaterToDB.execute(UpdatePostsListToDatabase.COMMON_POSTS);
 		}
-		//TODO 这里是读取的旧的
-		new LoadPostsListFromDatabase().execute("");
+		else{
+			if(mLoaderFromDB != null)
+				mLoaderFromDB.cancel(false);
+			mLoaderFromDB = new LoadPostsListFromDatabase();
+			mLoaderFromDB.execute(null, null);
+		}
 	}
-
+	/**
+	 * 用法：new LoadPostsListFromDatabase.execute(where, limit);
+	 * @author Bai Jie
+	 *
+	 */
 	private class LoadPostsListFromDatabase extends AsyncTask<String, Void, ArrayList<Post>>{
+		StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
 
 		@Override
-		protected ArrayList<Post> doInBackground(String... where) {
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
+		protected ArrayList<Post> doInBackground(String... sqlParms) {
 			ArrayList<Post> result = null;
 			try{
 				database.open();
-				result = database.getPostsFromDB(where[0], StudentInfDBAdapter.KEY_DATE+" DESC", null);
+				result = database.getPostsFromDB(sqlParms[0], StudentInfDBAdapter.KEY_DATE+" DESC", sqlParms[1]);
 			} catch (SQLiteException e){
 				Log.e(TAG, "打开数据库异常！");
 				e.printStackTrace();
@@ -216,6 +243,7 @@ public class ListPostsActivity extends FragmentActivity{
 				e.printStackTrace();
 			} finally{
 				database.close();
+				database = null;
 			}
 			return result;
 		}
@@ -225,8 +253,17 @@ public class ListPostsActivity extends FragmentActivity{
 		 */
 		@Override
 		protected void onPostExecute(ArrayList<Post> result) {
-			if(result != null)
+			if(result != null){
+				clear();
 				addPostsListFromMultipleSource(result);
+			}
+		}
+
+		@Override
+		protected void onCancelled(ArrayList<Post> result) {
+			if(database != null)
+				database.close();
+			mLoaderFromDB = null;
 		}
 		
 	}
@@ -237,13 +274,14 @@ public class ListPostsActivity extends FragmentActivity{
 
 		@Override
 		protected Void doInBackground(Integer... params) {
+			boolean isCommonUpdate = params[0] == COMMON_POSTS;
 			List<Post> posts = null;
 			Date lastUpdatedTime = new Date(mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0));
 
 			//准备用Hessian连接GAE代理
 			String url = "http://schoolwebpageparser.appspot.com/getter";
 			int maxAttempts = 10;
-			int timeout = 2000;
+			int timeout = isCommonUpdate?2000:4000;
 			HessianProxyFactory factory = new HessianProxyFactory();
 			MyHessianSocketConnectionFactory mHessianSocketConnectionFactory =
 					new MyHessianSocketConnectionFactory();
@@ -261,7 +299,7 @@ public class ListPostsActivity extends FragmentActivity{
 					e.printStackTrace();
 				} catch (Exception e){
 					if(e.getCause() instanceof SocketTimeoutException){
-						System.out.println("SocketTimeoutException"+e.getMessage());
+						Log.i(TAG, "SocketTimeoutException"+e.getMessage());
 						continue;
 					}
 					else
@@ -275,7 +313,7 @@ public class ListPostsActivity extends FragmentActivity{
 				try {
 					SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener());
 					parser.setOnReadPageListener(readPageListener);
-					if(params[0] == COMMON_POSTS)
+					if(isCommonUpdate)
 						posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
 					else
 						posts = parser.parsePosts(lastUpdatedTime, null, -1);
@@ -299,6 +337,14 @@ public class ListPostsActivity extends FragmentActivity{
 				Log.e("BaiJie", "更新posts失败");
 			}
 			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if(mLoaderFromDB != null)
+				mLoaderFromDB.cancel(false);
+			mLoaderFromDB = new LoadPostsListFromDatabase();
+			mLoaderFromDB.execute(null, null);
 		}
 
 		private class MyOnReadPageListener implements OnReadPageListener{

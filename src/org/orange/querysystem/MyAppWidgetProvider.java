@@ -37,10 +37,10 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		long triggerAtTime = SystemClock.elapsedRealtime() + 5 * 1000;
+		long triggerAtTime = SystemClock.elapsedRealtime() + 15*60*1000;
 		int interval = 15*60*1000;
 		alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime, interval, pendingIntent);
-		updateCourse(context,appWidgetManager, appWidgetIds);
+		updateCourse(context, appWidgetManager, appWidgetIds);
 	}
 	
 	public void onReceive(Context context, Intent intent){
@@ -50,7 +50,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			if(extras != null){
 				int[] appWidgetIds = extras.getIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS);
 				if(appWidgetIds != null && appWidgetIds.length > 0){
-					this.onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds);
+					this.updateCourse(context, AppWidgetManager.getInstance(context), appWidgetIds);
 				}
 			}
 		}
@@ -58,6 +58,12 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 	
 	public void updateCourse(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){
 		SharedPreferences shareData = context.getSharedPreferences("data", 0);
+		if(shareData == null)
+		{
+			String str = "你还没登入";
+			showResult(context, appWidgetManager, appWidgetIds, str);
+			return;
+		}
 		ArrayList<Course> courses = null;
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try{
@@ -69,8 +75,12 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		} finally{
 			studentInfDBAdapter.close();
 		}
-		if(courses==null)
+		if(courses == null)
+		{
+			String str = "你还没刷新数据库";
+			showResult(context, appWidgetManager, appWidgetIds, str);
 			return;
+		}
 		int thePeriod = getTime();
 		Calendar calendar = Calendar.getInstance();
 		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
@@ -96,21 +106,30 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
 				coursesInADay.add(course);
 		
-		String str = " ";
+		String str = "";
 		if(coursesInADay.size() != 0){
 			str = coursesInADay.get(0).getName();
 			str = str + "  " + coursesInADay.get(0).getOtherInfo();
 		}
-		
+		showResult(context, appWidgetManager, appWidgetIds, str);
+	}
+	
+	private void showResult(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, String str){
 		final int N = appWidgetIds.length;
 		for(int i = 0; i < N; i++){
 			int appWidgetId = appWidgetIds[i];
-			Intent intent = new Intent(context, ListCoursesActivity.class);
+			Intent intent;
+			if(str == "你还没登入")
+			{
+				intent = new Intent(context, LoginActivity.class);
+			}else{
+				intent = new Intent(context, ListCoursesActivity.class);
+			}
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.myappwidget);
-//			views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
-			if(str == " "){
-				views.setTextViewText(R.id.appWidgetTextView, "此时无课程！");
+			views.setOnClickPendingIntent(R.id.theWidget, pendingIntent);
+			if((str == "你还没登入") || (str == "你还没刷新数据库")){
+				views.setTextViewText(R.id.appWidgetTextView, str);
 				views.setTextViewText(R.id.widgetPeriod, "");
 			}else{
 				views.setTextViewText(R.id.appWidgetTextView, str);

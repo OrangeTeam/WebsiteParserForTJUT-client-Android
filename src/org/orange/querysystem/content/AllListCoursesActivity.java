@@ -118,7 +118,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){
-    	mTabHost.clearAllTabs();
+		mTabsAdapter.clear();
         currentTime = (TextView)findViewById(R.id.currentTime);
         currentTime.setText("总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
         

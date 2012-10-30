@@ -79,10 +79,23 @@ public class MyHessianURLConnectionFactory implements HessianConnectionFactory {
   {
     if (log.isLoggable(Level.FINER))
       log.finer(this + " open(" + url + ")");
+    URLConnection conn = null;
 
-    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("203.208.47."+(1+(int)(Math.random()*7.9)), 80));
-    URLConnection conn = url.openConnection(proxy);
-
+//    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("203.208.47."+(1+(int)(Math.random()*7.9)), 80));
+//    Proxy proxy = new Proxy(Proxy.Type.DIRECT, new InetSocketAddress("74.125.128.113", 80));
+    String host = url.getHost();
+    System.out.println(host);
+    if(host.matches(".*\\.appspot\\.com")){
+    	url = new URL("http://www.google.com.hk"+url.getPath());
+    	conn = url.openConnection();
+    	System.out.println(host);
+    	conn.setRequestProperty("host", " "+host);
+    	System.out.println(conn.getRequestProperty("host"));
+    }
+    else{
+    	System.out.println("conn == null");
+    	conn = url.openConnection();
+    }
     // HttpURLConnection httpConn = (HttpURLConnection) conn;
     // httpConn.setRequestMethod("POST");
     // conn.setDoInput(true);

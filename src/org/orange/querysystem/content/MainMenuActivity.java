@@ -109,6 +109,18 @@ public class MainMenuActivity extends Activity{
 			if(args3 == 6){
 				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
 			}
+<<<<<<< Updated upstream
+=======
+//			if(args3 == 0){
+//				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+//			}
+//			if(args3 == 1){
+//				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
+//			}
+//			if(args3 == 2){
+//				showDialog(DATE_DIALOG_ID);
+//			}
+>>>>>>> Stashed changes
 		}
 	}
 	
@@ -156,7 +168,11 @@ public class MainMenuActivity extends Activity{
 	
 	private static Integer[] imgs = {};
 	
+<<<<<<< Updated upstream
 	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程"};
+=======
+	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开学时间设置", "增加课程"};
+>>>>>>> Stashed changes
 //	private static String[] texts = {"本周课程表", "总课程表","开学时间设置"};
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

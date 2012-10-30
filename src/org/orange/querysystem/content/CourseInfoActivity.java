@@ -19,8 +19,13 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
+<<<<<<< Updated upstream
 import android.os.Bundle;
 import android.util.Log;
+=======
+import android.os.Bundle;
+import android.util.Log;
+>>>>>>> Stashed changes
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -287,7 +292,11 @@ public class CourseInfoActivity extends Activity{
                          day_of_week_get = day_of_week_input.getText().toString();
                          period_get = period_input.getText().toString();
                          classroom_get = classroom_input.getText().toString();
+<<<<<<< Updated upstream
                          ((EditText) findViewById(2)).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+=======
+                         updateCoursesListToDatabase();
+>>>>>>> Stashed changes
                      }
                  })
                  .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -302,6 +311,7 @@ public class CourseInfoActivity extends Activity{
     }
     
     public void updateCoursesListToDatabase(){
+<<<<<<< Updated upstream
     	
     	Course course = new Course();
         course.setName(course_name_input.getText().toString());
@@ -321,13 +331,24 @@ public class CourseInfoActivity extends Activity{
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 		} catch (TimeAndAddressException e) {
+=======
+//    	findViewById(2).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+        Course course = new Course();
+        course.setName(course.getName());
+        try {
+			course.addTimeAndAddress(week_get, day_of_week_get, period_get, classroom_get);
+		 } catch (TimeAndAddressException e) {
+>>>>>>> Stashed changes
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		 } catch (BitOperateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		 }
+<<<<<<< Updated upstream
         course.setKind(course_kind_input.getText().toString());
+=======
+>>>>>>> Stashed changes
     	SharedPreferences shareData = getSharedPreferences("data", 0);
         String userName = shareData.getString("userName", null);
 //        String password = shareData.getString("password", null);

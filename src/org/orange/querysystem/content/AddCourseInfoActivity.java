@@ -1,12 +1,19 @@
 package org.orange.querysystem.content;
 
+<<<<<<< Updated upstream
 import org.orange.querysystem.CourseAndUser;
+=======
+>>>>>>> Stashed changes
 import org.orange.querysystem.R;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
+<<<<<<< Updated upstream
 import util.webpage.Course.TimeAndAddress;
+=======
+import util.webpage.Course.CourseException;
+>>>>>>> Stashed changes
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
@@ -14,11 +21,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+<<<<<<< Updated upstream
 import android.content.SharedPreferences.Editor;
+=======
+>>>>>>> Stashed changes
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+<<<<<<< Updated upstream
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +40,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+=======
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+>>>>>>> Stashed changes
 import android.widget.TextView;
 
 public class AddCourseInfoActivity extends Activity{
@@ -60,12 +77,19 @@ public class AddCourseInfoActivity extends Activity{
 	private EditText day_of_week_input;
 	private EditText period_input;
 	private EditText classroom_input;
+<<<<<<< Updated upstream
 	private Button add;
 	private String[] week_get = new String[10];
 	private String[] day_of_week_get = new String[10];
 	private String[] period_get = new String[10];
 	private String[] classroom_get = new String[10];
 	private int add_num = 1;
+=======
+	private String week_get = "";
+	private String day_of_week_get = "";
+	private String period_get = "";
+	private String classroom_get = "";
+>>>>>>> Stashed changes
 	
 	private static final int DIALOG_TEXT_ENTRY = 1;
 	
@@ -80,7 +104,12 @@ public class AddCourseInfoActivity extends Activity{
         course_time_and_adress_input = (EditText)findViewById(R.id.course_time_and_adress_input);
         
         course_name.setText("课程名称：");
+<<<<<<< Updated upstream
         course_time_and_adress.setText("时间地点1：");
+=======
+        course_time_and_adress.setText("时间地点：");
+//        updateCoursesListToDatabase();
+>>>>>>> Stashed changes
         course_code = (TextView)findViewById(R.id.course_code);
         course_class_number = (TextView)findViewById(R.id.course_class_number);
         course_teacher = (TextView)findViewById(R.id.course_teacher);
@@ -99,6 +128,7 @@ public class AddCourseInfoActivity extends Activity{
         course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
         
+<<<<<<< Updated upstream
         add = (Button)findViewById(R.id.add);
 //        add.setText("添加");
         add.setOnClickListener(new OnClickListener() {
@@ -111,6 +141,8 @@ public class AddCourseInfoActivity extends Activity{
 			}
 		});
         
+=======
+>>>>>>> Stashed changes
         course_code.setText("课程代码：");
 		course_class_number.setText("教学班号：");
 		course_teacher.setText("任课老师：");
@@ -118,7 +150,11 @@ public class AddCourseInfoActivity extends Activity{
 		course_kind.setText("课程性质：");
 		course_test_score.setText("结课成绩：");
 		course_total_score.setText("期末总评：");
+<<<<<<< Updated upstream
 		course_grade_point.setText("绩        点：");
+=======
+		course_grade_point.setText("绩点：");
+>>>>>>> Stashed changes
 		course_time_and_adress_input.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -128,6 +164,7 @@ public class AddCourseInfoActivity extends Activity{
 		});
 	}
 	
+<<<<<<< Updated upstream
 	public void addTimeAndAddress(){
 		TextView textView = new TextView(this);
 		textView.setText("时间地点" + add_num + "：");
@@ -164,6 +201,8 @@ public class AddCourseInfoActivity extends Activity{
 		});
 		
 	}
+=======
+>>>>>>> Stashed changes
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -188,6 +227,7 @@ public class AddCourseInfoActivity extends Activity{
                          day_of_week_input = (EditText)textEntryView.findViewById(R.id.day_of_week_input);
                          period_input = (EditText)textEntryView.findViewById(R.id.period_input);
                          classroom_input = (EditText)textEntryView.findViewById(R.id.classroom_input);
+<<<<<<< Updated upstream
                          week_get[add_num-1] = week_input.getText().toString();
                          day_of_week_get[add_num-1] = day_of_week_input.getText().toString();
                          period_get[add_num-1] = period_input.getText().toString();
@@ -199,6 +239,13 @@ public class AddCourseInfoActivity extends Activity{
                     	 {
                     		 ((EditText)findViewById((add_num-2)*2 + 2)).setText(week_get[add_num-1] + "周" + " " + day_of_week_get[add_num-1] + " " + period_get[add_num-1] + "节" + " " + classroom_get[add_num-1]);
                     	 }	 
+=======
+                         week_get = week_input.getText().toString();
+                         day_of_week_get = day_of_week_input.getText().toString();
+                         period_get = period_input.getText().toString();
+                         classroom_get = classroom_input.getText().toString();
+                         updateCoursesListToDatabase();
+>>>>>>> Stashed changes
                      }
                  })
                  .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -213,13 +260,18 @@ public class AddCourseInfoActivity extends Activity{
     }
     
     public void updateCoursesListToDatabase(){
+<<<<<<< Updated upstream
     	
+=======
+    	course_time_and_adress_input.setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+>>>>>>> Stashed changes
         Course course = new Course();
         course.setName(course_name_input.getText().toString());
         course.setCode(course_code_input.getText().toString());
         course.setClassNumber(course_class_number_input.getText().toString());
         course.setTeachers(course_teacher_input.getText().toString());
         try {
+<<<<<<< Updated upstream
 //			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
 //			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
 //	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
@@ -231,6 +283,13 @@ public class AddCourseInfoActivity extends Activity{
         		timeAndAddress.setAddress(classroom_get[j]);
         		course.addTimeAndAddress(timeAndAddress);
         	}
+=======
+//        	course.setId(10);
+//			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
+//			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
+//	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
+	        course.addTimeAndAddress(week_get, day_of_week_get, period_get, classroom_get);
+>>>>>>> Stashed changes
 	        
 		} catch (NumberFormatException e1) {
 			// TODO Auto-generated catch block
@@ -244,32 +303,53 @@ public class AddCourseInfoActivity extends Activity{
 		 } catch (BitOperateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+<<<<<<< Updated upstream
 		 } catch (NullPointerException e){
 			 e.printStackTrace();
+=======
+>>>>>>> Stashed changes
 		 }
         course.setKind(course_kind_input.getText().toString());
     	SharedPreferences shareData = getSharedPreferences("data", 0);
         String userName = shareData.getString("userName", null);
+<<<<<<< Updated upstream
         String password = shareData.getString("password", null);
         CourseAndUser courseAndUser = new CourseAndUser(course, userName, password);
         new UpdateCoursesListToDatabase().execute(courseAndUser);
     }
     
     class UpdateCoursesListToDatabase extends AsyncTask<CourseAndUser,Void,Void>{
+=======
+//        String password = shareData.getString("password", null);
+        new UpdateCoursesListToDatabase().execute(course);
+    }
+    
+    class UpdateCoursesListToDatabase extends AsyncTask<Course,Void,Void>{
+>>>>>>> Stashed changes
 		
 		public static final String TAG = "org.orange.querysystem";
 		public static final int PARSE_COURSE = 1;
 		public static final int PARSE_SCORE = 2;
 
 		@Override
+<<<<<<< Updated upstream
 		protected Void doInBackground(CourseAndUser... args) {
+=======
+		protected Void doInBackground(Course... args) {
+>>>>>>> Stashed changes
 			
 			SchoolWebpageParser parser = null;
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
 			try {
+<<<<<<< Updated upstream
 				parser = new SchoolWebpageParser(new MyParserListener(), args[0].getUserName(), args[0].getPassword());
 				studentInfDBAdapter.open();
 				studentInfDBAdapter.autoInsertCourseInf(args[0].getCourse(), args[0].getUserName());
+=======
+				parser = new SchoolWebpageParser(new MyParserListener(), "20106135", "20106135");
+				studentInfDBAdapter.open();
+				studentInfDBAdapter.autoInsertCourseInf(args[0], "20106135");
+>>>>>>> Stashed changes
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -312,6 +392,7 @@ public class AddCourseInfoActivity extends Activity{
 			}
 		}	
 	}
+<<<<<<< Updated upstream
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -341,4 +422,6 @@ public class AddCourseInfoActivity extends Activity{
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+=======
+>>>>>>> Stashed changes
 }

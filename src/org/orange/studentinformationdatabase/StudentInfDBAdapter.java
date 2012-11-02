@@ -681,92 +681,118 @@ public class StudentInfDBAdapter {
 	 }
 	
 	/**
-	 * 从数据库中的courseInf1和courseInf2返回本学期的所有课程也包括成绩。
+	 * 从数据库中的courseInf1和courseInf2返回所有课程也包括成绩。
 	 * @param theUserName
-	 * @return ArrayList<Course>
+	 * @return Array<ArrayList<Course>>
 	 * @throws SQLException
 	 */
-	public ArrayList<Course> getThisTermCoursesFromDB(String theUserName) throws SQLException{
+	public ArrayList<ArrayList<Course>> getAllCoursesFromDB(String theUserName) throws SQLException, CourseException{
 		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		 if(cursor.getCount() == 0)
 		 {
 			 throw new SQLException("no this user data");
 		 }
-		 ArrayList<Course> courses = new ArrayList<Course>();
-		 Course course = new Course();
-		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
-		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
+		 
+		 String year[] = {"year"};
+		 Cursor cursor3 = db.query(true, DATABASE_COURSE_TABLE1, year, null, null, null, null, null, null);
+		 int sum[] = new int[cursor3.getCount()];
+		 if((cursor3.getCount() == 0) || !cursor3.moveToFirst()){
 			 throw new SQLException("No course found from database");
 		 }
 		 else{
-			 for(int i = 0; i <cursor1.getCount(); i++){
-				 cursor1.moveToPosition(i);
-				 int newId = cursor1.getInt(0);
-				 String newCode = cursor1.getString(1);
-				 String newName = cursor1.getString(2);
-				 String newTeachers = cursor1.getString(3);
-				 int newCredit = cursor1.getInt(4);
-				 String newClassNumber = cursor1.getString(5);
-				 String newTeachingMaterial = cursor1.getString(6);
-				 int newYear = cursor1.getInt(7);
-				 String newIsFirstSemester = cursor1.getString(8);
-				 int newTestScore = cursor1.getInt(9);
-				 int newTotalScore = cursor1.getInt(10);
-				 String newKind = cursor1.getString(11);
-				 String newNote = cursor1.getString(12);
-				 
-				 ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
-				 TimeAndAddress timeAndAddress = new TimeAndAddress();
-				 Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + newId, null, null, null, null);
-				 if((cursor2.getCount() == 0) || !cursor2.moveToFirst()){
-					 
-				 }
-				 else{
-					 for(int j = 0; j < cursor2.getCount(); j++){
-						 cursor2.moveToPosition(j);
-						 int newWeek = cursor2.getInt(2);
-						 int newDay = cursor2.getInt(3);
-						 int newPeriod = cursor2.getInt(4);
-						 String newAddress = cursor2.getString(5);
-						 try{
-							 timeAndAddress.setWeek(newWeek);
-							 timeAndAddress.setDay(newDay);
-							 timeAndAddress.setPeriod(newPeriod);
-							 timeAndAddress.setAddress(newAddress); 
-						 }catch(BitOperateException e){
-							 e.printStackTrace();
-						 }catch(NullPointerException e){
-							 e.printStackTrace();
-						 }
-						 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
-						 //这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
-					 }
-				 }
-				 course.setId(newId);
-				 course.setCode(newCode);
-				 course.setName(newName);
-				 course.setClassNumber(newClassNumber);
-				 course.setTeachingMaterial(newTeachingMaterial);
-				 course.setIsFirstSemester(reconvert(newIsFirstSemester));
-				 course.setKind(newKind);
-				 course.setNote(newNote);
-				 course.setTimeAndAddresse(timeAndAddresses);
-				 course.setTeachers(newTeachers);
-				 try{
-					 course.setCredit(newCredit);
-					 if(newYear != 0)course.setYear(newYear);
-					 if(newTestScore != -1)course.setTestScore(newTestScore);
-					 if(newTotalScore != -1)course.setTotalScore(newTotalScore);
-				 }catch(NullPointerException e){
-					 e.printStackTrace();
-				 }catch(CourseException e){
-					 e.printStackTrace();
-				 }
-				 courses.add(new Course(course));
-				 //这里使用了Course的拷贝构造方法进行了深拷贝。
+			 for(int i = 0; i < cursor3.getCount(); i++){
+				 cursor3.moveToPosition(i);
+				 sum[i] = cursor3.getInt(0);
 			 }
 		 }
-		 return courses;
+		 
+		 ArrayList<ArrayList<Course>> all = new ArrayList<ArrayList<Course>>();
+		 for (int m = 0; m < sum.length; m++){ 
+			 for(int n = 0; n < 2; n++){
+				 String temp;
+				 if(n == 0)
+					 temp = "t";
+				 else
+					 temp = "f";
+				 
+				ArrayList<Course> courses = new ArrayList<Course>();
+				Course course = new Course();
+				Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + sum[m] + " AND " + KEY_ISFIRSTSEMESTER + "= '" + temp + "'", null, null, null, null);
+				if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
+					continue;
+				}
+				else{
+					for(int i = 0; i <cursor1.getCount(); i++){
+						cursor1.moveToPosition(i);
+						int newId = cursor1.getInt(0);
+						String newCode = cursor1.getString(1);
+						String newName = cursor1.getString(2);
+						String newTeachers = cursor1.getString(3);
+						int newCredit = cursor1.getInt(4);
+						String newClassNumber = cursor1.getString(5);
+						String newTeachingMaterial = cursor1.getString(6);
+						int newYear = cursor1.getInt(7);
+						String newIsFirstSemester = cursor1.getString(8);
+						int newTestScore = cursor1.getInt(9);
+						int newTotalScore = cursor1.getInt(10);
+						String newKind = cursor1.getString(11);
+						String newNote = cursor1.getString(12);
+							 
+						ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
+						TimeAndAddress timeAndAddress = new TimeAndAddress();
+						Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + newId, null, null, null, null);
+						if((cursor2.getCount() == 0) || !cursor2.moveToFirst()){
+								 
+						}
+						else{
+							for(int j = 0; j < cursor2.getCount(); j++){
+								cursor2.moveToPosition(j);
+								int newWeek = cursor2.getInt(2);
+								int newDay = cursor2.getInt(3);
+								int newPeriod = cursor2.getInt(4);
+								String newAddress = cursor2.getString(5);
+								try{
+									timeAndAddress.setWeek(newWeek);
+									timeAndAddress.setDay(newDay);
+									timeAndAddress.setPeriod(newPeriod);
+									timeAndAddress.setAddress(newAddress); 
+								}catch(BitOperateException e){
+									e.printStackTrace();
+								}catch(NullPointerException e){
+									e.printStackTrace();
+								}
+								timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
+								//这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
+						    }
+						}
+						course.setId(newId);
+						course.setCode(newCode);
+						course.setName(newName);
+						course.setClassNumber(newClassNumber);
+						course.setTeachingMaterial(newTeachingMaterial);
+						course.setIsFirstSemester(reconvert(newIsFirstSemester));
+						course.setKind(newKind);
+						course.setNote(newNote);
+						try{
+							course.setTimeAndAddresse(timeAndAddresses);
+							course.setTeachers(newTeachers);
+							course.setCredit(newCredit);
+							if(newYear != 0)course.setYear(newYear);
+							if(newTestScore != -1)course.setTestScore(newTestScore);
+							if(newTotalScore != -1)course.setTotalScore(newTotalScore);
+						}catch(NullPointerException e){
+							e.printStackTrace();
+						}catch(CourseException e){
+							e.printStackTrace();
+						}
+						courses.add(new Course(course));
+							 //这里使用了Course的拷贝构造方法进行了深拷贝。
+						}
+				   }
+			 all.add(courses);
+			 }
+		 }
+		 return all;
 	 }
 	
 	/**

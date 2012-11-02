@@ -82,6 +82,12 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			return;
 		}
 		int thePeriod = getTime();
+		if(thePeriod == 0)
+		{
+			String str = "此时无课";
+			showResult(context, appWidgetManager, appWidgetIds, str);
+			return;
+		}
 		Calendar calendar = Calendar.getInstance();
 		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
 		mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-Calendar.MONDAY+1;
@@ -133,7 +139,10 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 				views.setTextViewText(R.id.widgetPeriod, "");
 			}else{
 				views.setTextViewText(R.id.appWidgetTextView, str);
-				views.setTextViewText(R.id.widgetPeriod, "第" + String.valueOf(period) + "节");
+				if(period != 0)
+				{
+					views.setTextViewText(R.id.widgetPeriod, "第" + String.valueOf(period) + "节");
+				}
 			}
 			
 			appWidgetManager.updateAppWidget(appWidgetId, views);

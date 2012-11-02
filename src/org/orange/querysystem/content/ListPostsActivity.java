@@ -15,30 +15,19 @@
  */
 package org.orange.querysystem.content;
 
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.ListPostsFragment.SimplePost;
+import org.orange.querysystem.content.PostUpdater.OnPostExecuteListener;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
-import com.caucho.hessian.client.HessianProxyFactory;
-import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
-
-import util.GetterInterface;
 import util.webpage.Post;
-import util.webpage.ReadPageHelper.OnReadPageListener;
-import util.webpage.SchoolWebpageParser;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
@@ -47,7 +36,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -68,7 +56,6 @@ public class ListPostsActivity extends FragmentActivity{
 	public static final String ARRAYLIST_OF_POSTS_KEY
 		= ListPostsActivity.class.getName()+"arraylist_of_posts_key";
 	private static final String TAG = ListPostsActivity.class.getName();
-	private static final String LAST_UPDATED_TIME_KEY = "LAST_UPDATED_TIME_KEY";
 	
 	private int start_resume = 0;
 	private TextView currentTime;
@@ -76,11 +63,8 @@ public class ListPostsActivity extends FragmentActivity{
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
 
-	SharedPreferences mPreferences = null;
-	long longUpdateInterval = 0;
-	long updateInterval = 0;
 	LoadPostsListFromDatabase mLoaderFromDB;
-	UpdatePostsListToDatabase mWebUpdaterToDB;
+	PostUpdater mWebUpdaterToDB;
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -97,6 +81,19 @@ public class ListPostsActivity extends FragmentActivity{
 		setContentView(R.layout.fragment_tabs_pager);
 		currentTime = (TextView)findViewById(R.id.currentTime);
 		currentTime.setText("通知");
+
+		mWebUpdaterToDB = new PostUpdater(this);
+		mWebUpdaterToDB.setOnPostExecuteListener(new OnPostExecuteListener() {
+			@Override
+			public void onPostExecute() {
+				if(mLoaderFromDB != null){
+					mLoaderFromDB.cancel(false);
+				}
+				mLoaderFromDB = new LoadPostsListFromDatabase();
+				mLoaderFromDB.execute(null, null);
+			}
+		});
+
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -121,9 +118,6 @@ public class ListPostsActivity extends FragmentActivity{
 				//child.getLayoutParams().height = tv.getHeight();
 			}
 		}
-		mPreferences = getPreferences(MODE_PRIVATE);
-		longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 31L*24*60*60*1000);
-		updateInterval = PreferenceManager.getDefaultSharedPreferences(this).getLong("", 4L*24*60*60*1000);
 	}
 
 	@Override
@@ -134,10 +128,11 @@ public class ListPostsActivity extends FragmentActivity{
 
 	@Override
 	protected void onStop() {
-		if(mWebUpdaterToDB != null)
-			mWebUpdaterToDB.cancel(false);
-		if(mLoaderFromDB != null)
+		mWebUpdaterToDB.stop();
+		if(mLoaderFromDB != null){
 			mLoaderFromDB.cancel(false);
+			mLoaderFromDB = null;
+		}
 		super.onStop();
 	}
 
@@ -213,20 +208,7 @@ public class ListPostsActivity extends FragmentActivity{
 	}
 
 	public void loadPosts(){
-		long lastUpdatedTime = mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0);
-		long now = new Date().getTime();
-		if(now - lastUpdatedTime > longUpdateInterval){
-			if(lastUpdatedTime == 0){
-				Log.v(TAG, "第一次更新");
-				//警告
-			}
-			mWebUpdaterToDB = new UpdatePostsListToDatabase();
-			mWebUpdaterToDB.execute(UpdatePostsListToDatabase.ALL_POSTS);
-		}else if(now - lastUpdatedTime > updateInterval){
-			mWebUpdaterToDB = new UpdatePostsListToDatabase();
-			mWebUpdaterToDB.execute(UpdatePostsListToDatabase.COMMON_POSTS);
-		}
-		else{
+		if(!mWebUpdaterToDB.autoUpdatePosts()){
 			if(mLoaderFromDB != null)
 				mLoaderFromDB.cancel(false);
 			mLoaderFromDB = new LoadPostsListFromDatabase();
@@ -280,128 +262,6 @@ public class ListPostsActivity extends FragmentActivity{
 		
 	}
 
-	private class UpdatePostsListToDatabase extends AsyncTask<Integer, Void, Void>{
-		public static final int COMMON_POSTS = 1;
-		public static final int ALL_POSTS = 2;
-
-		@Override
-		protected Void doInBackground(Integer... params) {
-			boolean isCommonUpdate = params[0] == COMMON_POSTS;
-			List<Post> posts = null;
-			Date lastUpdatedTime = new Date(mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0));
-
-			//准备用Hessian连接GAE代理
-			String url = "http://schoolwebpageparser.appspot.com/getter";
-			int maxAttempts = 10;
-			int timeout = isCommonUpdate?2000:4000;
-			HessianProxyFactory factory = new HessianProxyFactory();
-			MyHessianSocketConnectionFactory mHessianSocketConnectionFactory =
-					new MyHessianSocketConnectionFactory();
-			mHessianSocketConnectionFactory.setHessianProxyFactory(factory);
-			factory.setConnectionFactory(mHessianSocketConnectionFactory);
-			factory.setConnectTimeout(timeout);
-			factory.setReadTimeout(timeout);
-			GetterInterface getter;
-			//用Hessian连接GAE代理
-			for(int counter = 1;counter <= maxAttempts;counter++){
-				try {
-					getter = (GetterInterface) factory.create(GetterInterface.class, url);
-					posts = getter.getPosts(lastUpdatedTime, null, -1);
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (Exception e){
-					if(e.getCause() instanceof SocketTimeoutException){
-						Log.i(TAG, "SocketTimeoutException"+e.getMessage());
-						continue;
-					}
-					else
-						e.printStackTrace();
-				}
-				break;
-			}
-			//备用方案
-			if(posts == null){
-				MyOnReadPageListener readPageListener = new MyOnReadPageListener();
-				try {
-					SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener());
-					parser.setOnReadPageListener(readPageListener);
-					if(isCommonUpdate)
-						posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
-					else
-						posts = parser.parsePosts(lastUpdatedTime, null, -1);
-					
-					Log.i(TAG, "共 "+posts.size()+" 条， "+readPageListener.pageNumber+" 页 "+readPageListener.totalSize/1024.0+" KB");
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-				} catch (java.io.UnsupportedEncodingException e){
-					e.printStackTrace();
-				} catch (java.io.IOException e){
-					e.printStackTrace();
-				}
-			}
-			if(posts != null){
-				StudentInfDBAdapter database = new StudentInfDBAdapter(ListPostsActivity.this);
-				database.open();
-				database.autoInsertArrayPostsInf(posts);
-				mPreferences.edit().putLong(LAST_UPDATED_TIME_KEY, new Date().getTime()).commit();
-				database.close();
-			}else{
-				Log.e("BaiJie", "更新posts失败");
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			if(mLoaderFromDB != null)
-				mLoaderFromDB.cancel(false);
-			mLoaderFromDB = new LoadPostsListFromDatabase();
-			mLoaderFromDB.execute(null, null);
-		}
-
-		private class MyOnReadPageListener implements OnReadPageListener{
-			int pageNumber = 0;
-			int totalSize = 0;
-
-			@Override
-			public void onRequest(String url, int statusCode, String statusMessage,
-					int pageSize) {
-				Log.v(TAG,"URL: "+url+"\nStatus Code: "+statusCode+"\tStatusMessage: "
-						+statusMessage+"\t Page Size: "+pageSize);
-				totalSize+=pageSize;
-				pageNumber++;
-			}
-			
-		}
-		private class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
-			String TAG = ListPostsActivity.class.getName();
-		
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
-			 */
-			@Override
-			public void onError(int code, String message) {
-				Log.e(TAG, message);
-			}
-		
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onWarn(int, java.lang.String)
-			 */
-			@Override
-			public void onWarn(int code, String message) {
-				Log.w(TAG, message);
-			}
-		
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onInformation(int, java.lang.String)
-			 */
-			@Override
-			public void onInformation(int code, String message) {
-				Log.i(TAG, message);
-			}
-		}
-	}
-	
 	public boolean isNetworkConnected(){
     	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import org.orange.querysystem.content.ListCoursesActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
+import org.orange.querysystem.content.MainMenuActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
@@ -112,7 +113,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			for(SimpleCourse course:lesson[mDayOfWeek][thePeriod])
 				coursesInADay.add(course);
 		
-		String str = "";
+		String str = "此时无课程！";
 		if(coursesInADay.size() != 0){
 			str = coursesInADay.get(0).getName();
 			str = str + "  " + coursesInADay.get(0).getOtherInfo();
@@ -129,7 +130,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			{
 				intent = new Intent(context, LoginActivity.class);
 			}else{
-				intent = new Intent(context, ListCoursesActivity.class);
+				intent = new Intent(context, MainMenuActivity.class);
 			}
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.myappwidget);

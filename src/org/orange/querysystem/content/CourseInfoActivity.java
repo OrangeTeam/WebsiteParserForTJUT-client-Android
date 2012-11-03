@@ -1,5 +1,8 @@
 package org.orange.querysystem.content;
 
+import java.util.ArrayList;
+
+import org.orange.querysystem.CourseAndUser;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.AddCourseInfoActivity.UpdateCoursesListToDatabase;
 import org.orange.querysystem.content.AddCourseInfoActivity.UpdateCoursesListToDatabase.MyParserListener;
@@ -8,6 +11,7 @@ import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
+import util.webpage.Course.TimeAndAddress;
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
@@ -19,13 +23,8 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
-<<<<<<< Updated upstream
 import android.os.Bundle;
 import android.util.Log;
-=======
-import android.os.Bundle;
-import android.util.Log;
->>>>>>> Stashed changes
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,14 +62,19 @@ public class CourseInfoActivity extends Activity{
 	private EditText day_of_week_input;
 	private EditText period_input;
 	private EditText classroom_input;
+	private int i = 0;
 	private int course_id;
 	private int time_and_adress_counter;
+	private int time_and_adress_sign = 0;
 	private String week_get = "";
 	private String day_of_week_get = "";
 	private String period_get = "";
 	private String classroom_get = "";
 	
 	private static final int DIALOG_TEXT_ENTRY = 1;
+	
+	ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
+    TimeAndAddress timeAndAddress = new TimeAndAddress();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,7 @@ public class CourseInfoActivity extends Activity{
 	}
 	
 	public void showCourse(Course course){
+		course_id = course.getId();
 		course_name.setText("课程名称：");
 		course_code.setText("课程代码：");
 		course_class_number.setText("教学班号：");
@@ -129,6 +134,17 @@ public class CourseInfoActivity extends Activity{
 			textView.setTextSize(18);
 			EditText editText = new EditText(this);
 			editText.setText(course.getTimeAndAddress().get(time_and_adress_counter).toString());
+			timeAndAddress.setAddress(course.getTimeAndAddress().get(time_and_adress_counter).getAddress());
+			try {
+				timeAndAddress.setWeek(course.getTimeAndAddress().get(time_and_adress_counter).getWeek());
+				timeAndAddress.setDay(course.getTimeAndAddress().get(time_and_adress_counter).getDay());
+				timeAndAddress.setPeriod(course.getTimeAndAddress().get(time_and_adress_counter).getPeriod());
+			} catch (BitOperateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
 			editText.setId(time_and_adress_counter*2 + 2);
 			editText.setEnabled(false);
 			editText.setCursorVisible(false);
@@ -245,18 +261,20 @@ public class CourseInfoActivity extends Activity{
     		course_test_score_input.setEnabled(true);
     		course_total_score_input.setEnabled(true);
     		course_grade_point_input.setEnabled(true);
-    		for(int i=0; i < time_and_adress_counter; i++){
-    			findViewById(i*2 + 2).setEnabled(true);
-    			findViewById(i*2 + 2).setOnClickListener(new EditText.OnClickListener(){
-					@Override
-					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("我能行！");
-						showDialog(DIALOG_TEXT_ENTRY);
-						
-					}
+    		for(time_and_adress_sign=0; time_and_adress_sign < time_and_adress_counter; time_and_adress_sign++){
+    			findViewById(time_and_adress_sign*2 + 2).setEnabled(true);
+    			findViewById(time_and_adress_sign*2 + 2).setOnClickListener(new EditText.OnClickListener(){
+    				@Override
+    				public void onClick(View arg0) {
+    					// TODO Auto-generated method stub
+    					i++;
+    					System.out.println("我能行！");
+    					showDialog(i);
+    					
+    				}
     			});
     		}
+    		
     	}
     	else if(item.getItemId() == 2){
     		updateCoursesListToDatabase();
@@ -266,12 +284,18 @@ public class CourseInfoActivity extends Activity{
     }
     
     @Override
-    protected Dialog onCreateDialog(int id) {
-    	switch(id){
-    	 case DIALOG_TEXT_ENTRY:
+    protected Dialog onCreateDialog(final int id) {
+    	Log.w("i", ""+id);
+//    	int[] con = new int[time_and_adress_counter];
+//        for(int i = 0; i < time_and_adress_counter; i++)
+//        	con[i] = i;
+    	LayoutInflater factory = LayoutInflater.from(this);
+        final View textEntryView = factory.inflate(R.layout.time_and_adress_entry, null);
+//        
+//    	switch(id){
+//    	case 2:
              // This example shows how to add a custom layout to an AlertDialog
-             LayoutInflater factory = LayoutInflater.from(this);
-             final View textEntryView = factory.inflate(R.layout.time_and_adress_entry, null);
+             
              return new AlertDialog.Builder(this)
                  //.setIconAttribute(android.R.attr.alertDialogIcon)
 //                 .setTitle(R.string.alert_dialog_text_entry)
@@ -292,11 +316,16 @@ public class CourseInfoActivity extends Activity{
                          day_of_week_get = day_of_week_input.getText().toString();
                          period_get = period_input.getText().toString();
                          classroom_get = classroom_input.getText().toString();
-<<<<<<< Updated upstream
-                         ((EditText) findViewById(2)).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
-=======
-                         updateCoursesListToDatabase();
->>>>>>> Stashed changes
+                         ((EditText) findViewById(id*2 + 2 )).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+                         try {
+							timeAndAddresses.get(id).setWeek(Integer.parseInt(week_get));
+							timeAndAddresses.get(id).setDay(Integer.parseInt(day_of_week_get));
+							timeAndAddresses.get(id).setPeriod(Integer.parseInt(period_get));
+							timeAndAddresses.get(id).setAddress(classroom_get);
+						} catch (BitOperateException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
                      }
                  })
                  .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -306,14 +335,15 @@ public class CourseInfoActivity extends Activity{
                      }
                  })
                  .create();
-    	}
-    	return null;
+             
+//    	}
+//    	return null;
     }
     
     public void updateCoursesListToDatabase(){
-<<<<<<< Updated upstream
     	
     	Course course = new Course();
+    	course.setId(course_id);
         course.setName(course_name_input.getText().toString());
         course.setCode(course_code_input.getText().toString());
         course.setClassNumber(course_class_number_input.getText().toString());
@@ -322,54 +352,43 @@ public class CourseInfoActivity extends Activity{
 //			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
 //			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
 //	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
-	        course.addTimeAndAddress(week_get, day_of_week_get, period_get, classroom_get);
-	        
+        		course.setTimeAndAddresse(timeAndAddresses);
 		} catch (NumberFormatException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 //		} catch (CourseException e1) {
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
-		} catch (TimeAndAddressException e) {
-=======
+//		} catch (TimeAndAddressException e) {
 //    	findViewById(2).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
-        Course course = new Course();
-        course.setName(course.getName());
-        try {
-			course.addTimeAndAddress(week_get, day_of_week_get, period_get, classroom_get);
-		 } catch (TimeAndAddressException e) {
->>>>>>> Stashed changes
+//		} catch (BitOperateException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		 } catch (BitOperateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		 }
-<<<<<<< Updated upstream
+//			e.printStackTrace();
+		}
         course.setKind(course_kind_input.getText().toString());
-=======
->>>>>>> Stashed changes
-    	SharedPreferences shareData = getSharedPreferences("data", 0);
+        SharedPreferences shareData = getSharedPreferences("data", 0);
         String userName = shareData.getString("userName", null);
-//        String password = shareData.getString("password", null);
-        new UpdateCoursesListToDatabase().execute(course);
+        String password = shareData.getString("password", null);
+        CourseAndUser courseAndUser = new CourseAndUser(course, userName, password);
+        new UpdateCoursesListToDatabase().execute(courseAndUser);
     }
     
-    class UpdateCoursesListToDatabase extends AsyncTask<Course,Void,Void>{
+    class UpdateCoursesListToDatabase extends AsyncTask<CourseAndUser,Void,Void>{
 		
 		public static final String TAG = "org.orange.querysystem";
 		public static final int PARSE_COURSE = 1;
 		public static final int PARSE_SCORE = 2;
 
 		@Override
-		protected Void doInBackground(Course... args) {
+		protected Void doInBackground(CourseAndUser... args) {
 			
 			SchoolWebpageParser parser = null;
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(CourseInfoActivity.this);
 			try {
-				parser = new SchoolWebpageParser(new MyParserListener(), "20106135", "20106135");
+				parser = new SchoolWebpageParser(new MyParserListener(), args[0].getUserName(), args[0].getPassword());
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertCourseInf(args[0], "20106135");
+				System.out.println(args[0].getCourse());
+				studentInfDBAdapter.updateCourseInf(args[0].getCourse());
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

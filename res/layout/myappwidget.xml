@@ -3,7 +3,7 @@
     android:id="@+id/theWidget"
     android:layout_width="220dp"
     android:layout_height="74dp"
-    android:background="#030"
+    android:background="@drawable/desk_bg"
     android:alpha="100" 
     android:layout_marginLeft="3dp">  
     <TextView 

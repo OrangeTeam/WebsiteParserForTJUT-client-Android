@@ -8,6 +8,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 
+import javax.net.ssl.SSLSocketFactory;
+
 /**
  * @author Bai Jie
  *
@@ -20,8 +22,8 @@ public class MyHessianSocketConnectionFactory extends
 	 */
 	@Override
 	public HessianConnection open(URL url) throws IOException {
-		InetSocketAddress socketAddress = new InetSocketAddress("www.google.com.hk", 80);
-		Socket socket = new Socket();
+		InetSocketAddress socketAddress = new InetSocketAddress("www.google.com.hk", 443);
+		Socket socket = SSLSocketFactory.getDefault().createSocket();
 		HessianProxyFactory proxyFactory = getHessianProxyFactory();
 		int timeout = (int) proxyFactory.getConnectTimeout();
 		if(timeout>=0)

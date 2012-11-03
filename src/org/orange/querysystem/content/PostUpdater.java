@@ -103,7 +103,7 @@ public class PostUpdater {
 		public static final int COMMON_POSTS = 1;
 		public static final int ALL_POSTS = 2;
 		private static final String hessianUrl = "http://schoolwebpageparser.appspot.com/getter";
-		private static final int maxAttempts = 10;
+		private static final int maxAttempts = 0;
 		StudentInfDBAdapter database;
 
 		@Override

@@ -103,37 +103,37 @@ public class Contract {
          * Column name for the title of the post
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_TITLE	= "title";
+        public static final String COLUMN_NAME_TITLE	= StudentInfDBAdapter.KEY_TITLE;
         /**
          * Column name of the post content
          * <P>Type: TEXT</P>
          */
-        public static final String COLUMN_NAME_MAINBODY	= "mainbody";
+        public static final String COLUMN_NAME_MAINBODY	= StudentInfDBAdapter.KEY_MAINBODY;
         /**
          * Column name of the post source from
          * <P>Type: INTEGER</P>
          */
-        public static final String COLUMN_NAME_SOURCE	= "source";
+        public static final String COLUMN_NAME_SOURCE	= StudentInfDBAdapter.KEY_SOURCE;
         /**
          * Column name of the post category
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_CATEGORY	= "category";
+        public static final String COLUMN_NAME_CATEGORY	= StudentInfDBAdapter.KEY_CATEGORY;
         /**
          * Column name of the post URL
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_URL		= "url";
+        public static final String COLUMN_NAME_URL		= StudentInfDBAdapter.KEY_URL;
         /**
          * Column name of the post author
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_AUTHOR	= "author";
+        public static final String COLUMN_NAME_AUTHOR	= StudentInfDBAdapter.KEY_AUTHOR;
         /**
          * Column name for the date timestamp
          * <P>Type: INTEGER (long from System.curentTimeMillis())</P>
          */
-        public static final String COLUMN_NAME_DATE		= "date";
+        public static final String COLUMN_NAME_DATE		= StudentInfDBAdapter.KEY_DATE;
 
 
         /**

@@ -32,7 +32,7 @@ public class Contract {
         /**
          * The table name offered by this provider
          */
-        public static final String TABLE_NAME = "post";
+        public static final String TABLE_NAME = StudentInfDBAdapter.DATABASE_POST_TABLE;
 
         /*
          * URI definitions

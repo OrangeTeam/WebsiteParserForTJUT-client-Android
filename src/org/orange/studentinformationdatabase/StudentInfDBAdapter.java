@@ -28,7 +28,7 @@ public class StudentInfDBAdapter {
 	private static final String DATABASE_NAME = "studentInf.db";
 	private static final String DATABASE_COURSE_TABLE1 = "courseInf1";
 	private static final String DATABASE_COURSE_TABLE2 = "courseInf2";
-	private static final String DATABASE_POST_TABLE = "post";
+	static final String DATABASE_POST_TABLE = "post";
 	private static final int DATABASE_VERSION = 1;
 	
 	private SQLiteDatabase db;
@@ -68,7 +68,7 @@ public class StudentInfDBAdapter {
 	public static final String KEY_ADDRESS ="address";
 	
 	
-	public static final String KEY_POST_ID = "post_id";
+	public static final String KEY_POST_ID = Contract.Posts._ID;
 	public static final String KEY_SOURCE = "source";
 	public static final String KEY_CATEGORY = "category";
 	public static final String KEY_TITLE = "title";

@@ -66,7 +66,7 @@ public class PostUpdater {
 			return true;
 		long lastUpdatedTime = mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0);
 		long now = new Date().getTime();
-		if(true){
+		if(now - lastUpdatedTime > longUpdateInterval){
 			if(lastUpdatedTime == 0){
 				Log.v(TAG, "第一次更新");
 				//警告

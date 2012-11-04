@@ -1,208 +1,144 @@
-/**
- * 
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.orange.querysystem.content;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.orange.querysystem.R;
+import org.orange.studentinformationdatabase.Contract;
 
-import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
-import android.view.LayoutInflater;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 /**
- * @author Bai Jie
+ * modified from Support4Demo's LoaderCursorSupport
+ * @modifiedBy Bai Jie
  */
-public class ListPostsFragment extends ListFragment {
-	public static final String POSTS_KEY = ListPostsFragment.class.getName()+"simplepost.key";
-	
-	public static ListPostsFragment newInstance(ArrayList<SimplePost> posts){
-		ListPostsFragment listADay = new ListPostsFragment();
-		Bundle args = new Bundle();
-		args.putParcelableArrayList(POSTS_KEY, posts);
-		listADay.setArguments(args);
-		return listADay;
-	}
+public class ListPostsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static final String SOURCE = Contract.Posts.COLUMN_NAME_SOURCE;
 
-	/**
-	 * 应用{@link #setArguments(Bundle args)}设置的Posts，{@link #onCreate(Bundle)}会自动调用此方法<br />
-	 * 使用方法：<br />
-	 * 先用{@link #setArguments(Bundle args)}方法传递通知列表，再用此方法应用传递过来的列表
-	 * <code>
-	 * ArrayList<SimplePost> posts;
-	 * ...
-	 * Bundle arg = new Bundle();
-	 * arg.putParcelableArrayList(ListPostsFragment.POSTS_KEY, posts);
-	 * thisFragment.setArguments(arg);
-	 * thisFragment.applyArguments();
-	 * </code>
-	 */
-	public void applyArguments(){
-		Bundle args = getArguments();
-		if(args != null){
-			ArrayList<SimplePost> posts = args.getParcelableArrayList(POSTS_KEY);
-			setListAdapter(new PostsAdapter(getActivity(), posts));
-		}
-	}
+    public static Bundle buildArgument(byte source) {
+        Bundle args = new Bundle();
+        args.putString(SOURCE, String.valueOf(source));
+        return args;
+    }
+    public static ListPostsFragment newInstance(byte source) {
+        ListPostsFragment frag = new ListPostsFragment();
+        frag.setArguments(buildArgument(source));
+        return frag;
+    }
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onCreate(android.os.Bundle)
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		applyArguments();
-	}
+    // This is the Adapter being used to display the list's data.
+    SimpleCursorAdapter mAdapter;
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.ListFragment#onListItemClick(android.widget.ListView, android.view.View, int, long)
-	 */
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent(getActivity(), ShowOnePostActivity.class);
-		intent.putExtra(ShowOnePostActivity.EXTRA_POST_ID, (int)id);
-		startActivity(intent);
-	}
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-	public static class SimplePost implements Parcelable{
-		private long id;
-		private String title;
-		private String category;
-		private String date;
-		private String author;
-		public SimplePost(long id, String title, String category, String author, String date){
-			this.id = id;
-			this.title = title;
-			this.category = category;
-			this.date = date;
-			this.author = author;
-		}
-		public SimplePost(Parcel in){
-			this(in.readLong(), in.readString(), in.readString(), in.readString(), in.readString());
-		}
-		public long getId() {
-			return id;
-		}
-		public String getTitle() {
-			return title;
-		}
-		public String getCategory(){
-			return category;
-		}
-		public String getDate() {
-			return date;
-		}
-		public String getAuthor() {
-			return author;
-		}
-		@Override
-		public int describeContents() {
-			return 0;
-		}
-		@Override
-		public void writeToParcel(Parcel out, int flags) {
-			out.writeLong(id);
-			out.writeString(title);
-			out.writeString(category);
-			out.writeString(author);
-			out.writeString(date);
-		}
-		public static final Parcelable.Creator<SimplePost> CREATOR 
-		= new Parcelable.Creator<SimplePost>(){
+        // Give some text to display if there is no data.
+        setEmptyText(getResources().getText(R.string.no_post));
 
-			@Override
-			public SimplePost createFromParcel(Parcel source) {
-				return new SimplePost(source);
-			}
+        // We have a menu item to show in action bar.
+        //setHasOptionsMenu(true);
 
-			@Override
-			public SimplePost[] newArray(int size) {
-				return new SimplePost[size];
-			}
-			
-		};
-	}
-	
-	public static class PostsAdapter extends BaseAdapter{
-		private LayoutInflater mInflater;
-		private List<SimplePost> posts;
-		public PostsAdapter(Context context, List<SimplePost> posts){
-			mInflater = LayoutInflater.from(context);
-			setPosts(posts);
-		}
-		public void setPosts(List<SimplePost> posts){
-			this.posts = posts;
-		}
+        // Create an empty adapter we will use to display the loaded data.
+        mAdapter = new SimpleCursorAdapter(getActivity(),
+                R.layout.fragment_list_post_row, null,
+                new String[] {Contract.Posts.COLUMN_NAME_TITLE,
+                                Contract.Posts.COLUMN_NAME_CATEGORY,
+                                Contract.Posts.COLUMN_NAME_DATE,
+                                Contract.Posts.COLUMN_NAME_AUTHOR},
+                new int[] {R.id.post_title, R.id.post_category, R.id.post_date, R.id.post_author}, 0);
+        setListAdapter(mAdapter);
 
-		@Override
-		public int getCount() {
-			if(posts!=null)
-				return posts.size();
-			return 0;
-		}
+        // Start out with a progress indicator.
+        setListShown(false);
 
-		@Override
-		public SimplePost getItem(int position) {
-			return posts.get(position);
-		}
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(0, null, this);
+    }
 
-		@Override
-		public long getItemId(int position) {
-			return posts.get(position).getId();
-		}
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Intent intent = new Intent(getActivity(), ShowOnePostActivity.class);
+        intent.putExtra(ShowOnePostActivity.EXTRA_POST_ID, id);
+        startActivity(intent);
+    }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// A ViewHolder keeps references to children views to avoid unneccessary calls
-            // to findViewById() on each row.
-            ViewHolder holder;
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This is called when a new Loader needs to be created.  This
+        // sample only has one Loader, so we don't care about the ID.
+        // First, pick the base URI to use depending on whether we are
+        // currently filtering.
+        Uri baseUri;
+//        if (mCurFilter != null) {
+//            baseUri = Uri.withAppendedPath(People.CONTENT_FILTER_URI, Uri.encode(mCurFilter));
+//        } else {
+            baseUri = Contract.Posts.CONTENT_URI;
+//        }
 
-            // When convertView is not null, we can reuse it directly, there is no need
-            // to reinflate it. We only inflate a new View when the convertView supplied
-            // by ListView is null.
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.fragment_list_post_row,parent,false);
+        String source = getArguments().getString(SOURCE);
+        String selection = null;
+        String[] selectionArgs = null;
+        if(!TextUtils.isEmpty(source)){
+            selection = Contract.Posts.COLUMN_NAME_SOURCE + "= ?";
+            selectionArgs = new String[]{source};
+        }
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        return new CursorLoader(getActivity(), baseUri,
+                new String[] {Contract.Posts._ID,
+                                Contract.Posts.COLUMN_NAME_TITLE,
+                                Contract.Posts.COLUMN_NAME_CATEGORY,
+                                Contract.Posts.COLUMN_NAME_DATE,
+                                Contract.Posts.COLUMN_NAME_AUTHOR}
+                , selection, selectionArgs,
+                Contract.Posts.DEFAULT_SORT_ORDER);
+    }
 
-                // Creates a ViewHolder and store references to the two children views
-                // we want to bind data to.
-                holder = new ViewHolder();
-                holder.title = (TextView) convertView.findViewById(R.id.post_title);
-                holder.category = (TextView) convertView.findViewById(R.id.post_category);
-                holder.author = (TextView) convertView.findViewById(R.id.post_author);
-                holder.date = (TextView) convertView.findViewById(R.id.post_date);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new cursor in.  (The framework will take care of closing the
+        // old cursor once we return.)
+        mAdapter.swapCursor(data);
 
-                convertView.setTag(holder);
-            } else {
-                // Get the ViewHolder back to get fast access to the TextView
-                // and the ImageView.
-                holder = (ViewHolder) convertView.getTag();
-            }
+        // The list should now be shown.
+        if (isResumed()) {
+            setListShown(true);
+        } else {
+            setListShownNoAnimation(true);
+        }
+    }
 
-            // Bind the data efficiently with the holder.
-            holder.title.setText(posts.get(position).getTitle());
-            holder.category.setText(posts.get(position).getCategory());
-            holder.author.setText(posts.get(position).getAuthor());
-            holder.date.setText(posts.get(position).getDate());
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed.  We need to make sure we are no
+        // longer using it.
+        mAdapter.swapCursor(null);
+    }
 
-            return convertView;
-		}
-		
-		private class ViewHolder{
-			TextView title;
-			TextView category;
-			TextView author;
-			TextView date;
-		}
-	}
 }

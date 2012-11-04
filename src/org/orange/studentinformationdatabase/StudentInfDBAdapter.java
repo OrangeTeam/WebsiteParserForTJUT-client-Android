@@ -28,7 +28,7 @@ public class StudentInfDBAdapter {
 	private static final String DATABASE_NAME = "studentInf.db";
 	private static final String DATABASE_COURSE_TABLE1 = "courseInf1";
 	private static final String DATABASE_COURSE_TABLE2 = "courseInf2";
-	private static final String DATABASE_POST_TABLE = "post";
+	private static final String DATABASE_POST_TABLE = Contract.Posts.TABLE_NAME;
 	private static final int DATABASE_VERSION = 1;
 	
 	private SQLiteDatabase db;
@@ -68,22 +68,25 @@ public class StudentInfDBAdapter {
 	public static final String KEY_ADDRESS ="address";
 	
 	
-	public static final String KEY_POST_ID = "post_id";
-	public static final String KEY_SOURCE = "source";
-	public static final String KEY_CATEGORY = "category";
-	public static final String KEY_TITLE = "title";
-	public static final String KEY_URL = "url";
-	public static final String KEY_AUTHOR = "author";
-	public static final String KEY_DATE = "date";
-	public static final String KEY_MAINBODY = "mainbody";
+	private static final String KEY_POST_ID	= Contract.Posts._ID;
+	private static final String KEY_SOURCE	= Contract.Posts.COLUMN_NAME_SOURCE;
+	private static final String KEY_CATEGORY= Contract.Posts.COLUMN_NAME_CATEGORY;
+	private static final String KEY_TITLE	= Contract.Posts.COLUMN_NAME_TITLE;
+	private static final String KEY_URL		= Contract.Posts.COLUMN_NAME_URL;
+	private static final String KEY_AUTHOR	= Contract.Posts.COLUMN_NAME_AUTHOR;
+	private static final String KEY_DATE	= Contract.Posts.COLUMN_NAME_DATE;
+	private static final String KEY_MAINBODY= Contract.Posts.COLUMN_NAME_MAINBODY;
 	
 	
 	/*
 	 *  内部类，构建数据库用的，生成courseInf1、courseInf2和post表。
 	 */
-	private static class StudentInfDBOpenHelper extends SQLiteOpenHelper{
+	static class StudentInfDBOpenHelper extends SQLiteOpenHelper{
 		public StudentInfDBOpenHelper(Context context, String name, CursorFactory factory, int version){
 			super(context, name, factory,version);
+		}
+		public StudentInfDBOpenHelper(Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
 	
 	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key,"

@@ -6,6 +6,7 @@ package org.orange.querysystem.content;
 import java.io.IOException;
 
 import org.orange.querysystem.R;
+import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Post;
@@ -62,7 +63,7 @@ public class ShowOnePostActivity extends Activity {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			mActionBar = getActionBar();
 		
-		int id = getIntent().getIntExtra(EXTRA_POST_ID, 0);
+		long id = getIntent().getLongExtra(EXTRA_POST_ID, 0);
 		if(id!=0)
 			new LoadPost().execute(id);
 	}
@@ -112,15 +113,15 @@ public class ShowOnePostActivity extends Activity {
 		sourceAndCategoryView.setText(post.getSourceString()+" "+post.getCategory());
 	}
 
-	private class LoadPost extends AsyncTask<Integer, Void, Post>{
+	private class LoadPost extends AsyncTask<Long, Void, Post>{
 
 		@Override
-		protected Post doInBackground(Integer... id) {
+		protected Post doInBackground(Long... id) {
 			Post post = null;
 			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowOnePostActivity.this);
 			try{
 				database.open();
-				post = database.getPostsFromDB(StudentInfDBAdapter.KEY_POST_ID+" = "+id[0], null, null).get(0);
+				post = database.getPostsFromDB(Contract.Posts._ID+" = "+id[0], null, null).get(0);
 			} catch (SQLiteException e){
 				Log.e(TAG, "打开数据库异常！");
 				e.printStackTrace();

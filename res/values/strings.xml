@@ -27,6 +27,12 @@
     
     <!-- used in ShowOnePostActivity.java -->
     <string name="open_with_browser">用浏览器打开</string>
+    <!-- used in ListPostsFragment.java -->
+    <string name="no_post">尚无通知</string>
+    <string name="unknown_source">未知来源</string>
+    <string name="teaching_affairs">教务处</string>
+    <string name="school_of_computer_and_communication_engineering">计算机与通讯工程学院</string>
+    <string name="student_website_of_SCCE">计算机与通信工程学院学生网站</string>
     <!-- used in ListScoresFragment.java -->
     <string name="course_name">课程名称</string>
     <string name="course_test_score">考试</string>

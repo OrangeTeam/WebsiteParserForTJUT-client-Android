@@ -66,7 +66,7 @@ public class PostUpdater {
 			return true;
 		long lastUpdatedTime = mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0);
 		long now = new Date().getTime();
-		if(now - lastUpdatedTime > longUpdateInterval){
+		if(true){
 			if(lastUpdatedTime == 0){
 				Log.v(TAG, "第一次更新");
 				//警告
@@ -162,7 +162,7 @@ public class PostUpdater {
 				database = new StudentInfDBAdapter(mContext);
 				database.open();
 				database.autoInsertArrayPostsInf(posts);
-				mPreferences.edit().putLong(LAST_UPDATED_TIME_KEY, new Date().getTime()).commit();
+				mPreferences.edit().putLong(LAST_UPDATED_TIME_KEY, System.currentTimeMillis()).commit();
 				database.close();
 			}else{
 				Log.e(TAG, "更新posts失败");

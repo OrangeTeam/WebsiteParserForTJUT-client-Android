@@ -131,7 +131,7 @@ public class Contract {
         public static final String COLUMN_NAME_AUTHOR	= StudentInfDBAdapter.KEY_AUTHOR;
         /**
          * Column name for the date timestamp
-         * <P>Type: INTEGER (long from System.curentTimeMillis())</P>
+         * <P>Type: INTEGER</P>
          */
         public static final String COLUMN_NAME_DATE		= StudentInfDBAdapter.KEY_DATE;
 

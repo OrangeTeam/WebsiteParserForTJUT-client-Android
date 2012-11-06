@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <Preference android:title="@string/prefs_student_account" >
+        <intent android:targetPackage="org.orange.querysystem"
+                android:targetClass="org.orange.querysystem.LoginActivity" />
+    </Preference>
+
+</PreferenceScreen>

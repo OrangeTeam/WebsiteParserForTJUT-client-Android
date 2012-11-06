@@ -100,6 +100,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
             baseUri = Contract.Posts.CONTENT_URI;
 //        }
 
+        //TODO 不会null?
         String source = getArguments().getString(SOURCE);
         String selection = null;
         String[] selectionArgs = null;

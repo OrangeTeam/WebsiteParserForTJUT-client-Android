@@ -53,6 +53,7 @@
 		<activity android:name=".content.CourseInfoActivity"/>
 		<activity android:name=".content.AddCourseInfoActivity"/>
 		<activity android:name=".content.ListScoresActivity"/>
+        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>

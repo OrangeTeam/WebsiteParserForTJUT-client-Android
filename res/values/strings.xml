@@ -56,4 +56,5 @@
 
     <!-- preferences.xml -->
     <string name="prefs_student_account">设置账号</string>
+    <string name="prefs_starting_date">开学日期</string>
 </resources>

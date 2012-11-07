@@ -4,5 +4,9 @@
         <intent android:targetPackage="org.orange.querysystem"
                 android:targetClass="org.orange.querysystem.LoginActivity" />
     </Preference>
+    <org.orange.querysystem.content.DatePickerPreference
+        android:key = "pref_startingDate"
+        android:title = "@string/prefs_starting_date"
+        android:defaultValue="1348416000000L" />
 
 </PreferenceScreen>

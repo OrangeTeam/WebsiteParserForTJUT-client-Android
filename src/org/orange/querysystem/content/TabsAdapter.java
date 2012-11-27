@@ -101,6 +101,7 @@ public class TabsAdapter extends FragmentPagerAdapter
 	 */
 	public void clear(){
 		mTabs.clear();
+		mTabHost.setCurrentTab(0);
 		mTabHost.clearAllTabs();
 		notifyDataSetChanged();
 	}

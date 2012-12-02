@@ -15,9 +15,13 @@
  */
 package org.orange.querysystem.content;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.orange.querysystem.R;
 import org.orange.studentinformationdatabase.Contract;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,10 +30,13 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * modified from Support4Demo's LoaderCursorSupport
@@ -50,7 +57,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
     }
 
     // This is the Adapter being used to display the list's data.
-    SimpleCursorAdapter mAdapter;
+    CursorAdapter mAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -63,13 +70,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
         //setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new SimpleCursorAdapter(getActivity(),
-                R.layout.fragment_list_post_row, null,
-                new String[] {Contract.Posts.COLUMN_NAME_TITLE,
-                                Contract.Posts.COLUMN_NAME_CATEGORY,
-                                Contract.Posts.COLUMN_NAME_DATE,
-                                Contract.Posts.COLUMN_NAME_AUTHOR},
-                new int[] {R.id.post_title, R.id.post_category, R.id.post_date, R.id.post_author}, 0);
+        mAdapter = new PostsCursorAdapter(getActivity(), null, 0);
         setListAdapter(mAdapter);
 
         // Start out with a progress indicator.
@@ -142,4 +143,31 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
         mAdapter.swapCursor(null);
     }
 
+    public static class PostsCursorAdapter extends CursorAdapter {
+        private final LayoutInflater mInflater;
+        private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        public PostsCursorAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+            mInflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            String tempString;
+            tempString = cursor.getString(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_TITLE));
+            ((TextView) view.findViewById(R.id.post_title)).setText(tempString);
+            tempString = cursor.getString(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_CATEGORY));
+            ((TextView) view.findViewById(R.id.post_category)).setText(tempString);
+            tempString = cursor.getString(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_AUTHOR));
+            ((TextView) view.findViewById(R.id.post_author)).setText(tempString);
+            long date = cursor.getLong(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_DATE));
+            ((TextView) view.findViewById(R.id.post_date)).setText(mDateFormat.format(new Date(date)));
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater.inflate(R.layout.fragment_list_post_row, parent, false);
+        }
+    }
 }

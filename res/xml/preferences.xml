@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <Preference android:title="@string/prefs_student_account" >
+    <Preference
+        android:title="@string/prefs_student_account"
+        android:summary="@string/prefs_student_account_summary" >
         <intent android:targetPackage="org.orange.querysystem"
                 android:targetClass="org.orange.querysystem.LoginActivity" />
     </Preference>
     <org.orange.querysystem.content.DatePickerPreference
         android:key = "pref_startingDate"
         android:title = "@string/prefs_starting_date"
+        android:summary = "@string/prefs_starting_date_summary"
         android:defaultValue="1348416000000L" />
 
 </PreferenceScreen>

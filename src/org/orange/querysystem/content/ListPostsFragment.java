@@ -30,9 +30,15 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SearchViewCompat;
+import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -59,6 +65,14 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
     // This is the Adapter being used to display the list's data.
     CursorAdapter mAdapter;
 
+    // If non-null, this is the filter the user has provided.
+    String mFilter;
+    /** search mFilter by this clause */
+    private static final String searchClause =
+            Contract.Posts.COLUMN_NAME_TITLE + " LIKE ? OR " +
+            Contract.Posts.COLUMN_NAME_CATEGORY +" LIKE ? OR "+
+            Contract.Posts.COLUMN_NAME_AUTHOR + " LIKE ?";
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -67,7 +81,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
         setEmptyText(getResources().getText(R.string.no_post));
 
         // We have a menu item to show in action bar.
-        //setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new PostsCursorAdapter(getActivity(), null, 0);
@@ -79,6 +93,41 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Place an action bar item for searching.
+        MenuItem item = menu.add("Search");
+        item.setIcon(android.R.drawable.ic_menu_search);
+        MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
+                | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        View searchView = SearchViewCompat.newSearchView(getActivity());
+        if (searchView != null) {
+            SearchViewCompat.setOnQueryTextListener(searchView,
+                    new OnQueryTextListenerCompat() {
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    // Called when the action bar search text has changed.  Update
+                    // the search filter, and restart the loader to do a new query
+                    // with this filter.
+                    if(TextUtils.isEmpty(newText))
+                        newText = null;
+                    // Don't do anything if the filter hasn't actually changed.
+                    // Prevents restarting the loader when restoring state.
+                    if (mFilter == null && newText == null) {
+                        return true;
+                    }
+                    if (mFilter != null && mFilter.equals(newText)) {
+                        return true;
+                    }
+                    mFilter = newText;
+                    getLoaderManager().restartLoader(0, null, ListPostsFragment.this);
+                    return true;
+                }
+            });
+            MenuItemCompat.setActionView(item, searchView);
+        }
     }
 
     @Override
@@ -95,20 +144,28 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
         // First, pick the base URI to use depending on whether we are
         // currently filtering.
         Uri baseUri;
-//        if (mCurFilter != null) {
-//            baseUri = Uri.withAppendedPath(People.CONTENT_FILTER_URI, Uri.encode(mCurFilter));
+//        if (mFilter != null) {
+//            baseUri = Uri.withAppendedPath(People.CONTENT_FILTER_URI, Uri.encode(mFilter));
 //        } else {
             baseUri = Contract.Posts.CONTENT_URI;
 //        }
 
-        //TODO 不会null?
         String source = getArguments().getString(SOURCE);
         String selection = null;
         String[] selectionArgs = null;
         if(!TextUtils.isEmpty(source)){
             selection = Contract.Posts.COLUMN_NAME_SOURCE + "= ?";
-            selectionArgs = new String[]{source};
-        }
+            if(mFilter == null) {
+                selectionArgs = new String[]{source};
+            } else {
+                selection += " AND (" + searchClause + ")";
+                selectionArgs = new String[]{source, "%"+mFilter+"%", "%"+mFilter+"%", "%"+mFilter+"%"};
+            }
+        }else
+            if(mFilter != null) {
+                selection = searchClause;
+                selectionArgs = new String[]{"%"+mFilter+"%", "%"+mFilter+"%", "%"+mFilter+"%"};
+            }
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), baseUri,
@@ -145,7 +202,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
 
     public static class PostsCursorAdapter extends CursorAdapter {
         private final LayoutInflater mInflater;
-        private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         public PostsCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);

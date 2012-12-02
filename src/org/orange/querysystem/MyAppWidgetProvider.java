@@ -1,17 +1,18 @@
 package org.orange.querysystem;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 
-import org.orange.querysystem.content.ListCoursesActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.MainMenuActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -33,12 +34,12 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 	private int period = 0;
 	StudentInfDBAdapter studentInfDBAdapter = null;
 	
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){
+	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){        
 		AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		long triggerAtTime = SystemClock.elapsedRealtime() + 15*60*1000;
+		long triggerAtTime = SystemClock.elapsedRealtime() + 5*1000;
 		int interval = 15*60*1000;
 		alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime, interval, pendingIntent);
 		updateCourse(context, appWidgetManager, appWidgetIds);

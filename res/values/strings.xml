@@ -44,17 +44,6 @@
     <string name="course_kind">课程性质</string>
     <string name="course_info_change">修改</string>
     <string name="course_info_submit">提交</string>
-    
-    <string name="student_number">学号</string>
-    <string name="name">姓名</string>
-    <string name="gender">性别</string>
-    <string name="birth">出生年月日</string>
-    <string name="lengthofschooling">学制</string>
-    <string name="admission_date">入学时间</string>
-    <string name="school_name">院系名称</string>
-    <string name="profession">专业名称</string>
-    <string name="class_name">班级名称</string>
-    <string name="photo">照片</string>
 
     <!-- preferences.xml -->
     <string name="prefs_student_account">账号</string>

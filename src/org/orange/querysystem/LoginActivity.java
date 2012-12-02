@@ -1,6 +1,9 @@
 package org.orange.querysystem;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 
 import org.orange.querysystem.content.ListCoursesActivity;
@@ -19,7 +22,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +89,16 @@ public class LoginActivity extends Activity{
             editor.putString("start_month", String.valueOf(mMonth));
             editor.putString("start_day", String.valueOf(mDayOfMonth));
             editor.commit();
+        }
+        
+        if(shareData.getString("userName", null) == null){
+            DBManager manager = new DBManager();
+    		try {
+    			manager.openHelper(this);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
         }
         
         userNameBox.setText(shareData.getString("userName", null));
@@ -263,6 +276,21 @@ public class LoginActivity extends Activity{
 				Intent intent = new Intent(LoginActivity.this, ListCoursesActivity.class);
 				startActivity(intent);
 			}
+		}
+	}
+	private class DBManager{
+		protected void openHelper(Context context) throws IOException{
+			 String dbDirPath = "/data/data/org.orange.querysystem/databases";
+			 File dbDir = new File(dbDirPath);
+			 if(!dbDir.exists())
+				 dbDir.mkdir();
+			 InputStream is = context.getResources().openRawResource(R.raw.studentinf);
+			 FileOutputStream os = new FileOutputStream(dbDirPath+"/studentInf.db");
+			 byte[] buffer = new byte[1024];
+			 int count = 0;
+			 while ((count = is.read(buffer)) > 0) {    os.write(buffer, 0, count);  }  
+			 is.close();
+			 os.close();
 		}
 	}
 }

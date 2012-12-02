@@ -22,14 +22,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -62,7 +65,6 @@ public class CourseInfoActivity extends Activity{
 	private EditText day_of_week_input;
 	private EditText period_input;
 	private EditText classroom_input;
-	private int i = 0;
 	private int course_id;
 	private int time_and_adress_counter;
 	private int time_and_adress_sign = 0;
@@ -70,6 +72,11 @@ public class CourseInfoActivity extends Activity{
 	private String day_of_week_get = "";
 	private String period_get = "";
 	private String classroom_get = "";
+	
+	private static final int ITEM1 = Menu.FIRST;
+	private static final int ITEM2 = Menu.FIRST+1;
+	private static final int ITEM3 = Menu.FIRST+2;
+	private static final int ITEM4 = Menu.FIRST+3;
 	
 	private static final int DIALOG_TEXT_ENTRY = 1;
 	
@@ -127,9 +134,9 @@ public class CourseInfoActivity extends Activity{
 		course_kind_input.setText(course.getKind());
 		course_test_score_input.setText(String.valueOf(course.getTestScore()));
 		course_total_score_input.setText(String.valueOf(course.getTotalScore()));
+		TextView textView = new TextView(this);
+		textView.setText("时间地点: ");
 		for(time_and_adress_counter=0; time_and_adress_counter<course.getTimeAndAddress().size(); time_and_adress_counter++){
-			TextView textView = new TextView(this);
-			textView.setText("时间地点" + (time_and_adress_counter+1) + ": ");
 			textView.setId(time_and_adress_counter*2 + 1);
 			textView.setTextSize(18);
 			EditText editText = new EditText(this);
@@ -263,16 +270,7 @@ public class CourseInfoActivity extends Activity{
     		course_grade_point_input.setEnabled(true);
     		for(time_and_adress_sign=0; time_and_adress_sign < time_and_adress_counter; time_and_adress_sign++){
     			findViewById(time_and_adress_sign*2 + 2).setEnabled(true);
-    			findViewById(time_and_adress_sign*2 + 2).setOnClickListener(new EditText.OnClickListener(){
-    				@Override
-    				public void onClick(View arg0) {
-    					// TODO Auto-generated method stub
-    					i++;
-    					System.out.println("我能行！");
-    					showDialog(i);
-    					
-    				}
-    			});
+    			registerForContextMenu((EditText)findViewById(time_and_adress_sign*2 + 2));
     		}
     		
     	}
@@ -281,6 +279,21 @@ public class CourseInfoActivity extends Activity{
     		finish();
     	}
     	return super.onMenuItemSelected(featureId, item);
+    }
+    
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo){
+    	for(int i = 0; i < time_and_adress_counter; i++){
+    		menu.add(0, i, 0, "时间与地点"+(i+1));
+    	}
+    }
+    
+    public boolean onContextItemSelected(MenuItem item){
+    	for(int i = 0; i < time_and_adress_counter; i++){
+    		if(item.getItemId() == i){
+    			showDialog(i);
+    		}
+    	}
+    	return true;
     }
     
     @Override

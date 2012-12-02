@@ -22,6 +22,7 @@ import org.orange.querysystem.content.PostUpdater.OnPostExecuteListener;
 
 import util.webpage.Post;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
@@ -35,6 +36,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -64,7 +66,7 @@ public class ListPostsActivity extends FragmentActivity{
 		
 		setContentView(R.layout.fragment_tabs_pager);
 		currentTime = (TextView)findViewById(R.id.currentTime);
-		currentTime.setText("通知");
+		currentTime.setText(R.string.post);
 
 		mWebUpdaterToDB = new PostUpdater(this);
 		mWebUpdaterToDB.setOnPostExecuteListener(new OnPostExecuteListener() {
@@ -81,11 +83,16 @@ public class ListPostsActivity extends FragmentActivity{
 		mViewPager = (ViewPager)findViewById(R.id.pager);
 
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-		
+
+		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar mActionBar = getActionBar();
+			mActionBar.setTitle(R.string.post);
+			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
+			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
-				getActionBar().hide();
+				mActionBar.hide();
 		}else{
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  

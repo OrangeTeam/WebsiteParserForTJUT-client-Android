@@ -27,6 +27,8 @@
     
     <!-- used in ShowOnePostActivity.java -->
     <string name="open_with_browser">用浏览器打开</string>
+    <!-- used in ListPostsActivity.java -->
+    <string name="post">通知</string>
     <!-- used in ListPostsFragment.java -->
     <string name="no_post">尚无通知</string>
     <string name="unknown_source">未知来源</string>

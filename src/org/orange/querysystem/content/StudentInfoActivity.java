@@ -51,8 +51,6 @@ public class StudentInfoActivity extends ListActivity{
 	private ListViewAdapter adapter;
 	private View showImage;
 	private ImageView imageView;
-	private Bitmap bitmap;
-//	private int start_resume = 0;
 	private static final String FILE_NAME = "student_info.txt";
 	
 	@Override

@@ -252,6 +252,10 @@ public class LoginActivity extends Activity{
 				parser.setUser(userNameBox.getText().toString(), passwordBox.getText().toString());
 				parser.setTimeout(LOGIN_TIME_OUT);
 				hasLogined = parser.getCurrentHelper().doLogin();
+				File imageFile = new File("data/data/org.orange.querysystem/files/", "student_image.jpg");
+    			imageFile.delete();
+    			File fileObject = new File("data/data/org.orange.querysystem/files/", "student_info.txt");
+    			fileObject.delete();
 			} catch (IOException e) {
 				System.err.println(e);
 			}

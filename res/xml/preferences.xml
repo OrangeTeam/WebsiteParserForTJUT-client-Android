@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:orange="org.orange" >
     <Preference
         android:title="@string/prefs_student_account"
         android:summary="@string/prefs_student_account_summary" >
@@ -10,6 +11,9 @@
         android:key = "pref_startingDate"
         android:title = "@string/prefs_starting_date"
         android:summary = "@string/prefs_starting_date_summary"
-        android:defaultValue="1348416000000L" />
+        android:defaultValue="1348416000000L"
+        orange:minDateComparedWithRunTime="-15811200000"
+        orange:maxDateComparedWithRunTime="15811200000" />
+        <!-- 15811200000ms 约为半年 -->
 
 </PreferenceScreen>

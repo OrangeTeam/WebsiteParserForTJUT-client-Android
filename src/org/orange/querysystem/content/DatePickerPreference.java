@@ -2,8 +2,6 @@ package org.orange.querysystem.content;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -21,15 +19,79 @@ import android.widget.DatePicker.OnDateChangedListener;
 public class DatePickerPreference extends DialogPreference implements OnDateChangedListener{
 	//TODO change it
 	private static final long DEFAULT_VALUE = 0;
-	Context mContext;
-	Date mCurrentValue;
+	private static final String ORANGE = "org.orange";
+	private Context mContext;
+	private Date mCurrentValue;
+	private Date mMaxDate;
+	private Date mMinDate;
 
-	DatePicker mDatePicker;
+	private DatePicker mDatePicker;
 
 	public DatePickerPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		initPreference(context, attrs);
+	}
+	public DatePickerPreference(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		initPreference(context, attrs);
+	}
+	private void initPreference(Context context, AttributeSet attrs) {
 		mContext = context;
 		mCurrentValue = new Date(DEFAULT_VALUE);
+		setValuesFromXml(attrs);
+	}
+	/**
+	 * 根据preferenceXML配置DatePicker的最早时间、最晚时间
+	 * @param attrs XML中的属性集
+	 * @throws IllegalArgumentException 如果最早时间晚于最晚时间
+	 */
+	private void setValuesFromXml(AttributeSet attrs) {
+		Long minDate = null, maxDate = null, tempLong = null;
+		long current = new Date().getTime();
+		minDate = parseLong(attrs.getAttributeValue(ORANGE, "minDate"));
+		maxDate = parseLong(attrs.getAttributeValue(ORANGE, "maxDate"));
+
+		tempLong = parseLong(attrs.getAttributeValue(ORANGE, "minDateComparedWithRunTime"));
+		if(minDate == null)
+			minDate = current + tempLong;
+		else if(tempLong != null) {
+			tempLong += current;
+			if(minDate < tempLong)
+				minDate = tempLong;
+		}//else minDate !=null && tempLong == null, do nothing
+		tempLong = parseLong(attrs.getAttributeValue(ORANGE, "maxDateComparedWithRunTime"));
+		if(maxDate == null)
+			maxDate = current + tempLong;
+		else if(tempLong != null) {
+			tempLong += current;
+			if(maxDate > tempLong)
+				maxDate = tempLong;
+		}//else maxDate !=null && tempLong == null, do nothing
+
+		if(minDate != null)
+			this.mMinDate = new Date(minDate);
+		if(maxDate != null)
+			this.mMaxDate = new Date(maxDate);
+		if(mMinDate != null && mMaxDate != null && mMinDate.after(mMaxDate))
+			throw new IllegalArgumentException("mMinDate after mMaxDate mMinDate:" 
+					+ mMinDate + " mMaxDate:" + mMaxDate);
+	}
+	/**
+	 * 把string解析为Long。sting可带一个字母后缀，若string为null返回null
+	 * @param string 可带一个字母后缀的Long字符串
+	 * @return string == null ? null : Long形式的string
+	 */
+	private Long parseLong(String string) {
+		Long result = null;
+		if(string != null) {
+			if(string.matches("[+-]?\\d+"))
+				result = Long.valueOf(string);
+			else if(string.matches("[+-]?\\d+[a-zA-Z]"))
+				result = Long.valueOf(string.substring(0, string.length()-1));
+			else
+				throw new NumberFormatException("数字\"" + string + "\"的格式错误");
+		}
+		return result;
 	}
 
 	@Override
@@ -45,9 +107,9 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 	}
 
 	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
+	protected Long onGetDefaultValue(TypedArray a, int index) {
 		String date = a.getString(index);
-		if(TextUtils.isEmpty(date)||!date.matches("\\d+[a-zA-Z]"))
+		if(TextUtils.isEmpty(date)||!date.matches("[+-]?\\d+[a-zA-Z]"))
 			return DEFAULT_VALUE;
 		else {
 			try {
@@ -68,6 +130,10 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 		Calendar c = Calendar.getInstance();
 		c.setTime(mCurrentValue);
 		mDatePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
+		if(mMinDate != null)
+			mDatePicker.setMinDate(mMinDate.getTime());
+		if(mMaxDate != null)
+			mDatePicker.setMaxDate(mMaxDate.getTime());
 		return mDatePicker;
 	}
 
@@ -85,7 +151,7 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 	private Long getPickerTime() {
 		if(mDatePicker == null)
 			return null;
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+08"), Locale.PRC);
+		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.set(mDatePicker.getYear(), mDatePicker.getMonth(), mDatePicker.getDayOfMonth());
 		return calendar.getTimeInMillis();
@@ -171,6 +237,5 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 
 	@Override
 	public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-		// TODO Auto-generated method stub
 	}
 }

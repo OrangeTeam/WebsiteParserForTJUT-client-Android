@@ -102,6 +102,13 @@ public class ListCoursesFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 	}
 
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		setEmptyText(getResources().getText(R.string.no_course));
+	}
+
 	public static class SimpleCourse implements Parcelable{
 		private int id;
 		private String name;

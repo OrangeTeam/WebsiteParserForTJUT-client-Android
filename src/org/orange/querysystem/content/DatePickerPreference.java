@@ -123,16 +123,18 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 	@TargetApi(11)
 	@Override
 	protected View onCreateDialogView() {
+		boolean isOrLaterThanHoneycomb = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+
 		mDatePicker = new DatePicker(mContext);
 		//Set View attributes
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		if(isOrLaterThanHoneycomb)
 			mDatePicker.setCalendarViewShown(false);
 		Calendar c = Calendar.getInstance();
 		c.setTime(mCurrentValue);
 		mDatePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
-		if(mMinDate != null)
+		if(mMinDate != null && isOrLaterThanHoneycomb)
 			mDatePicker.setMinDate(mMinDate.getTime());
-		if(mMaxDate != null)
+		if(mMaxDate != null && isOrLaterThanHoneycomb)
 			mDatePicker.setMaxDate(mMaxDate.getTime());
 		return mDatePicker;
 	}

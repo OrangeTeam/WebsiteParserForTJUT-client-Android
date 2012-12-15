@@ -25,6 +25,8 @@
     <string name="day_and_week_courses">日周课表</string>
     <string name="student_info">学生信息</string>
     
+    <!-- used in ListCoursesFragment.java -->
+    <string name="no_course">今日无课</string>
     <!-- used in ShowOnePostActivity.java -->
     <string name="open_with_browser">用浏览器打开</string>
     <!-- used in ListPostsActivity.java -->

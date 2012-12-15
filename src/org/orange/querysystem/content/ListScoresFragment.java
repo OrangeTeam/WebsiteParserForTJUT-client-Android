@@ -9,6 +9,7 @@ import java.util.List;
 import org.orange.querysystem.R;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -26,7 +27,10 @@ import android.widget.TextView;
 public class ListScoresFragment extends ListFragment {
 	public static final String SCORES_KEY = ListScoresFragment.class.getName()+"simplescores_key";
 	private View mHeaderView;
+	private TextView mFootView;
 	private ScoresAdapter mScoresAdapter;
+	private float GPA;
+	private float allGradePoint;
 
 	public static ListScoresFragment newInstance(ArrayList<SimpleScore> scores){
 		ListScoresFragment scoresFragment = new ListScoresFragment();
@@ -55,6 +59,10 @@ public class ListScoresFragment extends ListFragment {
 			ArrayList<SimpleScore> scores = args.getParcelableArrayList(SCORES_KEY);
 			mScoresAdapter = new ScoresAdapter(getActivity(), scores);
 			setListAdapter(mScoresAdapter);
+			for(int i = 0; i<scores.size(); i++){
+				allGradePoint = allGradePoint + scores.get(i).gradePoint;
+			}
+			GPA = allGradePoint/scores.size();
 		}
 	}
 	@Override
@@ -74,6 +82,11 @@ public class ListScoresFragment extends ListFragment {
 		((TextView)mHeaderView.findViewById(R.id.course_grade_point)).setText(R.string.course_grade_point);
 		((TextView)mHeaderView.findViewById(R.id.course_credit)).setText(R.string.course_credit);
 		((TextView)mHeaderView.findViewById(R.id.course_kind)).setText(R.string.course_kind);
+		mFootView = new TextView(getActivity());
+		mFootView.setTextColor(Color.BLACK);
+		mFootView.setText("                      平均绩点： " + GPA);
+		
+		
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
@@ -83,6 +96,7 @@ public class ListScoresFragment extends ListFragment {
 		setListAdapter(null);
 		getListView().addHeaderView(mHeaderView);
 		setListAdapter(mScoresAdapter);
+		getListView().addFooterView(mFootView);
 		super.onActivityCreated(savedInstanceState);
 	}
 
@@ -135,7 +149,11 @@ public class ListScoresFragment extends ListFragment {
 		}
 
 		public String getTestScore() {
-			return String.valueOf(testScore);
+			if(testScore == -1){
+				return "无";
+			}else{
+				return String.valueOf(testScore);
+			}
 		}
 
 		public String getTotalScore() {

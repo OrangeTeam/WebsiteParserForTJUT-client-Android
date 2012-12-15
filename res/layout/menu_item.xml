@@ -13,5 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/itemImage"
         android:text="TextView01"
+        style="@style/wordStyle"
         android:layout_centerHorizontal="true"/>
 </RelativeLayout>

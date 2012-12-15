@@ -3,7 +3,7 @@
     android:id="@+id/theWidget"
     android:layout_width="220dp"
     android:layout_height="74dp"
-    android:background="@drawable/desk_bg"
+    android:background="@drawable/lsydesk"
     android:alpha="100" 
     android:layout_marginLeft="3dp">  
     <TextView 
@@ -12,7 +12,7 @@
         android:layout_width="146dp"
         android:layout_height="fill_parent"
         android:textSize="15dp"
-        android:textColor="#fff"
+        style="@style/wordStyle"
         android:gravity="center"/>
    
     <TextView 
@@ -21,6 +21,6 @@
         android:layout_height="fill_parent"
         android:layout_toRightOf="@+id/appWidgetTextView"
         android:gravity="center"
-        android:textColor="#fff"
-        android:textSize="15dp"/>
+        android:textSize="15dp"
+        style="@style/wordStyle"/>
 </RelativeLayout>

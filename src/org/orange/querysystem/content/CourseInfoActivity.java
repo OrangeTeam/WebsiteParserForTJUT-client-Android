@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.orange.querysystem.CourseAndUser;
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.AddCourseInfoActivity.UpdateCoursesListToDatabase;
-import org.orange.querysystem.content.AddCourseInfoActivity.UpdateCoursesListToDatabase.MyParserListener;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
@@ -14,31 +12,34 @@ import util.webpage.Course.CourseException;
 import util.webpage.Course.TimeAndAddress;
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
 import util.webpage.SchoolWebpageParser;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CourseInfoActivity extends Activity{
+public class CourseInfoActivity extends FragmentActivity{
 	private TextView course_name;
 	private TextView course_code;
 	private TextView course_class_number;
@@ -61,10 +62,10 @@ public class CourseInfoActivity extends Activity{
 	private TextView day_of_week;
 	private TextView period;
 	private TextView classroom;
-	private EditText week_input;
-	private EditText day_of_week_input;
-	private EditText period_input;
-	private EditText classroom_input;
+	private static EditText week_input;
+	private static EditText day_of_week_input;
+	private static EditText period_input;
+	private static EditText classroom_input;
 	private int course_id;
 	private int time_and_adress_counter;
 	private int time_and_adress_sign = 0;
@@ -72,6 +73,13 @@ public class CourseInfoActivity extends Activity{
 	private String day_of_week_get = "";
 	private String period_get = "";
 	private String classroom_get = "";
+	private static String choice_result = "";
+	private int add_num = 1;
+	private static int address_choice = 0;
+	private static int choice_input_address = 0;
+	private static int choice_num = 0;
+	private static String address_choice_title = "";
+	private static ArrayList mSelectedItems;
 	
 	private static final int ITEM1 = Menu.FIRST;
 	private static final int ITEM2 = Menu.FIRST+1;
@@ -131,21 +139,37 @@ public class CourseInfoActivity extends Activity{
 		course_class_number_input.setText(course.getClassNumber());
 		course_teacher_input.setText(course.getTeacherString());
 		course_credit_input.setText(String.valueOf(course.getCredit()));
-		course_kind_input.setText(course.getKind());
-		course_test_score_input.setText(String.valueOf(course.getTestScore()));
-		course_total_score_input.setText(String.valueOf(course.getTotalScore()));
+		course_kind_input.setText("抱歉！暂时无数据");
+		if(course.getTestScore() == -1 && course.getTotalScore() == -1){
+			course_test_score_input.setText("抱歉！暂时无数据");
+			course_total_score_input.setText("抱歉！暂时无数据");
+		}else{
+			course_test_score_input.setText(String.valueOf(course.getTestScore()));
+			course_total_score_input.setText(String.valueOf(course.getTotalScore()));
+		}
+		try {
+			course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
+		} catch (CourseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			course_grade_point_input.setText("抱歉！暂时无数据");
+		}
 		for(time_and_adress_counter=0; time_and_adress_counter<course.getTimeAndAddress().size(); time_and_adress_counter++){
 			TextView textView = new TextView(this);
-			textView.setText("时间地点: ");
+			textView.setText("时间地点" + (time_and_adress_counter+1) + ": ");
 			textView.setId(time_and_adress_counter*2 + 1);
 			textView.setTextSize(18);
+			textView.setTextColor(Color.rgb(0, 0, 0));
 			EditText editText = new EditText(this);
 			editText.setText(course.getTimeAndAddress().get(time_and_adress_counter).toString());
 			timeAndAddress.setAddress(course.getTimeAndAddress().get(time_and_adress_counter).getAddress());
 			try {
-				timeAndAddress.setWeek(course.getTimeAndAddress().get(time_and_adress_counter).getWeek());
-				timeAndAddress.setDay(course.getTimeAndAddress().get(time_and_adress_counter).getDay());
-				timeAndAddress.setPeriod(course.getTimeAndAddress().get(time_and_adress_counter).getPeriod());
+				timeAndAddress.addWeeks(String.valueOf(course.getTimeAndAddress().get(time_and_adress_counter).getWeek()));
+				timeAndAddress.addDays(course.getTimeAndAddress().get(time_and_adress_counter).getDayString());
+				timeAndAddress.addPeriods(course.getTimeAndAddress().get(time_and_adress_counter).getPeriodString());
+			} catch (TimeAndAddressException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} catch (BitOperateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -173,16 +197,7 @@ public class CourseInfoActivity extends Activity{
 			etlp.addRule(RelativeLayout.RIGHT_OF, time_and_adress_counter*2 + 1);
 			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(textView, tvlp);
 			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(editText, etlp);
-		}
-		
-		try {
-			course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
-		} catch (CourseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			course_grade_point_input.setText("-1");
-		}
-		
+		}	
 	}
 	
 	public class ReadCourseInfo extends AsyncTask<String,Void,Course>{
@@ -291,6 +306,67 @@ public class CourseInfoActivity extends Activity{
 //        	con[i] = i;
     	LayoutInflater factory = LayoutInflater.from(this);
         final View textEntryView = factory.inflate(R.layout.time_and_adress_entry, null);
+        
+        week = (TextView)textEntryView.findViewById(R.id.week);
+        day_of_week = (TextView)textEntryView.findViewById(R.id.day_of_week);
+        period = (TextView)textEntryView.findViewById(R.id.period);
+        classroom = (TextView)textEntryView.findViewById(R.id.classroom);
+        week_input = (EditText)textEntryView.findViewById(R.id.week_input);
+        day_of_week_input = (EditText)textEntryView.findViewById(R.id.day_of_week_input);
+        period_input = (EditText)textEntryView.findViewById(R.id.period_input);
+        classroom_input = (EditText)textEntryView.findViewById(R.id.classroom_input);
+        
+        week_input.setCursorVisible(false);
+        week_input.setLongClickable(false);
+//		 editText.setEditableFactory(null);
+		 week_input.setFocusable(false);
+        week_input.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				address_choice = R.array.week;
+				address_choice_title = "周数";
+				choice_num = 0;
+				choice_result = "";
+				choice_input_address = R.id.week_input;
+				showDialog();
+			}
+		 });
+        day_of_week_input.setCursorVisible(false);
+        day_of_week_input.setLongClickable(false);
+//		 editText.setEditableFactory(null);
+        day_of_week_input.setFocusable(false);
+        day_of_week_input.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				address_choice = R.array.days_of_week;
+				address_choice_title = "星期数";
+				choice_num = 0;
+				choice_result = "";
+				choice_input_address = R.id.day_of_week_input;
+				showDialog();
+			}
+		 });
+        period_input.setCursorVisible(false);
+        period_input.setLongClickable(false);
+//		 editText.setEditableFactory(null);
+        period_input.setFocusable(false);
+        period_input.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				address_choice_title = "节数";
+				address_choice = R.array.period;
+				choice_num = 0;
+				choice_result = "";
+				choice_input_address = R.id.period_input;
+				showDialog();
+			}
+		 });
 //        
 //    	switch(id){
 //    	case 2:
@@ -308,20 +384,20 @@ public class CourseInfoActivity extends Activity{
                          day_of_week = (TextView)textEntryView.findViewById(R.id.day_of_week);
                          period = (TextView)textEntryView.findViewById(R.id.period);
                          classroom = (TextView)textEntryView.findViewById(R.id.classroom);
-                         week_input = (EditText)textEntryView.findViewById(R.id.week_input);
-                         day_of_week_input = (EditText)textEntryView.findViewById(R.id.day_of_week_input);
-                         period_input = (EditText)textEntryView.findViewById(R.id.period_input);
-                         classroom_input = (EditText)textEntryView.findViewById(R.id.classroom_input);
+                         
                          week_get = week_input.getText().toString();
                          day_of_week_get = day_of_week_input.getText().toString();
                          period_get = period_input.getText().toString();
                          classroom_get = classroom_input.getText().toString();
                          ((EditText) findViewById(id*2 + 2 )).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
                          try {
-							timeAndAddresses.get(id).setWeek(Integer.parseInt(week_get));
-							timeAndAddresses.get(id).setDay(Integer.parseInt(day_of_week_get));
-							timeAndAddresses.get(id).setPeriod(Integer.parseInt(period_get));
+							timeAndAddresses.get(id).addWeeks(week_get);
+							timeAndAddresses.get(id).addDays(day_of_week_get); 
+							timeAndAddresses.get(id).addPeriods(period_get);
 							timeAndAddresses.get(id).setAddress(classroom_get);
+						} catch (TimeAndAddressException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						} catch (BitOperateException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -338,6 +414,115 @@ public class CourseInfoActivity extends Activity{
              
 //    	}
 //    	return null;
+    }
+    
+    public void showDialog(){
+    	DialogFragment newFragment = MyAlertDialogFragment.newInstance(
+                R.string.alert_dialog_ok);
+        newFragment.show(getSupportFragmentManager(), "dialog");
+    }
+    
+    public void doPositiveClick() {
+        // Do stuff here.
+        Log.i("FragmentAlertDialog", "Positive click!");
+    }
+    
+    public void doNegativeClick() {
+        // Do stuff here.
+        Log.i("FragmentAlertDialog", "Negative click!");
+    }
+
+    
+
+    public static class MyAlertDialogFragment extends DialogFragment {
+
+        public static MyAlertDialogFragment newInstance(int title) {
+            MyAlertDialogFragment frag = new MyAlertDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+        
+        @Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) {
+    	    mSelectedItems = new ArrayList();  // Where we track the selected items
+    	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    // Set the dialog title
+    	    builder.setTitle(address_choice_title)
+    	    // Specify the list array, the items to be selected by default (null for none),
+    	    // and the listener through which to receive callbacks when items are selected
+    	           .setMultiChoiceItems(address_choice, null,
+    	                      new DialogInterface.OnMultiChoiceClickListener() {
+    	               @Override
+    	               public void onClick(DialogInterface dialog, int which,
+    	                       boolean isChecked) {
+    	                   if (isChecked) {
+    	                       // If the user checked the item, add it to the selected items
+    	                       mSelectedItems.add(which);
+    	                       choice_num++;
+    	                   } else if (mSelectedItems.contains(which)) {
+    	                       // Else, if the item is already in the array, remove it 
+    	                       mSelectedItems.remove(Integer.valueOf(which));
+    	                       choice_num--;
+    	                   }
+    	               }
+    	           })
+    	    // Set the action buttons
+    	           .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+    	               @Override
+    	               public void onClick(DialogInterface dialog, int id) {
+    	                   // User clicked OK, so save the mSelectedItems results somewhere
+    	                   // or return them to the component that opened the dialog
+//    	                   ...
+    	            	   Resources res = getResources();
+    	            	   String[] content = res.getStringArray(address_choice);
+    	            	   System.out.println(choice_result);
+    	            	   if(choice_input_address == R.id.week_input){
+    	            		   for(int i=0; i<choice_num; i++){
+//        	                	   System.out.println(mSelectedItems.get(i));
+        	            		   if(i == choice_num-1){
+        	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
+        	            			   break;
+        	            		   }
+        	                	   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)] + ",";
+        	                   }
+    	            		   week_input.setText(choice_result); 
+    	            	   }
+    	            	   if(choice_input_address == R.id.day_of_week_input){
+    	            		   for(int i=0; i<choice_num; i++){
+//        	                	   System.out.println(mSelectedItems.get(i));
+        	            		   if(i == choice_num-1){
+        	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
+        	            			   break;
+        	            		   }
+        	                	   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)] + ",";
+        	                   } 
+    	            		   day_of_week_input.setText(choice_result);  
+    	            	   }
+    	            	   if(choice_input_address == R.id.period_input){
+    	            		   for(int i=0; i<choice_num; i++){
+//        	                	   System.out.println(mSelectedItems.get(i));
+        	            		   if(i == choice_num-1){
+        	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
+        	            			   break;
+        	            		   }
+        	                	   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)] + ",";
+        	                   } 
+    	            		   period_input.setText(choice_result); 
+    	            	   }
+    	            	   
+    	               }
+    	           })
+    	           .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+    	               @Override
+    	               public void onClick(DialogInterface dialog, int id) {
+//    	                   ...
+    	               }
+    	           });
+
+    	    return builder.create();
+    	}
     }
     
     public void updateCoursesListToDatabase(){

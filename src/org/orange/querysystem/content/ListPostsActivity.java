@@ -192,10 +192,11 @@ public class ListPostsActivity extends FragmentActivity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-    		startActivity(new Intent(this, MainMenuActivity.class));
+//    		Editor editor = getSharedPreferences("data", 0).edit();
+//			editor.putString("passMainMenu", "true");
+//            editor.commit();
+//    		startActivity(new Intent(this, MainMenuActivity.class));
+    		finish();
     	}
     	else if(item.getItemId() == 2){
     		Editor editor = getSharedPreferences("data", 0).edit();
@@ -223,13 +224,13 @@ public class ListPostsActivity extends FragmentActivity{
     	return super.onMenuItemSelected(featureId, item);
     }
 	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+//	@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//		if(keyCode == KeyEvent.KEYCODE_BACK){
+//			Editor editor = getSharedPreferences("data", 0).edit();
+//			editor.putString("passMainMenu", "true");
+//            editor.commit();
+//		}
+//		return super.onKeyDown(keyCode, event);
+//	}
 }

@@ -16,38 +16,30 @@
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
 
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
-import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import org.orange.querysystem.content.ReadDBForScores.OnPostExcuteListerner;
 
-import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TabHost;
-import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +49,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	TabHost mTabHost;
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
+	private TextView currentTime;
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -65,48 +58,65 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.fragment_tabs_pager);
+		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
 		mViewPager = (ViewPager)findViewById(R.id.pager);
 
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			if(getResources().getConfiguration().orientation ==
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				getActionBar().hide();
 		}
-		readDB();
+//		SharedPreferences shareData = getSharedPreferences("data", 0);
+//        if(shareData.getBoolean("changeUser", false)){
+//			Editor editor = getSharedPreferences("data", 0).edit();
+//            editor.putBoolean("changeUser", false);
+//            editor.commit();
+//            start_resume = 1;
+//            startActivity(new Intent(this, InsertDBFragmentActivity.class));
+//		}else{
+			readDB();
+//		}
+		
 	}
 	
 	public void readDB(){
 		SharedPreferences shareData = getSharedPreferences("data", 0);
-    	new ReadDB(this, this).execute(shareData.getString("userName", null));
+    	new ReadDBForScores(this, this).execute(shareData.getString("userName", null));
     }
     
     @Override
-	public void onPostReadFromDB(ArrayList<Course> courses) {
+	public void onPostReadFromDBForScores(ArrayList<ArrayList<Course>> courses) {
 			showScoresInfo(courses);
 	}
     
-    public void showScoresInfo(ArrayList<Course> courses){
-    	mTabHost.clearAllTabs();
+    public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
+//    	mTabHost.clearAllTabs();
+    	currentTime = (TextView)findViewById(R.id.currentTime);
+    	currentTime.setText("成绩单");
     	SharedPreferences shareData = getSharedPreferences("data", 0);
     	
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
-		for(int semester = 1;semester<=4;semester++){
+    	System.out.println("Activity" + courses.size());
+		for(int semester = 1;semester<courses.size();semester++){
+			float totalGradePoint = 0;
+			byte totalCredit = 0;
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
-			for(int counter = 0;counter<=5;counter++)
-				try {
-					scores.add(new SimpleScore(semester+counter, courses.get(counter).getName(), (short)(courses.get(counter).getTestScore()), (short)(courses.get(counter).getTotalScore()), (float)courses.get(counter).getGradePoint(), (byte)courses.get(counter).getCredit(), courses.get(counter).getKind()));
-				} catch (CourseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			for(int counter = 0;counter<courses.get(semester).size();counter++)
+			try {
+					totalGradePoint = totalGradePoint + (float)courses.get(semester).get(counter).getGradePoint();
+//					totalCredit = totalCredit + (byte)courses.get(semester).get(counter).getCredit();
+					scores.add(new SimpleScore(semester+1, courses.get(semester).get(counter).getName(), (short)(courses.get(semester).get(counter).getTestScore()), (short)(courses.get(semester).get(counter).getTotalScore()), (float)courses.get(semester).get(counter).getGradePoint(), (byte)courses.get(semester).get(counter).getCredit(), courses.get(semester).get(counter).getKind()));
+			} catch (CourseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+			currentTime.setText("成绩单");
 			Bundle arg = new Bundle();
 			arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);
 			args.add(arg);
@@ -157,15 +167,18 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-    		startActivity(new Intent(this, MainMenuActivity.class));
+//    		Editor editor = getSharedPreferences("data", 0).edit();
+//			editor.putString("passMainMenu", "true");
+//            editor.commit();
+//    		startActivity(new Intent(this, MainMenuActivity.class));
+    		finish();
     	}
     	else if(item.getItemId() == 2){
     		Editor editor = getSharedPreferences("data", 0).edit();
     		editor.putBoolean("logIn_auto", false);
+    		editor.putBoolean("changeUser", false);
     		editor.commit();
+    		start_resume = 1;
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
@@ -199,15 +212,15 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		}
     }
 
-    @Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+//    @Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//		if(keyCode == KeyEvent.KEYCODE_BACK){
+//			Editor editor = getSharedPreferences("data", 0).edit();
+//			editor.putString("passMainMenu", "true");
+//            editor.commit();
+//		}
+//		return super.onKeyDown(keyCode, event);
+//	}
     
     @Override
 	protected void onResume(){
@@ -218,5 +231,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		else if(start_resume == 1){
 			readDB();
 		}
-	}
+    }
 }
+

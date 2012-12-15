@@ -22,7 +22,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/tabhost"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/lsybackground">
 
     <LinearLayout
         android:orientation="vertical"
@@ -31,7 +32,8 @@
         <TextView 
             	android:id="@+id/currentTime"
             	android:layout_width="fill_parent"
-            	android:layout_height="20dp"/>
+            	android:layout_height="20dp"
+            	style="@style/wordStyle"/>
 
         <HorizontalScrollView
             android:id="@+id/tabs_scroll"

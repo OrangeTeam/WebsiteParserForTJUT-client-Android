@@ -221,8 +221,12 @@ public class LoginActivity extends Activity{
 				Toast.makeText(LoginActivity.this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
 			}
 			else{
-				Intent intent = new Intent(LoginActivity.this, ListCoursesActivity.class);
-				startActivity(intent);
+//				Intent intent = new Intent(LoginActivity.this, ListCoursesActivity.class);
+//				startActivity(intent);
+				Editor editor = getSharedPreferences("data", 0).edit();
+				editor.putBoolean("changeUser", true);
+				editor.commit();
+				finish();
 			}
 		}
 	}

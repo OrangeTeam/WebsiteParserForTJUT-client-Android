@@ -74,6 +74,14 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
+		
+		SharedPreferences shareData = getSharedPreferences("data", 0);
+//		if(shareData.getBoolean("changeUser", false)){
+//			Editor editor = getSharedPreferences("data", 0).edit();
+//            editor.putBoolean("changeUser", false);
+//            editor.commit();
+//            startActivity(new Intent(this, InsertDBFragmentActivity.class));
+//		}
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -214,15 +222,17 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-    		startActivity(new Intent(this, MainMenuActivity.class));
+//    		Editor editor = getSharedPreferences("data", 0).edit();
+//			editor.putString("passMainMenu", "true");
+//            editor.commit();
+//    		startActivity(new Intent(this, MainMenuActivity.class));
+    		finish();
     	}
     	else if(item.getItemId() == 2){
     		Editor editor = getSharedPreferences("data", 0).edit();
     		editor.putBoolean("logIn_auto", false);
     		editor.commit();
+//    		start_resume = 1;
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
@@ -256,13 +266,13 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 		}
     }
     
-    @Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+//    @Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//		if(keyCode == KeyEvent.KEYCODE_BACK){
+//			Editor editor = getSharedPreferences("data", 0).edit();
+//			editor.putString("passMainMenu", "true");
+//            editor.commit();
+//		}
+//		return super.onKeyDown(keyCode, event);
+//	}
 }

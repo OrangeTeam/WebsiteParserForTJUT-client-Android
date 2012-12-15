@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 
@@ -46,12 +47,17 @@ public class MainMenuActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
 		
+//		SharedPreferences shareData = getSharedPreferences("data", 0);
+//		if(shareData.getString("passMainMenu", null) == null || shareData.getString("passMainMenu", null) == "false"){
+//			startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+//		}else{
+//			
+//		}
 		SharedPreferences shareData = getSharedPreferences("data", 0);
-		if(shareData.getString("passMainMenu", null) == null || shareData.getString("passMainMenu", null) == "false"){
-			startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
-		}else{
-			
-		}
+    	//判断是否第一次登陆
+    	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){
+        	startActivity(new Intent(this, LoginActivity.class));
+        }
 		title = (TextView)findViewById(R.id.title);
 		gridView = (GridView)findViewById(R.id.gridView);
 		title.setText("主菜单");
@@ -66,7 +72,7 @@ public class MainMenuActivity extends Activity{
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
 		for(int i=0; i<8; i++){
 			HashMap<String ,Object> map = new HashMap<String, Object>();
-			map.put("ItemImage", R.drawable.week_course_list);//添加图像资源的ID
+			map.put("ItemImage", imgs[i]);//添加图像资源的ID
 			map.put("ItemText", texts[i]);//按序号做ItemText
 			lstImageItem.add(map);
 		}
@@ -158,7 +164,7 @@ public class MainMenuActivity extends Activity{
                 }
             };    
 	
-	private static Integer[] imgs = {};
+	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsystart, R.drawable.lsyadd, R.drawable.lsyadd};
 	
 	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程", "设置"};
 	@Override

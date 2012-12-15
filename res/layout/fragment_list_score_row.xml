@@ -8,36 +8,42 @@
         android:id="@+id/course_name"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="1" 
+        style="@style/wordStyle"/>
     <TextView
         android:id="@+id/course_test_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:ems="2" />
+        android:ems="2" 
+        style="@style/wordStyle"/>
     <TextView
         android:id="@+id/course_total_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:ems="2" />
+        android:ems="2" 
+        style="@style/wordStyle"/>
     <TextView
         android:id="@+id/course_grade_point"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:ems="2" />
+        android:ems="2" 
+        style="@style/wordStyle"/>
     <TextView
         android:id="@+id/course_credit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:ems="2" />
+        android:ems="2" 
+        style="@style/wordStyle"/>
     <TextView
         android:id="@+id/course_kind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:ems="5" />
+        android:ems="5" 
+        style="@style/wordStyle"/>
 
 </LinearLayout>

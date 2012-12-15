@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:padding="30dp"
-    android:background="@drawable/pic">
+    android:background="@drawable/lsydenglu">
     <TextView 
         android:id="@+id/start_time"
         android:layout_width="fill_parent"
@@ -26,7 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/title"
-        android:textSize="10pt"/>
+        android:textSize="10pt"
+        style="@style/wordStyle"/>
     <EditText 
         android:inputType="number"
         android:id="@+id/userNameBox"
@@ -38,7 +39,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="10pt"
-        android:layout_below="@+id/userNameBox"/>
+        android:layout_below="@+id/userNameBox"
+        style="@style/wordStyle"/>
     <EditText 
         android:inputType="textPassword"
         android:id="@+id/passwordBox"
@@ -51,14 +53,15 @@
         android:layout_width="wrap_content"
        	android:layout_height="wrap_content"
         android:text="@string/rememberPS"
-  	/>
+        style="@style/wordStyle"/>
    <CheckBox
         android:id="@+id/autoDengLu"
         android:layout_below="@+id/passwordBox"
         android:layout_toRightOf="@+id/rememberPS"
         android:layout_width="wrap_content"
        	android:layout_height="wrap_content"
-        android:text="@string/autoDengLu"/>
+        android:text="@string/autoDengLu"
+        style="@style/wordStyle"/>
    <Button 
         android:id="@+id/denglu"
         android:layout_width="170dp"

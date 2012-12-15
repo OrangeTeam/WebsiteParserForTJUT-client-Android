@@ -11,7 +11,6 @@ import org.orange.querysystem.content.ListCoursesActivity;
 import util.webpage.SchoolWebpageParser;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,7 +21,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +30,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,13 +45,8 @@ public class LoginActivity extends Activity{
 	private Button denglu;
 	private CheckBox rememberPS;
 	private CheckBox autoDengLu;	
-	private int mYear = 0;
-	private int mMonth = 0;
-	private int mDayOfMonth = 0;
-	private int mDayOfYear = 0;
 		
 	public static final String TAG = "org.orange.querysystem";
-	static final int DATE_DIALOG_ID = 1;
 	static final int DATE_DIALOG_PROMPT = 2;
 	private static final int LOGIN_TIME_OUT = 3000;//3s
 	   
@@ -72,24 +64,12 @@ public class LoginActivity extends Activity{
         denglu = (Button)findViewById(R.id.denglu);
         rememberPS = (CheckBox)findViewById(R.id.rememberPS);
         autoDengLu = (CheckBox)findViewById(R.id.autoDengLu);
-        Calendar calendar = Calendar.getInstance();
-		mYear = calendar.get(Calendar.YEAR);
-		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
-		mDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-		mDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
 		
        	     
         title.setText(R.string.title);
         userName.setText(R.string.userName);
         password.setText(R.string.password);
         SharedPreferences shareData = getSharedPreferences("data", 0);
-        if(shareData.getString("start_year", null) == null || shareData.getString("start_month", null) == null || shareData.getString("start_day", null) == null ){
-        	Editor editor = getSharedPreferences("data", 0).edit();
-            editor.putString("start_year", String.valueOf(mYear));
-            editor.putString("start_month", String.valueOf(mMonth));
-            editor.putString("start_day", String.valueOf(mDayOfMonth));
-            editor.commit();
-        }
         
         if(shareData.getString("userName", null) == null){
             DBManager manager = new DBManager();
@@ -112,20 +92,22 @@ public class LoginActivity extends Activity{
         }else{
         	passwordBox.setText("");
         }	    
-        if(shareData.getString("start_year", null) == "0" || shareData.getString("start_month", null) == "0" || shareData.getString("start_day", null) == "0" ){
-//        	//TODO 时间选择时判断有效的日期
+
+        Calendar firstDay = SettingsActivity.getMondayOfZeroWeek(this);
+        if(firstDay == null){
 //        	showDialog(DATE_DIALOG_ID);
         	showDialog(DATE_DIALOG_PROMPT);
         	startTime.setText("开课时间：请点击此处设置第一天开课日期！");
         }else{
-        	startTime.setText("开课时间：" + shareData.getString("start_year", null) + "年" + shareData.getString("start_month", null) + "月" + shareData.getString("start_day", null) + "日");
+            firstDay.set(Calendar.WEEK_OF_YEAR, 1 + firstDay.get(Calendar.WEEK_OF_YEAR));
+            startTime.setText("开课时间：" + firstDay.get(Calendar.YEAR) + "年"
+                    + (firstDay.get(Calendar.MONTH) - Calendar.JANUARY + 1) + "月"
+                    + firstDay.get(Calendar.DAY_OF_MONTH) + "日");
         }
         startTime.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				showDialog(DATE_DIALOG_ID);
+				startActivity(new Intent(LoginActivity.this ,SettingsActivity.class));
 			}
 		});
     }      
@@ -133,10 +115,6 @@ public class LoginActivity extends Activity{
 	@Override   
 	protected Dialog onCreateDialog(int id) {
         switch (id) {
-            case DATE_DIALOG_ID:
-                return new DatePickerDialog(this,
-                            mDateSetListener,
-                            mYear, mMonth, mDayOfMonth);
             case DATE_DIALOG_PROMPT:
             	LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
             	RelativeLayout relativeLayout = new RelativeLayout(LoginActivity.this);
@@ -153,8 +131,7 @@ public class LoginActivity extends Activity{
                         public void onClick(DialogInterface dialog, int whichButton) {
                        	 
                             /* User clicked OK so do some stuff */
-                       	 	
-                       	 	showDialog(DATE_DIALOG_ID);
+                            startActivity(new Intent(LoginActivity.this ,SettingsActivity.class));
                         }
                     })
 //                    .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -167,40 +144,7 @@ public class LoginActivity extends Activity{
         }
         return null;
     }    
-	    
-	@Override    
-	protected void onPrepareDialog(int id, Dialog dialog) {
-        switch (id) {
-            case DATE_DIALOG_ID:
-            	//设置初始时间为当前时间
-                ((DatePickerDialog) dialog).updateDate(mYear, mMonth, mDayOfMonth);
-                break;
-        }
-    }        
 
-	private DatePickerDialog.OnDateSetListener mDateSetListener =
-            new DatePickerDialog.OnDateSetListener() {
-
-                public void onDateSet(DatePicker view, int year_choice, int month_choice,
-                        int day_choice) {
-                	Calendar calendar_2 = Calendar.getInstance();
-                	calendar_2.set(year_choice, month_choice, day_choice);
-                	if(calendar_2.get(Calendar.YEAR) > mYear || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) < 0 || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) > 22*7){
-                		Toast.makeText(LoginActivity.this, "此为不恰当的开学日期，请重新设置！", Toast.LENGTH_LONG).show();
-                		startTime.setText("开课时间：请点击此处设置第一天开课日期！");
-                	}
-                	else{
-                		Editor editor = getSharedPreferences("data", 0).edit();
-                        editor.putString("start_year", Integer.toString(year_choice));
-                        editor.putString("start_month", Integer.toString(month_choice+1));
-                        editor.putString("start_day", Integer.toString(day_choice));
-                        editor.commit();
-                        startTime.setText("开课时间：" + year_choice + "年" + (month_choice+1) + "月" + day_choice + "日");
-                	}
-                	
-                }
-            };    
-	   
     @Override        
     protected void onPause(){
     	super.onPause();

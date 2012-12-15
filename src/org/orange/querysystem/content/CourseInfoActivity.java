@@ -134,9 +134,9 @@ public class CourseInfoActivity extends Activity{
 		course_kind_input.setText(course.getKind());
 		course_test_score_input.setText(String.valueOf(course.getTestScore()));
 		course_total_score_input.setText(String.valueOf(course.getTotalScore()));
-		TextView textView = new TextView(this);
-		textView.setText("时间地点: ");
 		for(time_and_adress_counter=0; time_and_adress_counter<course.getTimeAndAddress().size(); time_and_adress_counter++){
+			TextView textView = new TextView(this);
+			textView.setText("时间地点: ");
 			textView.setId(time_and_adress_counter*2 + 1);
 			textView.setTextSize(18);
 			EditText editText = new EditText(this);
@@ -270,9 +270,12 @@ public class CourseInfoActivity extends Activity{
     		course_grade_point_input.setEnabled(true);
     		for(time_and_adress_sign=0; time_and_adress_sign < time_and_adress_counter; time_and_adress_sign++){
     			findViewById(time_and_adress_sign*2 + 2).setEnabled(true);
-    			registerForContextMenu((EditText)findViewById(time_and_adress_sign*2 + 2));
+    	        findViewById(time_and_adress_sign*2 + 2).setOnClickListener(new EditText.OnClickListener(){
+    	        	public void onClick(View v) {
+    	        		showDialog(v.getId()/2);
+    	        		}
+    	        	});
     		}
-    		
     	}
     	else if(item.getItemId() == 2){
     		updateCoursesListToDatabase();
@@ -281,24 +284,8 @@ public class CourseInfoActivity extends Activity{
     	return super.onMenuItemSelected(featureId, item);
     }
     
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo){
-    	for(int i = 0; i < time_and_adress_counter; i++){
-    		menu.add(0, i, 0, "时间与地点"+(i+1));
-    	}
-    }
-    
-    public boolean onContextItemSelected(MenuItem item){
-    	for(int i = 0; i < time_and_adress_counter; i++){
-    		if(item.getItemId() == i){
-    			showDialog(i);
-    		}
-    	}
-    	return true;
-    }
-    
     @Override
     protected Dialog onCreateDialog(final int id) {
-    	Log.w("i", ""+id);
 //    	int[] con = new int[time_and_adress_counter];
 //        for(int i = 0; i < time_and_adress_counter; i++)
 //        	con[i] = i;

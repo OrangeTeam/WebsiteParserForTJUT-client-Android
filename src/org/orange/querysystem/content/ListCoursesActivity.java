@@ -15,13 +15,16 @@
  */
 package org.orange.querysystem.content;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 
@@ -49,12 +52,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
-	private int mYear = 0;
-	private int mMonth = 0;
-	private int mDay = 0;
-	private int mWeek = 0;
-	private int mDayOfWeek = 0;
-	private int calculate_week = 0;
 	private int start_resume = 0;
 	
 	private TextView currentTime;
@@ -94,12 +91,6 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				getActionBar().hide();
 		}
 		
-		Calendar calendar = Calendar.getInstance();
-		mYear = calendar.get(Calendar.YEAR);
-		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
-		mDay = calendar.get(Calendar.DAY_OF_MONTH);
-        mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
-        mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         readDB();
 	}
 	
@@ -126,17 +117,9 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     
     public void showCoursesInfo(ArrayList<Course> courses){
 		mTabsAdapter.clear();
-    	SharedPreferences shareData = getSharedPreferences("data", 0);
-    	Calendar calendar_2 = Calendar.getInstance();
-    	//解决在周日会跳到下一周的问题
-        calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null))+1);
-        calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
+		Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
         currentTime = (TextView)findViewById(R.id.currentTime);
-        //解决周日会变成下一周问题
-        if(mDayOfWeek == 1){
-        	calculate_week = calculate_week - 1;
-        }
-        currentTime.setText("本周课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay + "    " + "第" + (calculate_week+1) + "周");
+        currentTime.setText("本周课程表" + "        " + DateFormat.getDateInstance().format(new Date()) + "    " + "第" + weekNumber + "周");
         
     	Bundle[] args = new Bundle[7]; 
     	
@@ -150,7 +133,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
 					for(int period = 1; period<=13; period++)
 						try{
-							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(calculate_week + 1)){
+							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(weekNumber)){
 								lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period),time.getAddress()));
 							}
 						} catch(BitOperateException e){
@@ -189,7 +172,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				child.getLayoutParams().height = 80;
 			}
 		}
-		mTabHost.setCurrentTab(mDayOfWeek-1);
+		mTabHost.setCurrentTab(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY);
     }
 	
 
@@ -245,7 +228,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
-//    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){

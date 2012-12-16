@@ -17,13 +17,19 @@ import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 
 public class DatePickerPreference extends DialogPreference implements OnDateChangedListener{
+	/**
+	 * 如果当前版本是HONEYCOMB及其以上版本，为true；否则，为false
+	 * @see Build.VERSION_CODES#HONEYCOMB
+	 */
+	public static final boolean IS_OR_LATER_THAN_HONEYCOMB
+		= Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 	//TODO change it
 	private static final long DEFAULT_VALUE = 0;
 	private static final String ORANGE = "org.orange";
 	private Context mContext;
 	private Date mCurrentValue;
-	private Date mMaxDate;
-	private Date mMinDate;
+	private Calendar mMaxDate;
+	private Calendar mMinDate;
 
 	private DatePicker mDatePicker;
 
@@ -68,10 +74,14 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 				maxDate = tempLong;
 		}//else maxDate !=null && tempLong == null, do nothing
 
-		if(minDate != null)
-			this.mMinDate = new Date(minDate);
-		if(maxDate != null)
-			this.mMaxDate = new Date(maxDate);
+		if(minDate != null) {
+			mMinDate = Calendar.getInstance();
+			mMinDate.setTimeInMillis(minDate);
+		}
+		if(maxDate != null) {
+			mMaxDate = Calendar.getInstance();
+			mMaxDate.setTimeInMillis(maxDate);
+		}
 		if(mMinDate != null && mMaxDate != null && mMinDate.after(mMaxDate))
 			throw new IllegalArgumentException("mMinDate after mMaxDate mMinDate:" 
 					+ mMinDate + " mMaxDate:" + mMaxDate);
@@ -120,22 +130,37 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 		}
 	}
 
+	@Override
+	public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+		if(IS_OR_LATER_THAN_HONEYCOMB || (mMinDate == null && mMaxDate == null))
+			return;
+		Calendar current = Calendar.getInstance();
+		current.clear();
+		current.set(year, monthOfYear, dayOfMonth);
+		if(mMinDate != null && mMinDate.after(current)) {
+			view.updateDate(mMinDate.get(Calendar.YEAR),
+					mMinDate.get(Calendar.MONTH), mMinDate.get(Calendar.DAY_OF_MONTH));
+		}
+		if(mMaxDate != null && mMaxDate.before(current)) {
+			view.updateDate(mMaxDate.get(Calendar.YEAR),
+					mMaxDate.get(Calendar.MONTH), mMaxDate.get(Calendar.DAY_OF_MONTH));
+		}
+	}
 	@TargetApi(11)
 	@Override
 	protected View onCreateDialogView() {
-		boolean isOrLaterThanHoneycomb = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 
 		mDatePicker = new DatePicker(mContext);
 		//Set View attributes
-		if(isOrLaterThanHoneycomb)
+		if(IS_OR_LATER_THAN_HONEYCOMB)
 			mDatePicker.setCalendarViewShown(false);
 		Calendar c = Calendar.getInstance();
 		c.setTime(mCurrentValue);
 		mDatePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
-		if(mMinDate != null && isOrLaterThanHoneycomb)
-			mDatePicker.setMinDate(mMinDate.getTime());
-		if(mMaxDate != null && isOrLaterThanHoneycomb)
-			mDatePicker.setMaxDate(mMaxDate.getTime());
+		if(mMinDate != null && IS_OR_LATER_THAN_HONEYCOMB)
+			mDatePicker.setMinDate(mMinDate.getTimeInMillis());
+		if(mMaxDate != null && IS_OR_LATER_THAN_HONEYCOMB)
+			mDatePicker.setMaxDate(mMaxDate.getTimeInMillis());
 		return mDatePicker;
 	}
 
@@ -235,9 +260,5 @@ public class DatePickerPreference extends DialogPreference implements OnDateChan
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(myState.pickerTime);
 		mDatePicker.updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-	}
-
-	@Override
-	public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 	}
 }

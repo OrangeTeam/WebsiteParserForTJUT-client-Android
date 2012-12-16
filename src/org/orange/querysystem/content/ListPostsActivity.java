@@ -42,6 +42,7 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TabHost.TabSpec;
 
 /**
  * @author Bai Jie
@@ -158,8 +159,10 @@ public class ListPostsActivity extends FragmentActivity{
 
 	public void addTab(byte source){
 		String sourceString = getResources().getText(getSourceString(source)).toString();
-		mTabsAdapter.addTab(mTabHost.newTabSpec(sourceString).setIndicator(sourceString),
+		TabSpec tabSpec = mTabHost.newTabSpec(sourceString);
+		mTabsAdapter.addTab(tabSpec.setIndicator(sourceString),
 				ListPostsFragment.class, ListPostsFragment.buildArgument(source));
+		mTabHost.getTabWidget().getChildTabViewAt(source).setBackgroundResource(R.drawable.list_title);
 	}
 
 	public void loadPosts(){

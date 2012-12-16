@@ -62,8 +62,12 @@ public class ListScoresFragment extends ListFragment {
 				allCredit = allCredit + scores.get(i).credit;
 				passCredit = passCredit + (scores.get(i).gradePoint == 0 ? 0 : scores.get(i).credit);
 			}
-			GPA = allGradePoint/allCredit;
-			creditPassPercentage = passCredit / allCredit * 100 + "%";
+			try{
+				GPA = allGradePoint/allCredit;
+				creditPassPercentage = passCredit / allCredit * 100 + "%";
+			}catch(ArithmeticException e){
+				e.printStackTrace();
+			}
 		}
 	}
 	@Override

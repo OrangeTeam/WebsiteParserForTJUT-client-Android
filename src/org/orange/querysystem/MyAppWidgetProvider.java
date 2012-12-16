@@ -1,8 +1,5 @@
 package org.orange.querysystem;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -39,8 +36,8 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		long triggerAtTime = SystemClock.elapsedRealtime() + 5*1000;
-		int interval = 15*60*1000;
+		long triggerAtTime = SystemClock.elapsedRealtime() + 15 * 60 * 1000;
+		int interval = 15 * 60 * 1000;
 		alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime, interval, pendingIntent);
 		updateCourse(context, appWidgetManager, appWidgetIds);
 	}
@@ -52,7 +49,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			if(extras != null){
 				int[] appWidgetIds = extras.getIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS);
 				if(appWidgetIds != null && appWidgetIds.length > 0){
-					this.updateCourse(context, AppWidgetManager.getInstance(context), appWidgetIds);
+					this.onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds);
 				}
 			}
 		}
@@ -63,6 +60,12 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		if(shareData == null)
 		{
 			String str = "你还没登入";
+			showResult(context, appWidgetManager, appWidgetIds, str);
+			return;
+		}
+		if(shareData.getString("start_year", null) == null)
+		{
+			String str = "你还没设置开学时间";
 			showResult(context, appWidgetManager, appWidgetIds, str);
 			return;
 		}

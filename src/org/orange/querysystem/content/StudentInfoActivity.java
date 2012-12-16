@@ -21,7 +21,6 @@ import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.Student;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -34,16 +33,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class StudentInfoActivity extends ListActivity{
@@ -193,15 +188,15 @@ public class StudentInfoActivity extends ListActivity{
 				System.out.println("Error opening files");
 			}
 			ArrayList<String> items = new ArrayList<String>();
-			items.add(0, inputStream.nextLine());
-			items.add(1, inputStream.nextLine());
-			items.add(2, inputStream.nextLine());
-			items.add(3, inputStream.nextLine());
-			items.add(4, inputStream.nextLine());
-			items.add(5, inputStream.nextLine());
-			items.add(6, inputStream.nextLine());
-			items.add(7, inputStream.nextLine());
-			items.add(8, inputStream.nextLine());
+			items.add(0, "学号:" + inputStream.nextLine());
+			items.add(1, "姓名:" + inputStream.nextLine());
+			items.add(2, "性别:" + inputStream.nextLine());
+			items.add(3, "出生年月日:" + inputStream.nextLine());
+			items.add(4, "学制:" + inputStream.nextLine());
+			items.add(5, "入学时间:" + inputStream.nextLine());
+			items.add(6, "学院:" + inputStream.nextLine());
+			items.add(7, "专业名称:" + inputStream.nextLine());
+			items.add(8, "班级名称:" + inputStream.nextLine());
 			imageView.setImageBitmap(getBitmap());
 			adapter = new ListViewAdapter(StudentInfoActivity.this, items);
 			setListAdapter(adapter);

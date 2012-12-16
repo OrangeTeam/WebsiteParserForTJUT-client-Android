@@ -41,12 +41,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -175,10 +175,12 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     	
 		String[] daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 		
-		for(int day = 0;day<=6;day++)
-			mTabsAdapter.addTab(mTabHost.newTabSpec(daysOfWeek[day]).setIndicator(daysOfWeek[day]),
+		for(int day = 0;day<=6;day++){
+			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
+			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
-		
+			mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(R.drawable.list_title);
+		}
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  

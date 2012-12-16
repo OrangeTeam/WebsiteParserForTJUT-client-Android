@@ -21,9 +21,6 @@
         <item >18</item>
         <item >19</item>
         <item >20</item>
-        <item >奇数周</item>
-        <item >偶数周</item>
-        <item >全部周</item>
     </string-array>
     <string-array name="days_of_week">
         <item >星期日</item>
@@ -48,6 +45,5 @@
         <item >11</item>
         <item >12</item>
         <item >13</item>
-        <item >全部节数</item>
     </string-array>
 </resources>

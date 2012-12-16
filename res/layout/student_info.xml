@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingLeft="3dp"
-    android:paddingRight="3dp">
+    android:paddingRight="3dp"
+    android:background="@drawable/lsydenglu">
     <ListView 
         android:id="@id/android:list"
         android:layout_width="fill_parent"

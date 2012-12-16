@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TabHost.TabSpec;
 
 public class ListScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int start_resume = 0;
@@ -122,9 +123,13 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 			args.add(arg);
 		}
 		int counter = 1;
-		for(Bundle arg:args)
-			mTabsAdapter.addTab(mTabHost.newTabSpec(counter+"学期").setIndicator((counter++)+"学期"),
+		for(Bundle arg:args){
+			TabSpec tabSpec = mTabHost.newTabSpec(counter+"学期");
+			mTabsAdapter.addTab(tabSpec.setIndicator((counter++)+"学期"),
 					ListScoresFragment.class, arg);
+			mTabHost.getTabWidget().getChildAt(counter-2).setBackgroundResource(R.drawable.list_title);
+		}
+			
     }
 
 	/* (non-Javadoc)

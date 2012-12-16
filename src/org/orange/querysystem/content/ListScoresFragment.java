@@ -1,13 +1,8 @@
-/**
- *
- */
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.orange.querysystem.R;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,6 +26,9 @@ public class ListScoresFragment extends ListFragment {
 	private ScoresAdapter mScoresAdapter;
 	private float GPA;
 	private float allGradePoint;
+	private int allCredit;
+	private int passCredit;
+	private String creditPassPercentage;
 
 	public static ListScoresFragment newInstance(ArrayList<SimpleScore> scores){
 		ListScoresFragment scoresFragment = new ListScoresFragment();
@@ -60,9 +58,12 @@ public class ListScoresFragment extends ListFragment {
 			mScoresAdapter = new ScoresAdapter(getActivity(), scores);
 			setListAdapter(mScoresAdapter);
 			for(int i = 0; i<scores.size(); i++){
-				allGradePoint = allGradePoint + scores.get(i).gradePoint;
+				allGradePoint = allGradePoint + scores.get(i).gradePoint * scores.get(i).credit;
+				allCredit = allCredit + scores.get(i).credit;
+				passCredit = passCredit + (scores.get(i).gradePoint == 0 ? 0 : scores.get(i).credit);
 			}
-			GPA = allGradePoint/scores.size();
+			GPA = allGradePoint/allCredit;
+			creditPassPercentage = passCredit / allCredit * 100 + "%";
 		}
 	}
 	@Override
@@ -84,8 +85,7 @@ public class ListScoresFragment extends ListFragment {
 		((TextView)mHeaderView.findViewById(R.id.course_kind)).setText(R.string.course_kind);
 		mFootView = new TextView(getActivity());
 		mFootView.setTextColor(Color.BLACK);
-		mFootView.setText("                      平均绩点： " + GPA);
-		
+		mFootView.setText("    平均绩点： " + GPA + "         学分通过率： " + creditPassPercentage);
 		
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}

@@ -47,6 +47,7 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TabHost.TabSpec;
 
 public class AllListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int mYear = 0;
@@ -162,9 +163,12 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     	
 		String[] daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 		
-		for(int day = 0;day<=6;day++)
-			mTabsAdapter.addTab(mTabHost.newTabSpec(daysOfWeek[day]).setIndicator(daysOfWeek[day]),
+		for(int day = 0;day<=6;day++){
+			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
+			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
+			mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(R.drawable.list_title);
+		}
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			TabWidget tabWidget = mTabHost.getTabWidget();

@@ -88,42 +88,16 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 		}
 		
         readDB();
-//        if(shareData.getBoolean("changeUser", false)){
-//			Editor editor = getSharedPreferences("data", 0).edit();
-//            editor.putBoolean("changeUser", false);
-//            editor.commit();
-//            start_resume = 1;
-//            startActivity(new Intent(this, InsertDBFragmentActivity.class));
-//		}else{
-//		}
 	}
 	
 	@Override
 	protected void onResume(){
 		super.onResume();
 		if(start_resume == 0){
-//			SharedPreferences shareData = getSharedPreferences("data", 0);
-//			if(shareData.getBoolean("changeUser", false)){
-//				Editor editor = getSharedPreferences("data", 0).edit();
-//	            editor.putBoolean("changeUser", false);
-//	            editor.commit();
-//	            start_resume = 1;
-//	            startActivity(new Intent(this, InsertDBFragmentActivity.class));
-//			}
+			
 		}
 		else if(start_resume == 1){
-//			SharedPreferences shareData = getSharedPreferences("data", 0);
-//			if(shareData.getBoolean("changeUser", false)){
-//				Editor editor = getSharedPreferences("data", 0).edit();
-//	            editor.putBoolean("changeUser", false);
-//	            editor.commit();
-//	            start_resume = 1;
-//	            startActivity(new Intent(this, InsertDBFragmentActivity.class));
-//			}
-//			else{
-				readDB();
-//			}
-			
+			readDB();
 		}
 	}
 		
@@ -240,17 +214,12 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-//    		Editor editor = getSharedPreferences("data", 0).edit();
-//			editor.putString("passMainMenu", "true");
-//            editor.commit();		
-//    		startActivity(new Intent(this, MainMenuActivity.class));
     		finish();
     	}
     	else if(item.getItemId() == 2){
     		Editor editor = getSharedPreferences("data", 0).edit();
     		editor.putBoolean("logIn_auto", false);
     		editor.commit();
-//    		start_resume = 1;
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
@@ -261,7 +230,6 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
-//        		readDB();
             }
             else{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
@@ -284,15 +252,4 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 		    return false;
 		}
     }
-    
-//    @Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if(keyCode == KeyEvent.KEYCODE_BACK){
-//			Editor editor = getSharedPreferences("data", 0).edit();
-//			editor.putString("passMainMenu", "true");
-//            editor.commit();
-//		}
-//		return super.onKeyDown(keyCode, event);
-//	}
-
 }

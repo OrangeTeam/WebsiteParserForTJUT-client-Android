@@ -97,7 +97,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
         
         course_name.setText("课程名称：");
         course_time_and_adress.setText("时间地点1：");
-//        updateCoursesListToDatabase();
         course_code = (TextView)findViewById(R.id.course_code);
         course_class_number = (TextView)findViewById(R.id.course_class_number);
         course_teacher = (TextView)findViewById(R.id.course_teacher);
@@ -117,9 +116,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
         
         add = (Button)findViewById(R.id.add);
-//        add.setText("添加");
         add.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -156,7 +153,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
 		editText.setId((add_num-2)*2 + 2);
 		editText.setCursorVisible(false);
 		editText.setLongClickable(false);
-//		editText.setEditableFactory(null);
 		editText.setFocusable(false);
 		
 		RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -203,10 +199,8 @@ public class AddCourseInfoActivity extends FragmentActivity{
              
              week_input.setCursorVisible(false);
              week_input.setLongClickable(false);
-//     		 editText.setEditableFactory(null);
      		 week_input.setFocusable(false);
              week_input.setOnClickListener(new OnClickListener() {
-				
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
@@ -220,10 +214,8 @@ public class AddCourseInfoActivity extends FragmentActivity{
 			 });
              day_of_week_input.setCursorVisible(false);
              day_of_week_input.setLongClickable(false);
-//     		 editText.setEditableFactory(null);
              day_of_week_input.setFocusable(false);
              day_of_week_input.setOnClickListener(new OnClickListener() {
-				
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
@@ -237,10 +229,8 @@ public class AddCourseInfoActivity extends FragmentActivity{
 			 });
              period_input.setCursorVisible(false);
              period_input.setLongClickable(false);
-//     		 editText.setEditableFactory(null);
              period_input.setFocusable(false);
              period_input.setOnClickListener(new OnClickListener() {
-				
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
@@ -254,8 +244,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
 			 });
      		 
              return new AlertDialog.Builder(this)
-                 //.setIconAttribute(android.R.attr.alertDialogIcon)
-//                 .setTitle(R.string.alert_dialog_text_entry)
                  .setView(textEntryView)
                  .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
                      public void onClick(DialogInterface dialog, int whichButton) {
@@ -348,18 +336,9 @@ public class AddCourseInfoActivity extends FragmentActivity{
 //    	                   ...
     	            	   Resources res = getResources();
     	            	   String[] content = res.getStringArray(address_choice);
-//    	            	   for(int i=0; i<choice_num; i++){
-////    	                	   System.out.println(mSelectedItems.get(i));
-//    	            		   if(i == choice_num-1){
-//    	            			   choice_result = choice_result + mSelectedItems.get(i);
-//    	            			   break;
-//    	            		   }
-//    	                	   choice_result = choice_result + mSelectedItems.get(i) + ",";
-//    	                   } 
     	            	   System.out.println(choice_result);
     	            	   if(choice_input_address == R.id.week_input){
     	            		   for(int i=0; i<choice_num; i++){
-//        	                	   System.out.println(mSelectedItems.get(i));
         	            		   if(i == choice_num-1){
         	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
         	            			   break;
@@ -370,7 +349,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
     	            	   }
     	            	   if(choice_input_address == R.id.day_of_week_input){
     	            		   for(int i=0; i<choice_num; i++){
-//        	                	   System.out.println(mSelectedItems.get(i));
         	            		   if(i == choice_num-1){
         	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
         	            			   break;
@@ -381,7 +359,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
     	            	   }
     	            	   if(choice_input_address == R.id.period_input){
     	            		   for(int i=0; i<choice_num; i++){
-//        	                	   System.out.println(mSelectedItems.get(i));
         	            		   if(i == choice_num-1){
         	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
         	            			   break;
@@ -405,17 +382,12 @@ public class AddCourseInfoActivity extends FragmentActivity{
     }
     
     public void updateCoursesListToDatabase(){
-    	
-    	//course_time_and_adress_input.setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
         Course course = new Course();
         course.setName(course_name_input.getText().toString());
         course.setCode(course_code_input.getText().toString());
         course.setClassNumber(course_class_number_input.getText().toString());
         course.setTeachers(course_teacher_input.getText().toString());
         try {
-//			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
-//			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
-//	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
         	for(int j=0; j<add_num; j++){
         		TimeAndAddress timeAndAddress = new TimeAndAddress();
         		timeAndAddress.addDays(day_of_week_get[j]);
@@ -424,17 +396,11 @@ public class AddCourseInfoActivity extends FragmentActivity{
         		timeAndAddress.setAddress(classroom_get[j]);
         		course.addTimeAndAddress(timeAndAddress);
         	}
-//        	course.setId(10);
-//			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
-//			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
-//	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
 	        
 		} catch (NumberFormatException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-//		} catch (CourseException e1) {
 //			// TODO Auto-generated catch block
-//			e1.printStackTrace();
 		} catch (TimeAndAddressException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -453,7 +419,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
     }
     
     class UpdateCoursesListToDatabase extends AsyncTask<CourseAndUser,Void,Void>{
-//        String password = shareData.getString("password", null);
 		public static final String TAG = "org.orange.querysystem";
 		public static final int PARSE_COURSE = 1;
 		public static final int PARSE_SCORE = 2;

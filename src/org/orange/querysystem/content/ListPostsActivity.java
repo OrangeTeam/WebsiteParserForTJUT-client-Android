@@ -159,10 +159,8 @@ public class ListPostsActivity extends FragmentActivity{
 
 	public void addTab(byte source){
 		String sourceString = getResources().getText(getSourceString(source)).toString();
-		TabSpec tabSpec = mTabHost.newTabSpec(sourceString);
-		mTabsAdapter.addTab(tabSpec.setIndicator(sourceString),
+		mTabsAdapter.addTab(mTabHost.newTabSpec(sourceString).setIndicator(sourceString),
 				ListPostsFragment.class, ListPostsFragment.buildArgument(source));
-		mTabHost.getTabWidget().getChildTabViewAt(source).setBackgroundResource(R.drawable.list_title);
 	}
 
 	public void loadPosts(){
@@ -195,10 +193,6 @@ public class ListPostsActivity extends FragmentActivity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-//    		Editor editor = getSharedPreferences("data", 0).edit();
-//			editor.putString("passMainMenu", "true");
-//            editor.commit();
-//    		startActivity(new Intent(this, MainMenuActivity.class));
     		finish();
     	}
     	else if(item.getItemId() == 2){
@@ -208,14 +202,14 @@ public class ListPostsActivity extends FragmentActivity{
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
-//    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    		
     	}
     	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
-//        		readDB();
+
             }
             else{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
@@ -226,14 +220,4 @@ public class ListPostsActivity extends FragmentActivity{
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
-	
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if(keyCode == KeyEvent.KEYCODE_BACK){
-//			Editor editor = getSharedPreferences("data", 0).edit();
-//			editor.putString("passMainMenu", "true");
-//            editor.commit();
-//		}
-//		return super.onKeyDown(keyCode, event);
-//	}
 }

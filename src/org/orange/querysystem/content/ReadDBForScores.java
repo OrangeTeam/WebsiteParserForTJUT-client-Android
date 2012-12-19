@@ -34,9 +34,6 @@ public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<C
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try {
 			studentInfDBAdapter.open();
-//			for(int i=0; i<studentInfDBAdapter.getAllCoursesFromDB(args[0]).size(); i++){
-//				result.add(studentInfDBAdapter.getAllCoursesFromDB(args[0]).get(0));
-//			}
 			result = studentInfDBAdapter.getAllCoursesFromDB(args[0]);
 		} catch(SQLException e){
 			// TODO Auto-generated catch block

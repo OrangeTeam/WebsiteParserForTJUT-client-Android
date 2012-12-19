@@ -73,17 +73,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				getActionBar().hide();
 		}
-//		SharedPreferences shareData = getSharedPreferences("data", 0);
-//        if(shareData.getBoolean("changeUser", false)){
-//			Editor editor = getSharedPreferences("data", 0).edit();
-//            editor.putBoolean("changeUser", false);
-//            editor.commit();
-//            start_resume = 1;
-//            startActivity(new Intent(this, InsertDBFragmentActivity.class));
-//		}else{
-			readDB();
-//		}
-		
+		readDB();
 	}
 	
 	public void readDB(){
@@ -97,7 +87,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	}
     
     public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
-//    	mTabHost.clearAllTabs();
     	currentTime = (TextView)findViewById(R.id.currentTime);
     	currentTime.setText("成绩单");
     	SharedPreferences shareData = getSharedPreferences("data", 0);
@@ -111,7 +100,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 			for(int counter = 0;counter<courses.get(semester).size();counter++)
 			try {
 					totalGradePoint = totalGradePoint + (float)courses.get(semester).get(counter).getGradePoint();
-//					totalCredit = totalCredit + (byte)courses.get(semester).get(counter).getCredit();
 					scores.add(new SimpleScore(semester+1, courses.get(semester).get(counter).getName(), (short)(courses.get(semester).get(counter).getTestScore()), (short)(courses.get(semester).get(counter).getTotalScore()), (float)courses.get(semester).get(counter).getGradePoint(), (byte)courses.get(semester).get(counter).getCredit(), courses.get(semester).get(counter).getKind()));
 			} catch (CourseException e) {
 				// TODO Auto-generated catch block
@@ -172,10 +160,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-//    		Editor editor = getSharedPreferences("data", 0).edit();
-//			editor.putString("passMainMenu", "true");
-//            editor.commit();
-//    		startActivity(new Intent(this, MainMenuActivity.class));
     		finish();
     	}
     	else if(item.getItemId() == 2){
@@ -187,14 +171,13 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
-//    		startActivity(new Intent(this, AllListCoursesActivity.class));
+    		
     	}
     	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
-//        		readDB();
             }
             else{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
@@ -216,16 +199,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		    return false;
 		}
     }
-
-//    @Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if(keyCode == KeyEvent.KEYCODE_BACK){
-//			Editor editor = getSharedPreferences("data", 0).edit();
-//			editor.putString("passMainMenu", "true");
-//            editor.commit();
-//		}
-//		return super.onKeyDown(keyCode, event);
-//	}
     
     @Override
 	protected void onResume(){

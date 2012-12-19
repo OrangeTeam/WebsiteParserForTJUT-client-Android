@@ -26,8 +26,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -180,7 +178,6 @@ public class CourseInfoActivity extends FragmentActivity{
 			editText.setEnabled(false);
 			editText.setCursorVisible(false);
 			editText.setLongClickable(false);
-//			editText.setEditableFactory(null);
 			editText.setFocusable(false);
 			
 			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -301,9 +298,6 @@ public class CourseInfoActivity extends FragmentActivity{
     
     @Override
     protected Dialog onCreateDialog(final int id) {
-//    	int[] con = new int[time_and_adress_counter];
-//        for(int i = 0; i < time_and_adress_counter; i++)
-//        	con[i] = i;
     	LayoutInflater factory = LayoutInflater.from(this);
         final View textEntryView = factory.inflate(R.layout.time_and_adress_entry, null);
         
@@ -318,7 +312,6 @@ public class CourseInfoActivity extends FragmentActivity{
         
         week_input.setCursorVisible(false);
         week_input.setLongClickable(false);
-//		 editText.setEditableFactory(null);
 		 week_input.setFocusable(false);
         week_input.setOnClickListener(new OnClickListener() {
 			
@@ -335,7 +328,6 @@ public class CourseInfoActivity extends FragmentActivity{
 		 });
         day_of_week_input.setCursorVisible(false);
         day_of_week_input.setLongClickable(false);
-//		 editText.setEditableFactory(null);
         day_of_week_input.setFocusable(false);
         day_of_week_input.setOnClickListener(new OnClickListener() {
 			
@@ -352,7 +344,6 @@ public class CourseInfoActivity extends FragmentActivity{
 		 });
         period_input.setCursorVisible(false);
         period_input.setLongClickable(false);
-//		 editText.setEditableFactory(null);
         period_input.setFocusable(false);
         period_input.setOnClickListener(new OnClickListener() {
 			
@@ -367,53 +358,43 @@ public class CourseInfoActivity extends FragmentActivity{
 				showDialog();
 			}
 		 });
-//        
-//    	switch(id){
-//    	case 2:
-             // This example shows how to add a custom layout to an AlertDialog
-             
-             return new AlertDialog.Builder(this)
-                 //.setIconAttribute(android.R.attr.alertDialogIcon)
-//                 .setTitle(R.string.alert_dialog_text_entry)
-                 .setView(textEntryView)
-                 .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
-                     public void onClick(DialogInterface dialog, int whichButton) {
-                    	 
-                         /* User clicked OK so do some stuff */
-                    	 week = (TextView)textEntryView.findViewById(R.id.week);
-                         day_of_week = (TextView)textEntryView.findViewById(R.id.day_of_week);
-                         period = (TextView)textEntryView.findViewById(R.id.period);
-                         classroom = (TextView)textEntryView.findViewById(R.id.classroom);
-                         
-                         week_get = week_input.getText().toString();
-                         day_of_week_get = day_of_week_input.getText().toString();
-                         period_get = period_input.getText().toString();
-                         classroom_get = classroom_input.getText().toString();
-                         ((EditText) findViewById(id*2 + 2 )).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
-                         try {
-							timeAndAddresses.get(id).addWeeks(week_get);
-							timeAndAddresses.get(id).addDays(day_of_week_get); 
-							timeAndAddresses.get(id).addPeriods(period_get);
-							timeAndAddresses.get(id).setAddress(classroom_get);
-						} catch (TimeAndAddressException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (BitOperateException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} 
-                     }
-                 })
-                 .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-                     public void onClick(DialogInterface dialog, int whichButton) {
+        return new AlertDialog.Builder(this)
+        .setView(textEntryView)
+        .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+           	 
+                /* User clicked OK so do some stuff */
+           	 week = (TextView)textEntryView.findViewById(R.id.week);
+                day_of_week = (TextView)textEntryView.findViewById(R.id.day_of_week);
+                period = (TextView)textEntryView.findViewById(R.id.period);
+                classroom = (TextView)textEntryView.findViewById(R.id.classroom);
+                
+                week_get = week_input.getText().toString();
+                day_of_week_get = day_of_week_input.getText().toString();
+                period_get = period_input.getText().toString();
+                classroom_get = classroom_input.getText().toString();
+                ((EditText) findViewById(id*2 + 2 )).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+                try {
+					timeAndAddresses.get(id).addWeeks(week_get);
+					timeAndAddresses.get(id).addDays(day_of_week_get); 
+					timeAndAddresses.get(id).addPeriods(period_get);
+					timeAndAddresses.get(id).setAddress(classroom_get);
+				} catch (TimeAndAddressException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BitOperateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+            }
+        })
+        .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
 
-                         /* User clicked cancel so do some stuff */
-                     }
-                 })
-                 .create();
-             
-//    	}
-//    	return null;
+                /* User clicked cancel so do some stuff */
+            }
+        })
+        .create();    
     }
     
     public void showDialog(){
@@ -480,7 +461,6 @@ public class CourseInfoActivity extends FragmentActivity{
     	            	   System.out.println(choice_result);
     	            	   if(choice_input_address == R.id.week_input){
     	            		   for(int i=0; i<choice_num; i++){
-//        	                	   System.out.println(mSelectedItems.get(i));
         	            		   if(i == choice_num-1){
         	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
         	            			   break;
@@ -491,7 +471,6 @@ public class CourseInfoActivity extends FragmentActivity{
     	            	   }
     	            	   if(choice_input_address == R.id.day_of_week_input){
     	            		   for(int i=0; i<choice_num; i++){
-//        	                	   System.out.println(mSelectedItems.get(i));
         	            		   if(i == choice_num-1){
         	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
         	            			   break;
@@ -502,7 +481,6 @@ public class CourseInfoActivity extends FragmentActivity{
     	            	   }
     	            	   if(choice_input_address == R.id.period_input){
     	            		   for(int i=0; i<choice_num; i++){
-//        	                	   System.out.println(mSelectedItems.get(i));
         	            		   if(i == choice_num-1){
         	            			   choice_result = choice_result + content[(Integer) mSelectedItems.get(i)];
         	            			   break;
@@ -534,21 +512,10 @@ public class CourseInfoActivity extends FragmentActivity{
         course.setClassNumber(course_class_number_input.getText().toString());
         course.setTeachers(course_teacher_input.getText().toString());
         try {
-//			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
-//			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
-//	        course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
-        		course.setTimeAndAddresse(timeAndAddresses);
+        	course.setTimeAndAddresse(timeAndAddresses);
 		} catch (NumberFormatException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-//		} catch (CourseException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (TimeAndAddressException e) {
-//    	findViewById(2).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
-//		} catch (BitOperateException e) {
-			// TODO Auto-generated catch block
-//			e.printStackTrace();
 		}
         course.setKind(course_kind_input.getText().toString());
         SharedPreferences shareData = getSharedPreferences("data", 0);

@@ -46,13 +46,6 @@ public class MainMenuActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
-		
-//		SharedPreferences shareData = getSharedPreferences("data", 0);
-//		if(shareData.getString("passMainMenu", null) == null || shareData.getString("passMainMenu", null) == "false"){
-//			startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
-//		}else{
-//			
-//		}
 		SharedPreferences shareData = getSharedPreferences("data", 0);
     	//判断是否第一次登陆
     	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){

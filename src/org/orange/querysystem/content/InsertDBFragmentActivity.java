@@ -31,8 +31,7 @@ public class InsertDBFragmentActivity extends Activity{
         refresh = (TextView)findViewById(R.id.refresh);
 		progressBar = (ProgressBar)findViewById(R.id.progressBar);
         loadCourses();
-//        getSupportFragmentManager().beginTransaction().add(android.R.id.content,new InsertDBFragment(userName, password)).commit();
-	}
+    }
 	
 	public void loadCourses(){
 		SharedPreferences shareData = getSharedPreferences("data", 0);

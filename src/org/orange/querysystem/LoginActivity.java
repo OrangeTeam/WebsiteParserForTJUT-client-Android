@@ -95,7 +95,6 @@ public class LoginActivity extends Activity{
 
         Calendar firstDay = SettingsActivity.getMondayOfZeroWeek(this);
         if(firstDay == null){
-//        	showDialog(DATE_DIALOG_ID);
         	showDialog(DATE_DIALOG_PROMPT);
         	startTime.setText("开课时间：请点击此处设置第一天开课日期！");
         }else{
@@ -124,8 +123,6 @@ public class LoginActivity extends Activity{
            	 	RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
            	 	relativeLayout.addView(textView, tvlp);
            	 	return new AlertDialog.Builder(this)
-                 //.setIconAttribute(android.R.attr.alertDialogIcon)
-//                 .setTitle(R.string.alert_dialog_text_entry)
                  .setView(relativeLayout)
                  .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
@@ -133,14 +130,7 @@ public class LoginActivity extends Activity{
                             /* User clicked OK so do some stuff */
                             startActivity(new Intent(LoginActivity.this ,SettingsActivity.class));
                         }
-                    })
-//                    .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int whichButton) {
-//
-//                            /* User clicked cancel so do some stuff */
-//                        }
-//                    })
-                    .create();
+                    }).create();
         }
         return null;
     }    
@@ -221,8 +211,6 @@ public class LoginActivity extends Activity{
 				Toast.makeText(LoginActivity.this, "用户名或密码输入错误", Toast.LENGTH_LONG).show();
 			}
 			else{
-//				Intent intent = new Intent(LoginActivity.this, ListCoursesActivity.class);
-//				startActivity(intent);
 				Editor editor = getSharedPreferences("data", 0).edit();
 				editor.putBoolean("changeUser", true);
 				editor.commit();

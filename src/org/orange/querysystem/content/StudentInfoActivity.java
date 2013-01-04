@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -57,6 +58,7 @@ public class StudentInfoActivity extends ListActivity{
 		imageView = (ImageView)showImage.findViewById(R.id.studentImageView);
 		
 		listView = getListView();
+		listView.setCacheColorHint(Color.TRANSPARENT);
 		listView.addFooterView(showImage);
 		initAdapter();
 		setListAdapter(adapter);

@@ -51,8 +51,9 @@ public class InsertDBFragmentActivity extends Activity{
 				parser = new SchoolWebpageParser(new MyParserListener(), args[0], args[1]);
 				studentInfDBAdapter.open();
 				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.个人全部成绩),args[0]);
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.本学期修读课程),args[0]);
 				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.个人全部成绩));
+				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.本学期修读课程),args[0]);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.已选下学期课程),args[0]);
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

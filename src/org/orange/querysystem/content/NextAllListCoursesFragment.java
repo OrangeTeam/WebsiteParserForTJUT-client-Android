@@ -1,14 +1,9 @@
-/**
- * 
- */
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.orange.querysystem.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,11 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-/**
- * @author Bai Jie
- *
- */
-public class ListCoursesFragment extends ListFragment {
+public class NextAllListCoursesFragment extends ListFragment {
 	public static final String COURSES_KEY = "org.orange.querysystem.simplecourses.key";
 
 	private boolean hasRemovedRepeated = false;
@@ -70,6 +61,7 @@ public class ListCoursesFragment extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View view, int position, long id){
+		l.setCacheColorHint(Color.TRANSPARENT);
 		Intent intent = new Intent(getActivity(), CourseInfoActivity.class);
 		intent.putExtra("course_info", (int)id);
 		startActivity(intent);
@@ -106,7 +98,6 @@ public class ListCoursesFragment extends ListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		this.getListView().setCacheColorHint(Color.TRANSPARENT);
 
 		setEmptyText(getResources().getText(R.string.no_course));
 	}

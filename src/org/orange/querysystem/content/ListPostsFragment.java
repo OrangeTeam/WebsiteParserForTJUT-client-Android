@@ -24,6 +24,7 @@ import org.orange.studentinformationdatabase.Contract;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -76,6 +77,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        this.getListView().setCacheColorHint(Color.TRANSPARENT);
 
         // Give some text to display if there is no data.
         setEmptyText(getResources().getText(R.string.no_post));
@@ -132,6 +134,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+    	l.setCacheColorHint(Color.TRANSPARENT);
         Intent intent = new Intent(getActivity(), ShowOnePostActivity.class);
         intent.putExtra(ShowOnePostActivity.EXTRA_POST_ID, id);
         startActivity(intent);

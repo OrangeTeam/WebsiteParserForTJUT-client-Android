@@ -26,6 +26,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -161,6 +162,11 @@ public class ListPostsActivity extends FragmentActivity{
 		String sourceString = getResources().getText(getSourceString(source)).toString();
 		mTabsAdapter.addTab(mTabHost.newTabSpec(sourceString).setIndicator(sourceString),
 				ListPostsFragment.class, ListPostsFragment.buildArgument(source));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			
+		}else{
+			mTabHost.getTabWidget().getChildAt(mTabHost.getTabWidget().getChildCount()-1).setBackgroundResource(Color.TRANSPARENT);
+		}				
 	}
 
 	public void loadPosts(){

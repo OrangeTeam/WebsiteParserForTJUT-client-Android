@@ -63,7 +63,7 @@ public class MainMenuActivity extends Activity{
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
-		for(int i=0; i<8; i++){
+		for(int i=0; i<9; i++){
 			HashMap<String ,Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", imgs[i]);//添加图像资源的ID
 			map.put("ItemText", texts[i]);//按序号做ItemText
@@ -95,21 +95,24 @@ public class MainMenuActivity extends Activity{
 				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
 			}
 			if(args3 == 2){
-				startActivity(new Intent(MainMenuActivity.this, ListScoresActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, NextAllListCoursesActivity.class));
 			}
 			if(args3 == 3){
-				startActivity(new Intent(MainMenuActivity.this, ListPostsActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, ListScoresActivity.class));
 			}
 			if(args3 == 4){
-				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, ListPostsActivity.class));
 			}
 			if(args3 == 5){
-				showDialog(DATE_DIALOG_ID);
+				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
 			}
 			if(args3 == 6){
-				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
+				showDialog(DATE_DIALOG_ID);
 			}
 			if(args3 == 7){
+				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
+			}
+			if(args3 == 8){
 				startActivity(new Intent(MainMenuActivity.this, SettingsActivity.class));
 			}
 		}
@@ -157,9 +160,9 @@ public class MainMenuActivity extends Activity{
                 }
             };    
 	
-	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsystart, R.drawable.lsyadd, R.drawable.lsyadd};
+	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsyall, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsystart, R.drawable.lsyadd, R.drawable.lsyadd};
 	
-	private static String[] texts = {"本周课程表", "总课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程", "设置"};
+	private static String[] texts = {"本周课程表", "总课程表", "下学期课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程", "设置"};
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){

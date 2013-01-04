@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.orange.querysystem.R;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -102,7 +104,13 @@ public class ListScoresFragment extends ListFragment {
 		setListAdapter(mScoresAdapter);
 		getListView().addFooterView(mFootView);
 		super.onActivityCreated(savedInstanceState);
+		this.getListView().setCacheColorHint(Color.TRANSPARENT);
 	}
+	
+	 @Override
+	    public void onListItemClick(ListView l, View v, int position, long id) {
+	    	l.setCacheColorHint(Color.TRANSPARENT);
+	    }
 
 	public static class SimpleScore implements Parcelable{
 		private int id;

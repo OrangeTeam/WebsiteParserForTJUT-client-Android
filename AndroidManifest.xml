@@ -43,13 +43,13 @@
         <activity
             android:screenOrientation="sensor"
             android:name=".content.InsertDBFragmentActivity"
-            android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@android:style/Theme.Dialog"/>
         <activity android:name=".content.ListPostsActivity" />
         <activity android:name=".content.ListCoursesActivity" />
 -       <activity android:name=".content.ShowOnePostActivity" />
 -       <activity android:name=".content.StudentInfoActivity" />
 		<activity android:name=".content.AllListCoursesActivity" />
+		<activity android:name=".content.NextAllListCoursesActivity" />
 		<activity android:name=".content.CourseInfoActivity"/>
 		<activity android:name=".content.AddCourseInfoActivity"/>
 		<activity android:name=".content.ListScoresActivity"/>

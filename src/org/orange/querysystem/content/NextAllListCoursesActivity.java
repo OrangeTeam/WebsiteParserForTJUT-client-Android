@@ -1,30 +1,15 @@
-/*
- * Copyright (C) 2011 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
-
+import java.util.Calendar;
+import java.util.LinkedList;
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
-import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
-import org.orange.querysystem.content.ReadDBForScores.OnPostExcuteListerner;
-
+import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
+import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import util.BitOperate.BitOperateException;
 import util.webpage.Course;
-import util.webpage.Course.CourseException;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
@@ -49,13 +34,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
-public class ListScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
+public class NextAllListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
+	private int mYear = 0;
+	private int mMonth = 0;
+	private int mDay = 0;
+	private int mWeek = 0;
+	private int mDayOfWeek = 0;
 	private int start_resume = 0;
-
-	TabHost mTabHost;
-	ViewPager  mViewPager;
-	TabsAdapter mTabsAdapter;
+	
 	private TextView currentTime;
+	
+	protected static final int COURSE_NUMBER = 6;
+	public static final String ARRAYLIST_OF_COURSES_KEY
+		= ListCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
+	
+	TabHost mTabHost;
+    ViewPager  mViewPager;
+    TabsAdapter mTabsAdapter;
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -66,6 +61,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
 		
+		SharedPreferences shareData = getSharedPreferences("data", 0);
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -76,7 +72,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle("成绩单");
+			mActionBar.setTitle("下学期课程表");
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
@@ -93,63 +89,108 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 
 				//child.getLayoutParams().height = tv.getHeight();
 			}
-		}		
+		}						
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			if(getResources().getConfiguration().orientation ==
+			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				getActionBar().hide();
 		}
-		readDB();
+		
+		Calendar calendar = Calendar.getInstance();
+		mYear = calendar.get(Calendar.YEAR);
+		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
+		mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
+        mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
+        readDB();
 	}
 	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		if(start_resume == 0){
+			
+		}
+		else if(start_resume == 1){
+			readDB();
+		}
+	}
+		
 	public void readDB(){
 		SharedPreferences shareData = getSharedPreferences("data", 0);
-    	new ReadDBForScores(this, this).execute(shareData.getString("userName", null));
+    	new ReadDB(this, this).execute(shareData.getString("userName", null));
     }
     
     @Override
-	public void onPostReadFromDBForScores(ArrayList<ArrayList<Course>> courses) {
-			showScoresInfo(courses);
+	public void onPostReadFromDB(ArrayList<Course> courses) {
+			showCoursesInfo(courses);
 	}
     
-    public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
-    	currentTime = (TextView)findViewById(R.id.currentTime);
-    	currentTime.setText("成绩单");
-    	SharedPreferences shareData = getSharedPreferences("data", 0);
+    public void showCoursesInfo(ArrayList<Course> courses){
+		mTabsAdapter.clear();
+        currentTime = (TextView)findViewById(R.id.currentTime);
+        currentTime.setText("下学期总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
+        
+    	Bundle[] args = new Bundle[7]; 
     	
-    	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
-    	System.out.println("Activity" + courses.size());
-		for(int semester = 1;semester<courses.size();semester++){
-			float totalGradePoint = 0;
-			byte totalCredit = 0;
-			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
-			for(int counter = 0;counter<courses.get(semester).size();counter++)
-			try {
-					totalGradePoint = totalGradePoint + (float)courses.get(semester).get(counter).getGradePoint();
-					scores.add(new SimpleScore(semester+1, courses.get(semester).get(counter).getName(), (short)(courses.get(semester).get(counter).getTestScore()), (short)(courses.get(semester).get(counter).getTotalScore()), (float)courses.get(semester).get(counter).getGradePoint(), (byte)courses.get(semester).get(counter).getCredit(), courses.get(semester).get(counter).getKind()));
-			} catch (CourseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-			currentTime.setText("成绩单");
-			Bundle arg = new Bundle();
-			arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);
-			args.add(arg);
-		}
-		int counter = 1;
-		for(Bundle arg:args){
-			TabSpec tabSpec = mTabHost.newTabSpec(counter+"学期");
-			mTabsAdapter.addTab(tabSpec.setIndicator((counter++)+"学期"),
-					ListScoresFragment.class, arg);
+    	/*String[星期几][第几大节]*/
+    	LinkedList<SimpleCourse>[][] lesson = new LinkedList[7][14];
+    	for(int day=0;day<=6;day++)
+    		for(int period=1;period<=13;period++)
+    			lesson[day][period] = new LinkedList<SimpleCourse>();
+    	for(Course course:courses)
+			for(Course.TimeAndAddress time:course.getTimeAndAddress())
+				for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
+					for(int period = 1; period<=13; period++)
+						try{
+							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)){
+								lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period), time.getWeekString()+ "          " + time.getAddress()));
+							}
+						} catch(BitOperateException e){
+							e.printStackTrace();
+						}
+    	
+    	for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++){
+    		ArrayList<SimpleCourse> coursesInADay = new ArrayList<SimpleCourse>();
+    		for(int period = 1; period<=13; period++){
+    			for(SimpleCourse course:lesson[dayOfWeek][period])
+    				coursesInADay.add(course);
+    		}
+    		Bundle argForFragment = new Bundle();
+    		argForFragment.putParcelableArrayList(ListCoursesFragment.COURSES_KEY, coursesInADay);
+    		args[dayOfWeek] = argForFragment;
+    	}
+    	
+		String[] daysOfWeek = getResources().getStringArray(R.array.days_of_week);
+		
+		for(int day = 0;day<=6;day++){
+			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
+			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
+					ListCoursesFragment.class, args[day]);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 			}else{
-				mTabHost.getTabWidget().getChildAt(counter-2).setBackgroundResource(Color.TRANSPARENT);
-			}		
+				mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(Color.TRANSPARENT);
+			}	
 		}
-			
+		
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+			TabWidget tabWidget = mTabHost.getTabWidget();
+			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
+				View child = tabWidget.getChildAt(i);  
+
+				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
+				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
+				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
+				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
+
+				child.getLayoutParams().height = 80;
+			}
+		}
+		mTabHost.setCurrentTab(mDayOfWeek-1);
     }
+	
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
@@ -167,15 +208,15 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	 */
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
+	    mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString("tab", mTabHost.getCurrentTabTag());
-	}
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("tab", mTabHost.getCurrentTabTag());
+    }
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,7 +225,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
         menu.add(0, 3, 3, R.string.settings);
         menu.add(0, 4, 4, R.string.refresh);
         menu.add(0, 5, 5, R.string.about);
-        
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
@@ -196,9 +236,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     	else if(item.getItemId() == 2){
     		Editor editor = getSharedPreferences("data", 0).edit();
     		editor.putBoolean("logIn_auto", false);
-    		editor.putBoolean("changeUser", false);
     		editor.commit();
-    		start_resume = 1;
     		startActivity(new Intent(this, LoginActivity.class));
     	}
     	else if(item.getItemId() == 3){
@@ -230,16 +268,4 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		    return false;
 		}
     }
-    
-    @Override
-	protected void onResume(){
-		super.onResume();
-		if(start_resume == 0){
-			
-		}
-		else if(start_resume == 1){
-			readDB();
-		}
-    }
 }
-

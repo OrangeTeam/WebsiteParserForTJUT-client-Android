@@ -28,10 +28,12 @@ import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -42,6 +44,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -84,11 +87,27 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
 		
+		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar mActionBar = getActionBar();
+			mActionBar.setTitle("总课程表");
+			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
-				getActionBar().hide();
-		}
+				mActionBar.hide();
+		}else{
+			TabWidget tabWidget = mTabHost.getTabWidget();
+			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
+				View child = tabWidget.getChildAt(i);  
+
+				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
+				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
+				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
+				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
+
+				//child.getLayoutParams().height = tv.getHeight();
+			}
+		}				
 		
 		Calendar calendar = Calendar.getInstance();
 		mYear = calendar.get(Calendar.YEAR);
@@ -161,7 +180,11 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
 			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
-			mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(R.drawable.list_title);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
+			}else{
+				mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(Color.TRANSPARENT);
+			}	
 		}
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){

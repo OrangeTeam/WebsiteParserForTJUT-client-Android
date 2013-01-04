@@ -3,16 +3,22 @@ package org.orange.querysystem;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.orange.querysystem.content.AccountSettingPreference;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 public class SettingsActivity extends PreferenceActivity {
+	public static final String KEY_PREF_ACCOUNT = "pref_account";
+	public static final String KEY_PREF_ACCOUNT_STUDENT_ID =
+			KEY_PREF_ACCOUNT + AccountSettingPreference.STUDENT_ID_SUFFIX;
+	public static final String KEY_PREF_ACCOUNT_PASSWORD =
+			KEY_PREF_ACCOUNT + AccountSettingPreference.PASSWORD_SUFFIX;
 	public static final String KEY_PREF_SCHOOL_STARTING_DATE = "pref_startingDate";
 
 	@TargetApi(11)
@@ -79,5 +85,23 @@ public class SettingsActivity extends PreferenceActivity {
 			return null;
 		else
 			return getCurrentWeekNumber(c.getTimeInMillis());
+	}
+	/**
+	 * 取得账号的学号
+	 * @param context 上下文环境
+	 * @return 如果设置过学号，返回此学号；如果尚没设置学号，返回null
+	 */
+	public static String getAccountStudentID(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_STUDENT_ID, null);
+	}
+	/**
+	 * 取得账号的密码
+	 * @param context 上下文环境
+	 * @return 如果设置过密码，返回此密码；如果尚没设置密码，返回null
+	 */
+	public static String getAccountPassword(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_PASSWORD, null);
 	}
 }

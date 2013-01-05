@@ -101,7 +101,9 @@ public class SettingsActivity extends PreferenceActivity {
 	 * @return 如果设置过密码，返回此密码；如果尚没设置密码，返回null
 	 */
 	public static String getAccountPassword(Context context){
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getString(KEY_PREF_ACCOUNT_PASSWORD, null);
+		return AccountSettingPreference.decode(
+				PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_PASSWORD, null)
+				);
 	}
 }

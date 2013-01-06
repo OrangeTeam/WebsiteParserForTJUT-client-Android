@@ -8,12 +8,15 @@ import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,31 +24,42 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.DatePicker;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@TargetApi(11)
 public class MainMenuActivity extends Activity{
 	private GridView gridView;
 	private TextView title;
-	private int mYear = 0;
-	private int mMonth = 0;
-	private int mDayOfMonth = 0;
-	private int mDayOfYear = 0;
 	private int exit = 0;
-	
-	
-	static final int DATE_DIALOG_ID = 1;	
 	
 	@Override
 	public void onResume(){
 		super.onResume();
 		exit = 0;
 	}
+	@TargetApi(11)
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
+		
+		//3.0以上版本，使用ActionBar
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar mActionBar = getActionBar();
+			mActionBar.setTitle("主菜单");
+			//横屏时，为节省空间隐藏ActionBar
+			if(getResources().getConfiguration().orientation == 
+					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
+				mActionBar.hide();
+			title.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
+		}else{
+			
+		}				
 		SharedPreferences shareData = getSharedPreferences("data", 0);
     	//判断是否第一次登陆
     	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){
@@ -54,16 +68,11 @@ public class MainMenuActivity extends Activity{
 		title = (TextView)findViewById(R.id.title);
 		gridView = (GridView)findViewById(R.id.gridView);
 		title.setText("主菜单");
-		Calendar calendar = Calendar.getInstance();
-		mYear = calendar.get(Calendar.YEAR);
-		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
-		mDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-		mDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
 		
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
-		for(int i=0; i<9; i++){
+		for(int i=0; i<8; i++){
 			HashMap<String ,Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", imgs[i]);//添加图像资源的ID
 			map.put("ItemText", texts[i]);//按序号做ItemText
@@ -107,62 +116,17 @@ public class MainMenuActivity extends Activity{
 				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
 			}
 			if(args3 == 6){
-				showDialog(DATE_DIALOG_ID);
-			}
-			if(args3 == 7){
 				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
 			}
-			if(args3 == 8){
+			if(args3 == 7){
 				startActivity(new Intent(MainMenuActivity.this, SettingsActivity.class));
 			}
 		}
 	}
 	
-	@Override   
-	protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DATE_DIALOG_ID:
-                return new DatePickerDialog(this,
-                            mDateSetListener,
-                            mYear, mMonth, mDayOfMonth);
-        }
-        return null;
-    }    
-	    
-	@Override    
-	protected void onPrepareDialog(int id, Dialog dialog) {
-        switch (id) {
-            case DATE_DIALOG_ID:
-            	//设置初始时间为当前时间
-                ((DatePickerDialog) dialog).updateDate(mYear, mMonth, mDayOfMonth);
-                break;
-        }
-    }        
-
-	private DatePickerDialog.OnDateSetListener mDateSetListener =
-            new DatePickerDialog.OnDateSetListener() {
-
-                public void onDateSet(DatePicker view, int year_choice, int month_choice,
-                        int day_choice) {
-                	Calendar calendar_2 = Calendar.getInstance();
-                	calendar_2.set(year_choice, month_choice, day_choice);
-                	if(calendar_2.get(Calendar.YEAR) > mYear || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) < 0 || ((mYear-calendar_2.get(Calendar.YEAR))*365 + mDayOfYear - calendar_2.get(Calendar.DAY_OF_YEAR)) > 22*7){
-                		Toast.makeText(MainMenuActivity.this, "此为不恰当的日期，请重新设置！", Toast.LENGTH_LONG).show();
-                	}
-                	else{
-                		Editor editor = getSharedPreferences("data", 0).edit();
-                        editor.putString("start_year", Integer.toString(year_choice));
-                        editor.putString("start_month", Integer.toString(month_choice+1));
-                        editor.putString("start_day", Integer.toString(day_choice));
-                        editor.commit();
-                	}
-                	
-                }
-            };    
+	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsyall, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsyadd, R.drawable.lsyadd};
 	
-	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsyall, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsystart, R.drawable.lsyadd, R.drawable.lsyadd};
-	
-	private static String[] texts = {"本周课程表", "总课程表", "下学期课程表", "成绩单", "通知", "学生信息" ,"开课时间设置", "增加课程", "设置"};
+	private static String[] texts = {"本周课程表", "总课程表", "下学期课程表", "成绩单", "通知", "学生信息" , "增加课程", "设置"};
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){

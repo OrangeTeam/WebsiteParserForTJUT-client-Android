@@ -183,7 +183,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 			}else{
-				mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(Color.TRANSPARENT);
+				mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(R.drawable.tab);
 			}	
 		}
 		

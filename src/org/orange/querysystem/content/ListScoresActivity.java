@@ -145,7 +145,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 			}else{
-				mTabHost.getTabWidget().getChildAt(counter-2).setBackgroundResource(Color.TRANSPARENT);
+				mTabHost.getTabWidget().getChildAt(counter-2).setBackgroundResource(R.drawable.tab);
 			}		
 		}
 			

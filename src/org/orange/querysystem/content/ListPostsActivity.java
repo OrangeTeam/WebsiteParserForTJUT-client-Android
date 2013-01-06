@@ -165,7 +165,7 @@ public class ListPostsActivity extends FragmentActivity{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			
 		}else{
-			mTabHost.getTabWidget().getChildAt(mTabHost.getTabWidget().getChildCount()-1).setBackgroundResource(Color.TRANSPARENT);
+			mTabHost.getTabWidget().getChildAt(mTabHost.getTabWidget().getChildCount()-1).setBackgroundResource(R.drawable.tab);
 		}				
 	}
 

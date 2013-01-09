@@ -47,7 +47,11 @@ public class MainMenuActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
-		
+
+		title = (TextView)findViewById(R.id.title);
+		gridView = (GridView)findViewById(R.id.gridView);
+		title.setText("主菜单");
+
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();
@@ -65,10 +69,6 @@ public class MainMenuActivity extends Activity{
     	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){
         	startActivity(new Intent(this, LoginActivity.class));
         }
-		title = (TextView)findViewById(R.id.title);
-		gridView = (GridView)findViewById(R.id.gridView);
-		title.setText("主菜单");
-		
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();

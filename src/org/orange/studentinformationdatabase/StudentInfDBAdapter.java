@@ -361,9 +361,11 @@ public class StudentInfDBAdapter {
 	 * insertArrayPostsInf:解析出的通知通过此插入操作方法存入到数据库的post表中。
 	 * @param thePostInf
 	 */
-	public void autoInsertArrayPostsInf(List<Post> thePostInf){
-		if(thePostInf == null || thePostInf.isEmpty()) return;
-		insertArrayPostsInf(thePostInf);
+	public int autoInsertArrayPostsInf(List<Post> thePostInf){
+		int count = 0;
+		if(thePostInf == null || thePostInf.isEmpty()) return 0;
+		count = insertArrayPostsInf(thePostInf);
+		return count;
 	}
 	
 	/**

@@ -121,8 +121,7 @@ public class PostUpdater {
 		private void refreshLastUpdatedTime() {
 			try{
 				database.open();
-				Post lastPost = database.getPostsFromDB(null, Contract.Posts.COLUMN_NAME_DATE, "1").get(0);
-				System.out.println(lastPost);
+				Post lastPost = database.getPostsFromDB(null, Contract.Posts.COLUMN_NAME_DATE + " DESC", "1").get(0);
 				lastUpdatedTime = lastPost.getDate();
 			} catch (SQLiteException e){
 				Log.e(TAG, "打开数据库异常！");
@@ -133,7 +132,6 @@ public class PostUpdater {
 			} finally{
 				database.close();
 			}
-			System.out.println("上次更新："+lastUpdatedTime);
 		}
 
 		/**
@@ -153,6 +151,7 @@ public class PostUpdater {
 			factory.setConnectTimeout(timeout);
 			factory.setReadTimeout(timeout);
 			GetterInterface getter;
+
 			//用Hessian连接GAE代理
 			for(int counter = 1;counter <= maxAttempts;counter++){
 				try {
@@ -213,21 +212,21 @@ public class PostUpdater {
 		private void autoUpdatePosts(){
 			//更新时间
 			refreshLastUpdatedTime();
-			long lastUpdatedTime = PostUpdater.this.lastUpdatedTime.getTime();
-			long now = new Date().getTime();
+			long lastUpdated = lastUpdatedTime.getTime();
+			long now = System.currentTimeMillis();
 			long longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 31L*24*60*60*1000);
 			long updateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 4L*24*60*60*1000);
 			//根据时间间隔更新
-			if(now - lastUpdatedTime > longUpdateInterval){
-				if(lastUpdatedTime == 0){
+			if(now - lastUpdated > longUpdateInterval){
+				if(lastUpdated == 0){
 					Log.v(TAG, "第一次更新");
 					//警告
 				}
 				updatePosts(false);
-				PostUpdater.this.lastUpdatedTime = new Date(now);
-			}else if(now - lastUpdatedTime > updateInterval){
+				lastUpdatedTime = new Date(now);
+			}else if(now - lastUpdated > updateInterval){
 				updatePosts(true);
-				PostUpdater.this.lastUpdatedTime = new Date(now);
+				lastUpdatedTime = new Date(now);
 			}
 		}
 

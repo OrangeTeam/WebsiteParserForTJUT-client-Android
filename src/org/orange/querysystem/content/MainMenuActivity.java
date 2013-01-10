@@ -1,18 +1,13 @@
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -22,12 +17,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
-import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 

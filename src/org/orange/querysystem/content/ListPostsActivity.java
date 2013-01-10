@@ -18,6 +18,7 @@ package org.orange.querysystem.content;
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.PostUpdater.OnPostExecuteListener;
 
 import util.webpage.Post;
@@ -188,29 +189,14 @@ public class ListPostsActivity extends FragmentActivity{
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.main_menu);
-        menu.add(0, 2, 2, R.string.change_number);
-        menu.add(0, 3, 3, R.string.settings);
-        menu.add(0, 4, 4, R.string.refresh);
-        menu.add(0, 5, 5, R.string.about);
+        menu.add(0, 1, 1, R.string.refresh);
+        menu.add(0, 2, 2, R.string.settings);
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		finish();
-    	}
-    	else if(item.getItemId() == 2){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-    		editor.putBoolean("logIn_auto", false);
-    		editor.commit();
-    		startActivity(new Intent(this, LoginActivity.class));
-    	}
-    	else if(item.getItemId() == 3){
-    		
-    	}
-    	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
@@ -221,8 +207,8 @@ public class ListPostsActivity extends FragmentActivity{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
             }
     	}
-    	else if(item.getItemId() == 5){
-    		startActivity(new Intent(this, AboutActivity.class));
+    	else if(item.getItemId() == 2){
+    		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

@@ -15,14 +15,18 @@ import java.util.Scanner;
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 
 import util.webpage.Constant;
 import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.Student;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -38,8 +42,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class StudentInfoActivity extends ListActivity{
@@ -48,12 +56,14 @@ public class StudentInfoActivity extends ListActivity{
 	private View showImage;
 	private ImageView imageView;
 	private static final String FILE_NAME = "student_info.txt";
+	public static final int PASSWORD_PROMPT = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.student_info);
 		
+		showDialog(PASSWORD_PROMPT);
 		showImage = getLayoutInflater().inflate(R.layout.show_image, null);
 		imageView = (ImageView)showImage.findViewById(R.id.studentImageView);
 		
@@ -70,6 +80,56 @@ public class StudentInfoActivity extends ListActivity{
 		}else{
 			new StudentInfoFromWeb().execute();
 		}
+	}
+	
+	@Override
+    protected Dialog onCreateDialog(int id) {
+		// TODO Auto-generated method stub
+		switch(id){
+		case PASSWORD_PROMPT:
+			final TextView textView = new TextView(this);
+			textView.setText("请输入登陆密码：");
+			textView.setTextSize(14);
+			textView.setId(1);
+			final EditText editText = new EditText(this);
+			editText.setId(2);
+			editText.setEnabled(true);
+			editText.setCursorVisible(true);
+			editText.setLongClickable(true);
+			editText.setFocusable(true);
+       	 	
+			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout relativeLayout = new RelativeLayout(this);
+			tvlp.addRule(RelativeLayout.ALIGN_BASELINE, 2);
+			etlp.addRule(RelativeLayout.RIGHT_OF, 1);
+			relativeLayout.addView(textView, tvlp);
+			relativeLayout.addView(editText, etlp);
+			return new AlertDialog.Builder(this)
+            .setView(relativeLayout)
+            .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            	public void onClick(DialogInterface dialog, int whichButton) {
+                  	 
+            		/* User clicked OK so do some stuff */
+            		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
+            			
+            		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
+            			editText.setText("");
+            			Toast.makeText(StudentInfoActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
+            			finish();
+            		}
+                      
+                }
+            })
+            .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            	public void onClick(DialogInterface dialog, int whichButton) {
+
+            		/* User clicked cancel so do some stuff */
+            		finish();
+                }
+            }).create();
+		}
+		return null;
 	}
 	
 	private void initAdapter(){
@@ -207,11 +267,8 @@ public class StudentInfoActivity extends ListActivity{
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.main_menu);
-        menu.add(0, 2, 2, R.string.change_number);
-        menu.add(0, 3, 3, R.string.settings);
-        menu.add(0, 4, 4, R.string.refresh);
-        menu.add(0, 5, 5, R.string.about);
+        menu.add(0, 1, 1, R.string.refresh);
+        menu.add(0, 2, 2, R.string.settings);
         
         return super.onCreateOptionsMenu(menu); 
     }
@@ -219,21 +276,6 @@ public class StudentInfoActivity extends ListActivity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();		
-    		startActivity(new Intent(this, MainMenuActivity.class));
-    	}
-    	else if(item.getItemId() == 2){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-    		editor.putBoolean("logIn_auto", false);
-    		editor.commit();
-    		startActivity(new Intent(this, LoginActivity.class));
-    	}
-    	else if(item.getItemId() == 3){
-//    		startActivity(new Intent(this, AllListCoursesActivity.class));
-    	}
-    	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
     			new StudentInfoFromWeb().execute();
 //    			start_resume = 1;
@@ -245,8 +287,8 @@ public class StudentInfoActivity extends ListActivity{
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
             }
     	}
-    	else if(item.getItemId() == 5){
-    		startActivity(new Intent(this, AboutActivity.class));
+    	else if(item.getItemId() == 2){
+    		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

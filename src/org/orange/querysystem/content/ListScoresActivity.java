@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import org.orange.querysystem.AboutActivity;
 import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
 import org.orange.querysystem.content.ReadDBForScores.OnPostExcuteListerner;
 
@@ -27,11 +28,15 @@ import util.webpage.Course;
 import util.webpage.Course.CourseException;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -41,13 +46,16 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TabHost.TabSpec;
 
 public class ListScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int start_resume = 0;
@@ -56,6 +64,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
 	private TextView currentTime;
+	public static final int PASSWORD_PROMPT = 1;
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -65,6 +74,8 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
+		
+		showDialog(PASSWORD_PROMPT);
 		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -93,7 +104,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 
 				//child.getLayoutParams().height = tv.getHeight();
 			}
-		}		
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			if(getResources().getConfiguration().orientation ==
@@ -101,6 +111,57 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 				getActionBar().hide();
 		}
 		readDB();
+		}
+	}
+	
+	@Override
+    protected Dialog onCreateDialog(int id) {
+		// TODO Auto-generated method stub
+		switch(id){
+		case PASSWORD_PROMPT:
+			final TextView textView = new TextView(this);
+			textView.setText("请输入登陆密码：");
+			textView.setTextSize(14);
+			textView.setId(1);
+			final EditText editText = new EditText(this);
+			editText.setId(2);
+			editText.setEnabled(true);
+			editText.setCursorVisible(true);
+			editText.setLongClickable(true);
+			editText.setFocusable(true);
+       	 	
+			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout relativeLayout = new RelativeLayout(this);
+			tvlp.addRule(RelativeLayout.ALIGN_BASELINE, 2);
+			etlp.addRule(RelativeLayout.RIGHT_OF, 1);
+			relativeLayout.addView(textView, tvlp);
+			relativeLayout.addView(editText, etlp);
+			return new AlertDialog.Builder(this)
+            .setView(relativeLayout)
+            .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            	public void onClick(DialogInterface dialog, int whichButton) {
+                  	 
+            		/* User clicked OK so do some stuff */
+            		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(ListScoresActivity.this))){
+            			
+            		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(ListScoresActivity.this))){
+            			editText.setText("");
+            			Toast.makeText(ListScoresActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
+            			finish();
+            		}
+                      
+                }
+            })
+            .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            	public void onClick(DialogInterface dialog, int whichButton) {
+
+            		/* User clicked cancel so do some stuff */
+            		finish();
+                }
+            }).create();
+		}
+		return null;
 	}
 	
 	public void readDB(){
@@ -114,6 +175,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	}
     
     public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
+    	mTabsAdapter.clear();
     	currentTime = (TextView)findViewById(R.id.currentTime);
     	currentTime.setText("成绩单");
     	SharedPreferences shareData = getSharedPreferences("data", 0);
@@ -179,11 +241,8 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.main_menu);
-        menu.add(0, 2, 2, R.string.change_number);
-        menu.add(0, 3, 3, R.string.settings);
-        menu.add(0, 4, 4, R.string.refresh);
-        menu.add(0, 5, 5, R.string.about);
+        menu.add(0, 1, 1, R.string.refresh);
+        menu.add(0, 2, 2, R.string.settings);
         
         return super.onCreateOptionsMenu(menu); 
     }
@@ -191,20 +250,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		finish();
-    	}
-    	else if(item.getItemId() == 2){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-    		editor.putBoolean("logIn_auto", false);
-    		editor.putBoolean("changeUser", false);
-    		editor.commit();
-    		start_resume = 1;
-    		startActivity(new Intent(this, LoginActivity.class));
-    	}
-    	else if(item.getItemId() == 3){
-    		
-    	}
-    	else if(item.getItemId() == 4){
     		if(isNetworkConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
@@ -214,8 +259,8 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
             	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
             }
     	}
-    	else if(item.getItemId() == 5){
-    		startActivity(new Intent(this, AboutActivity.class));
+    	else if(item.getItemId() == 2){
+    		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }

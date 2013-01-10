@@ -331,7 +331,9 @@ public class StudentInfDBAdapter {
 	 * 解析出的通知通过此插入操作方法存入到数据库的post表中。
 	 * @param thePostInf 类型为List<Post>类型
 	 */
-	private void insertArrayPostsInf(List<Post> thePostInf){
+	private int insertArrayPostsInf(List<Post> thePostInf){
+		int count = 0;
+		long insertResult;
 		ContentValues newPostInfValues = new ContentValues();
 		
 		for(Post aPost:thePostInf){
@@ -346,9 +348,12 @@ public class StudentInfDBAdapter {
 			newPostInfValues.put(KEY_MAINBODY, aPost.getMainBody());
 			//aPost.getDate().getTime()获取date字段并进行转换为长整型数据。
 			
-			db.insert(DATABASE_POST_TABLE,null, newPostInfValues);
+			insertResult = db.insert(DATABASE_POST_TABLE,null, newPostInfValues);
+			if(insertResult > -1){
+				count++;
+			}
 		}
-		
+		return count;
 	}
 	
 	/**
@@ -358,10 +363,7 @@ public class StudentInfDBAdapter {
 	 */
 	public void autoInsertArrayPostsInf(List<Post> thePostInf){
 		if(thePostInf == null || thePostInf.isEmpty()) return;
-		String title = thePostInf.get(0).getTitle();
-		Cursor cursor = db.query(DATABASE_POST_TABLE, null, KEY_TITLE + "= '" + title + "'", null, null, null, null);
-		if(cursor.getCount() == 0)
-			insertArrayPostsInf(thePostInf);
+		insertArrayPostsInf(thePostInf);
 	}
 	
 	/**
@@ -612,7 +614,7 @@ public class StudentInfDBAdapter {
 	 */
 	public ArrayList<Course> getThisTermCoursesFromDB(String order, String theUserName) throws SQLException {
 		ArrayList<Course> courses = new ArrayList<Course>();
-		courses = getCoursesFromDB(KEY_YEAR + "=" + 0 + ", " + KEY_CURRENT_SEMESTER + "=" + 1, order, theUserName);
+		courses = getCoursesFromDB(KEY_YEAR + "=" + 0 + " AND " + KEY_CURRENT_SEMESTER + "=" + 1, order, theUserName);
 		return courses;
 	}
 	
@@ -625,7 +627,7 @@ public class StudentInfDBAdapter {
 	 */
 	public ArrayList<Course> getNextTermCoursesFromDB(String order, String theUserName) throws SQLException{
 		ArrayList<Course> courses = new ArrayList<Course>();
-		courses = getCoursesFromDB(KEY_YEAR + "=" + 0 + ", " + KEY_CURRENT_SEMESTER + "=" + 0, order, theUserName);
+		courses = getCoursesFromDB(KEY_YEAR + "=" + 0 + " AND " + KEY_CURRENT_SEMESTER + "=" + 0, order, theUserName);
 		return courses;
 	}
 	

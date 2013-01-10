@@ -30,7 +30,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -38,6 +40,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.method.PasswordTransformationMethod;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,7 +73,9 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		setContentView(R.layout.fragment_tabs_pager);
 		
 		showDialog(PASSWORD_PROMPT);
-		
+	}
+	
+	public void enterActivity(){
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -139,7 +144,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
                   	 
             		/* User clicked OK so do some stuff */
             		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(ListScoresActivity.this))){
-            			
+            			enterActivity();
             		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(ListScoresActivity.this))){
             			editText.setText("");
             			Toast.makeText(ListScoresActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
@@ -154,6 +159,17 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
             		/* User clicked cancel so do some stuff */
             		finish();
                 }
+            })
+            .setOnKeyListener(new OnKeyListener(){
+
+				@Override
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
+					// TODO Auto-generated method stub
+					finish();
+					return false;
+				}
+				
+            	
             }).create();
 		}
 		return null;

@@ -58,6 +58,7 @@ public class MainMenuActivity extends Activity{
 		}				
     	//判断是否第一次登陆
     	if(SettingsActivity.getAccountStudentID(this) == null || SettingsActivity.getAccountPassword(this) == null){
+    		Toast.makeText(this, "请设置帐号和开学时间！", Toast.LENGTH_LONG).show();
         	startActivity(new Intent(this, SettingsActivity.class));
         }
 		
@@ -115,9 +116,10 @@ public class MainMenuActivity extends Activity{
 		}
 	}
 	
-	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsyall, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsyadd, R.drawable.lsyadd};
+	private static Integer[] imgs = {R.drawable.lsyweek, R.drawable.lsyall, R.drawable.lsynext, R.drawable.lsyscore, R.drawable.lsyinform, R.drawable.lsystumessage, R.drawable.lsyadd, R.drawable.lsyset};
 	
 	private static String[] texts = {"本周课程表", "总课程表", "下学期课程表", "成绩单", "通知", "学生信息" , "增加课程", "设置"};
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){

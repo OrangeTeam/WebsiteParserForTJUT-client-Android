@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -61,6 +62,9 @@ public class StudentInfoActivity extends ListActivity{
 		setContentView(R.layout.student_info);
 		
 		showDialog(PASSWORD_PROMPT);
+	}
+	
+	public void enterActivity(){
 		showImage = getLayoutInflater().inflate(R.layout.show_image, null);
 		imageView = (ImageView)showImage.findViewById(R.id.studentImageView);
 		
@@ -109,7 +113,7 @@ public class StudentInfoActivity extends ListActivity{
                   	 
             		/* User clicked OK so do some stuff */
             		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
-            			
+            			enterActivity();
             		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
             			editText.setText("");
             			Toast.makeText(StudentInfoActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
@@ -124,6 +128,16 @@ public class StudentInfoActivity extends ListActivity{
             		/* User clicked cancel so do some stuff */
             		finish();
                 }
+            }).setOnKeyListener(new OnKeyListener(){
+
+				@Override
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
+					// TODO Auto-generated method stub
+					finish();
+					return false;
+				}
+				
+            	
             }).create();
 		}
 		return null;
@@ -307,6 +321,7 @@ public class StudentInfoActivity extends ListActivity{
 			editor.putString("passMainMenu", "true");
             editor.commit();
 		}
+		finish();
 		return super.onKeyDown(keyCode, event);
 	}
 }

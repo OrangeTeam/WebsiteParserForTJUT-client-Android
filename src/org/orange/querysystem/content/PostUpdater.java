@@ -212,7 +212,9 @@ public class PostUpdater {
 		private void autoUpdatePosts(){
 			//更新时间
 			refreshLastUpdatedTime();
-			long lastUpdated = lastUpdatedTime.getTime();
+			long lastUpdated = 0;
+			if(lastUpdatedTime != null)
+				lastUpdated = lastUpdatedTime.getTime();
 			long now = System.currentTimeMillis();
 			long longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 31L*24*60*60*1000);
 			long updateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 4L*24*60*60*1000);

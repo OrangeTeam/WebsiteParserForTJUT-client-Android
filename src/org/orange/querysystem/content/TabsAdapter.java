@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
@@ -81,6 +82,12 @@ public class TabsAdapter extends FragmentPagerAdapter
         super(activity.getSupportFragmentManager());
         mContext = activity;
         mTabHost = tabHost;
+        mTabHost.setOnFocusChangeListener(new OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                adjustSelectedTabToCenter();
+            }
+        });
         mViewPager = pager;
         mTabHost.setOnTabChangedListener(this);
         mViewPager.setAdapter(this);

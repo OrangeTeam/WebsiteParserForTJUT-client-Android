@@ -57,6 +57,7 @@ public class StudentInfDBAdapter {
 	public static final String KEY_TOTAL_SCORE = "total_score";
 	public static final String KEY_KIND = "kind";
 	public static final String KEY_NOTE = "note";
+	public static final String KEY_CURRENT_SEMESTER = "current_semester";
 	public static final String KEY_USER_NAME = "user_name";
 	
 	
@@ -92,7 +93,7 @@ public class StudentInfDBAdapter {
 	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key,"
 	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(15)," + KEY_TEACHERS + " varchar(15)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
 	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " integer,"
-	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_USER_NAME + " varchar(8));";
+	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_CURRENT_SEMESTER + " integer," + KEY_USER_NAME + " varchar(8));";
 	    
 	    private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2 + "(" + KEY_LINK + " integer," + KEY_VICEID + " varchar(5) unique,"
 	    + KEY_WEEK + " integer," + KEY_DAY + " integer," + KEY_PERIOD + " integer," + KEY_ADDRESS + " varchar(5));";
@@ -170,6 +171,7 @@ public class StudentInfDBAdapter {
 	 * @param theCourseInf 类型为 List<Course>
 	 */
 	private void insertArrayCoursesToCourseInf1(List<Course> theCourseInf, String theUserName){
+		Cursor cursor;
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		for(Course aCourse:theCourseInf){
@@ -185,6 +187,12 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_TOTAL_SCORE, aCourse.getTotalScore());
 			newCourseInfValues.put(KEY_KIND, aCourse.getKind());
 			newCourseInfValues.put(KEY_NOTE, aCourse.getNote());
+			cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
+			if(cursor.getCount() == 0){
+				newCourseInfValues.put(KEY_CURRENT_SEMESTER, 1);
+			}else{
+				newCourseInfValues.put(KEY_CURRENT_SEMESTER, 0);
+			}
 			newCourseInfValues.put(KEY_USER_NAME, theUserName);
 			//theCourseInf为ArrayList对象，get(i)顺序找到其中的一门课程。getCode()等方法得到相应实例变量的值。
 			
@@ -272,6 +280,7 @@ public class StudentInfDBAdapter {
 		newCourseInfValues.put(KEY_TOTAL_SCORE, theCourseInf.getTotalScore());
 		newCourseInfValues.put(KEY_KIND, theCourseInf.getKind());
 		newCourseInfValues.put(KEY_NOTE, theCourseInf.getNote());
+		newCourseInfValues.put(KEY_CURRENT_SEMESTER, 0);
 		newCourseInfValues.put(KEY_USER_NAME, theUserName);
 		
 		theCourseInf.setId((int)db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues));
@@ -593,10 +602,36 @@ public class StudentInfDBAdapter {
 		}
 	}
 	
+	/**
+	 *  返回本学期课程 
+	 * @param order
+	 * @param theUserName
+	 * @return  ArrayList<Course>
+	 * @throws SQLException
+	 */
+	public ArrayList<Course> getThisTermCoursesFromDB(String order, String theUserName) throws SQLException {
+		ArrayList<Course> courses = new ArrayList<Course>();
+		courses = getCoursesFromDB(KEY_YEAR + "=" + 0 + ", " + KEY_CURRENT_SEMESTER + "=" + 1, order, theUserName);
+		return courses;
+	}
+	
+	/**
+	 * 返回下学期课程
+	 * @param order
+	 * @param theUserName
+	 * @return ArrayList<Course>
+	 * @throws SQLException
+	 */
+	public ArrayList<Course> getNextTermCoursesFromDB(String order, String theUserName) throws SQLException{
+		ArrayList<Course> courses = new ArrayList<Course>();
+		courses = getCoursesFromDB(KEY_YEAR + "=" + 0 + ", " + KEY_CURRENT_SEMESTER + "=" + 0, order, theUserName);
+		return courses;
+	}
+	
     /**
      * 从数据库中一次获得courseInf1和courseInf2中的在where条件下的所有记录，也就是所有课程信息包括每门课程的成绩。  
      * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_YEAR + "=" + 2011, StudentInfDBAdapter.KEY_CODE + " DESC"。
-     * @param theUsername
+     * @param theUsername 
      * @return ArrayList<Course>
      * @throws CourseException
      */

@@ -20,14 +20,13 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 public class MyAppWidgetProvider extends AppWidgetProvider {
 	private int mMinute = 0;
 	private int mHour = 0;
-	private int mWeek = 0;
 	private int mDayOfWeek = 0;
-	private int calculate_week = 0;
 	private int period = 0;
 	StudentInfDBAdapter studentInfDBAdapter = null;
 	
@@ -56,14 +55,14 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 	}
 	
 	public void updateCourse(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){
-		SharedPreferences shareData = context.getSharedPreferences("data", 0);
+		SharedPreferences shareData = PreferenceManager.getDefaultSharedPreferences(context);
 		if(shareData == null)
 		{
 			String str = "你还没登入";
 			showResult(context, appWidgetManager, appWidgetIds, str);
 			return;
 		}
-		if(shareData.getString("start_year", null) == null)
+		if(shareData.getLong(SettingsActivity.KEY_PREF_SCHOOL_STARTING_DATE, -1) == -1)
 		{
 			String str = "你还没设置开学时间";
 			showResult(context, appWidgetManager, appWidgetIds, str);
@@ -94,11 +93,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			return;
 		}
 		Calendar calendar = Calendar.getInstance();
-		mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
 		mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-Calendar.MONDAY+1;
-		Calendar calendar_2 = Calendar.getInstance();
-		calendar_2.set(Integer.parseInt(shareData.getString("start_year", null)), Integer.parseInt(shareData.getString("start_month", null))-1, Integer.parseInt(shareData.getString("start_day", null)));
-		calculate_week =  mWeek - calendar_2.get(Calendar.WEEK_OF_YEAR);
 		LinkedList<SimpleCourse>[][] lesson = new LinkedList[7][14];
     	for(int day=0;day<=6;day++)
     		for(int period=1;period<=13;period++)
@@ -106,7 +101,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
     	for(Course course:courses)
 			for(Course.TimeAndAddress time:course.getTimeAndAddress())
 				try{
-					if(time.hasSetDay(mDayOfWeek)&&time.hasSetPeriod(thePeriod)&&time.hasSetWeek(calculate_week + 1)){
+					if(time.hasSetDay(mDayOfWeek)&&time.hasSetPeriod(thePeriod)&&time.hasSetWeek(SettingsActivity.getCurrentWeekNumber(context) + 1)){
 						lesson[mDayOfWeek][thePeriod].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(thePeriod),time.getAddress()));
 					}
 				} catch(BitOperateException e){

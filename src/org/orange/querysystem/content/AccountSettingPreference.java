@@ -1,5 +1,7 @@
 package org.orange.querysystem.content;
 
+import java.io.File;
+
 import org.orange.querysystem.R;
 
 import android.content.Context;
@@ -41,11 +43,22 @@ public class AccountSettingPreference extends DialogPreference {
 	protected void onDialogClosed(boolean positiveResult) {
 		// When the user selects "OK", persist the new value
 		if (positiveResult) {
+			deleteStudentInf();
 			SharedPreferences.Editor editor = getEditor();
 			editor.putString(getKey()+STUDENT_ID_SUFFIX, studentID.getText().toString());
 			editor.putString(getKey()+PASSWORD_SUFFIX, encode(password.getText().toString()));
 			editor.commit();
 		}
+	}
+	
+	/**
+	 * 当用户账号设置成功时就删除前一个用户的学生信息
+	 */
+	private void deleteStudentInf(){
+		File imageFile = new File("data/data/org.orange.querysystem/files/", "student_image.jpg");
+		imageFile.delete();
+		File fileObject = new File("data/data/org.orange.querysystem/files/", "student_info.txt");
+		fileObject.delete();
 	}
 	//TODO 加密
 	private static String encode(String plaintext){

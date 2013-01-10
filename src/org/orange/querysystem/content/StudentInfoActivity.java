@@ -192,11 +192,10 @@ public class StudentInfoActivity extends ListActivity{
 	private class StudentInfoFromWeb extends AsyncTask<Object,Void,Student> {
 		protected Student doInBackground(Object... args) {
 			Student student = new Student();
-			SharedPreferences shareData = getSharedPreferences("data", 0);
 			SchoolWebpageParser studentInfo;
 			try {
 				studentInfo = new SchoolWebpageParser();
-                studentInfo.setUser(shareData.getString("userName", null), shareData.getString("password", null));
+                studentInfo.setUser(SettingsActivity.getAccountStudentID(StudentInfoActivity.this), SettingsActivity.getAccountPassword(StudentInfoActivity.this));
 				studentInfo.parseScores(Constant.url.个人全部成绩, student);
 			} catch (ParserException e) {
 				e.printStackTrace();

@@ -1,5 +1,9 @@
 package org.orange.querysystem;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -8,6 +12,7 @@ import org.orange.querysystem.content.AccountSettingPreference;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -35,6 +40,10 @@ public class SettingsActivity extends PreferenceActivity {
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
 		}
+		
+		
+		//导入静态数据库
+		importInitialDB();
 	}
 
 	/**
@@ -105,5 +114,35 @@ public class SettingsActivity extends PreferenceActivity {
 				PreferenceManager.getDefaultSharedPreferences(context)
 				.getString(KEY_PREF_ACCOUNT_PASSWORD, null)
 				);
+	}
+	
+	/**
+	 * 导入静态数据库
+	 */
+	private void importInitialDB(){
+        if(getAccountStudentID(this) == null){
+            DBManager manager = new DBManager();
+    		try {
+    			manager.openHelper(this);
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+        }
+	}
+	
+	private class DBManager{
+		protected void openHelper(Context context) throws IOException{
+			 String dbDirPath = "/data/data/org.orange.querysystem/databases";
+			 File dbDir = new File(dbDirPath);
+			 if(!dbDir.exists())
+				 dbDir.mkdir();
+			 InputStream is = context.getResources().openRawResource(R.raw.studentinf);
+			 FileOutputStream os = new FileOutputStream(dbDirPath+"/studentInf.db");
+			 byte[] buffer = new byte[1024];
+			 int count = 0;
+			 while ((count = is.read(buffer)) > 0) {    os.write(buffer, 0, count);  }  
+			 is.close();
+			 os.close();
+		}
 	}
 }

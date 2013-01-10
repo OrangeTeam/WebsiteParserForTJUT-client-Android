@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.List;
 
+import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.GetterInterface;
@@ -19,7 +20,8 @@ import com.caucho.hessian.client.HessianProxyFactory;
 import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,24 +30,22 @@ import android.util.Log;
  * @author Bai Jie
  */
 public class PostUpdater {
-	public static final String LAST_UPDATED_TIME_KEY = "POST_LAST_UPDATED_TIME_KEY";
 	String TAG = PostUpdater.class.getName();
 
 	Context mContext;
-	SharedPreferences mPreferences;
-	long longUpdateInterval;
-	long updateInterval;
+	Date lastUpdatedTime;
 
 	UpdatePostsListToDatabase mWebUpdaterToDB;
 	OnPostExecuteListener mOnPostExecuteListener;
 
 	public PostUpdater(Context context) {
 		mContext = context;
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(context).getLong("", 31L*24*60*60*1000);
-		updateInterval = PreferenceManager.getDefaultSharedPreferences(context).getLong("", 4L*24*60*60*1000);
 	}
 
+	/**
+	 * 设置通知更新监听器，在更新完通知时回调。
+	 * @param mOnPostExecuteListener 通知更新监听器
+	 */
 	public void setOnPostExecuteListener(OnPostExecuteListener mOnPostExecuteListener) {
 		this.mOnPostExecuteListener = mOnPostExecuteListener;
 	}
@@ -55,33 +55,28 @@ public class PostUpdater {
 	 * @return 上次更新通知的时间
 	 */
 	public Date getLastUpdateTime(){
-		return new Date(mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0));
+		return (Date) lastUpdatedTime.clone();
 	}
 	/**
 	 * 更新通知。自动判断更新间隔、是否正在更新等。
-	 * @return 若正在更新返回true；若不足最小更新间隔而没有更新，返回false 
+	 * @return 若开始（正在）更新返回true；若不足最小更新间隔而没有更新，返回false 
 	 */
 	public boolean autoUpdatePosts(){
 		if(mWebUpdaterToDB != null)
 			return true;
-		long lastUpdatedTime = mPreferences.getLong(LAST_UPDATED_TIME_KEY, 0);
-		long now = new Date().getTime();
-		if(now - lastUpdatedTime > longUpdateInterval){
-			if(lastUpdatedTime == 0){
-				Log.v(TAG, "第一次更新");
-				//警告
-			}
-			mWebUpdaterToDB = new UpdatePostsListToDatabase();
-			mWebUpdaterToDB.execute(UpdatePostsListToDatabase.ALL_POSTS);
-			return true;
-		}else if(now - lastUpdatedTime > updateInterval){
-			mWebUpdaterToDB = new UpdatePostsListToDatabase();
-			mWebUpdaterToDB.execute(UpdatePostsListToDatabase.COMMON_POSTS);
-			return true;
-		}else{
+		long updateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 4L*24*60*60*1000);
+		//TODO lastUpdatedTime==null怎么办
+		if(lastUpdatedTime!=null && System.currentTimeMillis() - lastUpdatedTime.getTime() < updateInterval){
 			return false;
 		}
+		mWebUpdaterToDB = new UpdatePostsListToDatabase();
+		mWebUpdaterToDB.execute();
+		return true;
 	}
+	/**
+	 * 正在向数据库更新通知
+	 * @return 正在向数据库更新通知时放回true；没有更新（空闲）返回false
+	 */
 	public boolean isUpdating(){
 		return mWebUpdaterToDB != null;
 	}
@@ -99,21 +94,57 @@ public class PostUpdater {
 		public void onPostExecute();
 	}
 
-	private class UpdatePostsListToDatabase extends AsyncTask<Integer, Void, Void>{
-		public static final int COMMON_POSTS = 1;
-		public static final int ALL_POSTS = 2;
+	private class UpdatePostsListToDatabase extends AsyncTask<Void, Void, Void>{
 		private static final String hessianUrl = "http://schoolwebpageparser.appspot.com/getter";
 		private static final int maxAttempts = 10;
-		StudentInfDBAdapter database;
+		private StudentInfDBAdapter database = new StudentInfDBAdapter(mContext);;
 
 		@Override
-		protected Void doInBackground(Integer... params) {
-			boolean isCommonUpdate = params[0] == COMMON_POSTS;
+		protected Void doInBackground(Void... params) {
+			autoUpdatePosts();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if(mOnPostExecuteListener != null)
+				mOnPostExecuteListener.onPostExecute();
+		}
+
+		@Override
+		protected void onCancelled(Void result) {
+			if(database != null)
+				database.close();
+			mWebUpdaterToDB = null;
+		}
+
+		private void refreshLastUpdatedTime() {
+			try{
+				database.open();
+				Post lastPost = database.getPostsFromDB(null, Contract.Posts.COLUMN_NAME_DATE, "1").get(0);
+				System.out.println(lastPost);
+				lastUpdatedTime = lastPost.getDate();
+			} catch (SQLiteException e){
+				Log.e(TAG, "打开数据库异常！");
+				e.printStackTrace();
+			} catch (SQLException e){
+				Log.e(TAG, "从数据库读取最新Post时遇到异常！");
+				e.printStackTrace();
+			} finally{
+				database.close();
+			}
+			System.out.println("上次更新："+lastUpdatedTime);
+		}
+
+		/**
+		 * 更新通知
+		 * @param quickUpdateOrAllUpdate true for 快速（常用）更新；false for 完整更新
+		 */
+		private void updatePosts(boolean quickUpdateOrAllUpdate){
 			List<Post> posts = null;
-			Date lastUpdatedTime = getLastUpdateTime();
 
 			//准备用Hessian连接GAE代理
-			int timeout = isCommonUpdate?2000:5000;
+			int timeout = quickUpdateOrAllUpdate?2000:5000;
 			HessianProxyFactory factory = new HessianProxyFactory();
 			MyHessianSocketConnectionFactory mHessianSocketConnectionFactory =
 					new MyHessianSocketConnectionFactory();
@@ -131,7 +162,7 @@ public class PostUpdater {
 					e.printStackTrace();
 				} catch (Exception e){
 					if(e.getCause() instanceof SocketTimeoutException){
-						Log.i(TAG, "SocketTimeoutException"+e.getMessage());
+						Log.i(TAG, "用Hessian连接GAE代理更新通知时，遇到SocketTimeoutException"+e.getMessage());
 						continue;
 					}
 					else
@@ -145,7 +176,7 @@ public class PostUpdater {
 				try {
 					SchoolWebpageParser parser = new SchoolWebpageParser(new MyParserListener());
 					parser.setOnReadPageListener(readPageListener);
-					if(isCommonUpdate)
+					if(quickUpdateOrAllUpdate)
 						posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
 					else
 						posts = parser.parsePosts(lastUpdatedTime, null, -1);
@@ -159,28 +190,45 @@ public class PostUpdater {
 				}
 			}
 			if(posts != null){
-				database = new StudentInfDBAdapter(mContext);
-				database.open();
-				database.autoInsertArrayPostsInf(posts);
-				mPreferences.edit().putLong(LAST_UPDATED_TIME_KEY, System.currentTimeMillis()).commit();
-				database.close();
+				try{
+					database.open();
+					database.autoInsertArrayPostsInf(posts);
+				} catch (SQLiteException e){
+					Log.e(TAG, "打开数据库异常！");
+					e.printStackTrace();
+				} catch (SQLException e){
+					Log.e(TAG, "向数据库更新Posts时遇到异常！");
+					e.printStackTrace();
+				} finally{
+					database.close();
+				}
 			}else{
 				Log.e(TAG, "更新posts失败");
 			}
-			return null;
 		}
 
-		@Override
-		protected void onPostExecute(Void result) {
-			if(mOnPostExecuteListener != null)
-				mOnPostExecuteListener.onPostExecute();
-		}
-
-		@Override
-		protected void onCancelled(Void result) {
-			if(database != null)
-				database.close();
-			mWebUpdaterToDB = null;
+		/**
+		 * 更新通知。自动判断更新间隔、是否正在更新等。
+		 */
+		private void autoUpdatePosts(){
+			//更新时间
+			refreshLastUpdatedTime();
+			long lastUpdatedTime = PostUpdater.this.lastUpdatedTime.getTime();
+			long now = new Date().getTime();
+			long longUpdateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 31L*24*60*60*1000);
+			long updateInterval = PreferenceManager.getDefaultSharedPreferences(mContext).getLong("", 4L*24*60*60*1000);
+			//根据时间间隔更新
+			if(now - lastUpdatedTime > longUpdateInterval){
+				if(lastUpdatedTime == 0){
+					Log.v(TAG, "第一次更新");
+					//警告
+				}
+				updatePosts(false);
+				PostUpdater.this.lastUpdatedTime = new Date(now);
+			}else if(now - lastUpdatedTime > updateInterval){
+				updatePosts(true);
+				PostUpdater.this.lastUpdatedTime = new Date(now);
+			}
 		}
 
 		private class MyOnReadPageListener implements OnReadPageListener{

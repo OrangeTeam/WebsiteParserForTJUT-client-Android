@@ -166,16 +166,13 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
 			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
-			}else{
-				mTabHost.getTabWidget().getChildAt(day).setBackgroundResource(R.drawable.tab);
-			}	
 		}
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
 				View child = tabWidget.getChildAt(i);  
+
+				child.setBackgroundResource(R.drawable.tab);
 
 				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
 				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
@@ -186,21 +183,12 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				//{@link http://developer.android.com/intl/zh-CN/guide/practices/screens_support.html#screen-independence}
 				child.getLayoutParams().height = 80;
 			}
+		}else{
+			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 		}
 		mTabHost.setCurrentTab(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY);
+		
     }
-	
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onWindowFocusChanged(boolean)
-	 */
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		// TODO Auto-generated method stub
-		super.onWindowFocusChanged(hasFocus);
-
-		mTabsAdapter.adjustSelectedTabToCenter();
-	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)

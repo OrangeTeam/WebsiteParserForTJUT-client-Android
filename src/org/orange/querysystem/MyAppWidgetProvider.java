@@ -72,7 +72,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try{
 			studentInfDBAdapter.open();
-			courses = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0, null, shareData.getString("userName", null));
+			courses = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0, null, SettingsActivity.getAccountStudentID(context));
 		}catch(SQLException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();

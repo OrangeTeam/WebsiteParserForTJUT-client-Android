@@ -92,8 +92,8 @@ public class StudentInfDBAdapter {
 	
 	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key,"
 	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(15)," + KEY_TEACHERS + " varchar(15)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
-	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " integer,"
-	    + KEY_TOTAL_SCORE + " integer," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_CURRENT_SEMESTER + " integer," + KEY_USER_NAME + " varchar(8));";
+	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " float,"
+	    + KEY_TOTAL_SCORE + " float," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_CURRENT_SEMESTER + " integer," + KEY_USER_NAME + " varchar(8));";
 	    
 	    private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2 + "(" + KEY_LINK + " integer," + KEY_VICEID + " varchar(5) unique,"
 	    + KEY_WEEK + " integer," + KEY_DAY + " integer," + KEY_PERIOD + " integer," + KEY_ADDRESS + " varchar(5));";
@@ -174,6 +174,8 @@ public class StudentInfDBAdapter {
 		Cursor cursor;
 		ContentValues newCourseInfValues = new ContentValues();
 		
+		cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
+		
 		for(Course aCourse:theCourseInf){
 			newCourseInfValues.put(KEY_CODE, aCourse.getCode());
 			newCourseInfValues.put(KEY_NAME, aCourse.getName());
@@ -187,7 +189,6 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_TOTAL_SCORE, aCourse.getTotalScore());
 			newCourseInfValues.put(KEY_KIND, aCourse.getKind());
 			newCourseInfValues.put(KEY_NOTE, aCourse.getNote());
-			cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
 			if(cursor.getCount() == 0){
 				newCourseInfValues.put(KEY_CURRENT_SEMESTER, 1);
 			}else{
@@ -556,20 +557,20 @@ public class StudentInfDBAdapter {
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
 			
-			if(cursor1.getInt(9) != aScore.getTestScore())
+			if(cursor1.getFloat(9) != aScore.getTestScore())
 				if(aScore.getTestScore() < 0)
 				{
-					newCourseInfValues1.put(KEY_TEST_SCORE, -1);
+					newCourseInfValues1.put(KEY_TEST_SCORE, Float.NaN);
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_TEST_SCORE, aScore.getTestScore());
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			
-			if(cursor1.getInt(10) != aScore.getTotalScore())
+			if(cursor1.getFloat(10) != aScore.getTotalScore())
 				if(aScore.getTotalScore() < 0)
 				{
-					newCourseInfValues1.put(KEY_TOTAL_SCORE, -1);
+					newCourseInfValues1.put(KEY_TOTAL_SCORE, Float.NaN);
 					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_TOTAL_SCORE, aScore.getTotalScore());
@@ -659,8 +660,8 @@ public class StudentInfDBAdapter {
 				 String newTeachingMaterial = cursor1.getString(6);
 				 int newYear = cursor1.getInt(7);
 				 String newIsFirstSemester = cursor1.getString(8);
-				 int newTestScore = cursor1.getInt(9);
-				 int newTotalScore = cursor1.getInt(10);
+				 float newTestScore = cursor1.getFloat(9);
+				 float newTotalScore = cursor1.getFloat(10);
 				 String newKind = cursor1.getString(11);
 				 String newNote = cursor1.getString(12);
 				 
@@ -704,8 +705,8 @@ public class StudentInfDBAdapter {
 				 try{
 					 course.setCredit(newCredit);
 					 if(newYear != 0)course.setYear(newYear);
-					 if(newTestScore != -1)course.setTestScore(newTestScore);
-					 if(newTotalScore != -1)course.setTotalScore(newTotalScore);
+					 if(newTestScore != Float.NaN)course.setTestScore(newTestScore);
+					 if(newTotalScore != Float.NaN)course.setTotalScore(newTotalScore);
 				 }catch(NullPointerException e){
 					 e.printStackTrace();
 				 }catch(CourseException e){
@@ -771,8 +772,8 @@ public class StudentInfDBAdapter {
 						String newTeachingMaterial = cursor1.getString(6);
 						int newYear = cursor1.getInt(7);
 						String newIsFirstSemester = cursor1.getString(8);
-						int newTestScore = cursor1.getInt(9);
-						int newTotalScore = cursor1.getInt(10);
+						float newTestScore = cursor1.getFloat(9);
+						float newTotalScore = cursor1.getFloat(10);
 						String newKind = cursor1.getString(11);
 						String newNote = cursor1.getString(12);
 							 
@@ -816,8 +817,8 @@ public class StudentInfDBAdapter {
 							course.setTeachers(newTeachers);
 							course.setCredit(newCredit);
 							if(newYear != 0)course.setYear(newYear);
-							if(newTestScore != -1)course.setTestScore(newTestScore);
-							if(newTotalScore != -1)course.setTotalScore(newTotalScore);
+							if(newTestScore != Float.NaN)course.setTestScore(newTestScore);
+							if(newTotalScore != Float.NaN)course.setTotalScore(newTotalScore);
 						}catch(NullPointerException e){
 							e.printStackTrace();
 						}catch(CourseException e){
@@ -861,8 +862,8 @@ public class StudentInfDBAdapter {
 			 String newTeachingMaterial = cursor1.getString(6);
 			 int newYear = cursor1.getInt(7);
 			 String newIsFirstSemester = cursor1.getString(8);
-			 int newTestScore = cursor1.getInt(9);
-			 int newTotalScore = cursor1.getInt(10);
+			 float newTestScore = cursor1.getFloat(9);
+			 float newTotalScore = cursor1.getFloat(10);
 			 String newKind = cursor1.getString(11);
 			 String newNote = cursor1.getString(12);
 			 
@@ -905,8 +906,8 @@ public class StudentInfDBAdapter {
 			 try{
 				 course.setCredit(newCredit);
 				 if(newYear != 0)course.setYear(newYear);
-				 if(newTestScore != -1)course.setTestScore(newTestScore);
-				 if(newTotalScore != -1)course.setTotalScore(newTotalScore);
+				 if(newTestScore != Float.NaN)course.setTestScore(newTestScore);
+				 if(newTotalScore != Float.NaN)course.setTotalScore(newTotalScore);
 				 course.setTimeAndAddresse(timeAndAddresses);
 			 }catch(NullPointerException e){
 				 e.printStackTrace();

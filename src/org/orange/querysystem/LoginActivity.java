@@ -71,15 +71,15 @@ public class LoginActivity extends Activity{
         password.setText(R.string.password);
         SharedPreferences shareData = getSharedPreferences("data", 0);
         
-        if(shareData.getString("userName", null) == null){
-            DBManager manager = new DBManager();
-    		try {
-    			manager.openHelper(this);
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
-        }
+//        if(shareData.getString("userName", null) == null){
+//            DBManager manager = new DBManager();
+//    		try {
+//    			manager.openHelper(this);
+//    		} catch (IOException e) {
+//    			// TODO Auto-generated catch block
+//    			e.printStackTrace();
+//    		}
+//        }
         
         userNameBox.setText(shareData.getString("userName", null));
         if(shareData.getBoolean("logIn_auto", false)){

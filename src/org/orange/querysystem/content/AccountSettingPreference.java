@@ -36,7 +36,10 @@ public class AccountSettingPreference extends DialogPreference {
 
 		SharedPreferences pref = getSharedPreferences();
 		studentID.setText(pref.getString(getKey()+STUDENT_ID_SUFFIX, ""));
-		password.setText(decode(pref.getString(getKey()+PASSWORD_SUFFIX, "")));
+		try {
+			password.setText(decode(studentID.getText().toString(), pref.getString(getKey()+PASSWORD_SUFFIX, "")));
+		} catch (Exception e) {
+		}
 		super.onBindDialogView(view);
 	}
 	@Override
@@ -46,7 +49,10 @@ public class AccountSettingPreference extends DialogPreference {
 			deleteStudentInf();
 			SharedPreferences.Editor editor = getEditor();
 			editor.putString(getKey()+STUDENT_ID_SUFFIX, studentID.getText().toString());
-			editor.putString(getKey()+PASSWORD_SUFFIX, encode(password.getText().toString()));
+			try {
+				editor.putString(getKey()+PASSWORD_SUFFIX, encode(studentID.getText().toString(), password.getText().toString()));
+			} catch (Exception e) {
+			}
 			editor.commit();
 		}
 	}
@@ -61,12 +67,14 @@ public class AccountSettingPreference extends DialogPreference {
 		fileObject.delete();
 	}
 	//TODO 加密
-	private static String encode(String plaintext){
-		return plaintext;
+	private static String encode(String seed, String plaintext) throws Exception{
+		String encryptingCode = Crypto.encrypt(seed, plaintext);
+		return encryptingCode;
 	}
 	//TODO 解密
-	public static String decode(String ciphertext){
-		return ciphertext;
+	public static String decode(String seed, String ciphertext) throws Exception{
+		String decryptingCode = Crypto.decrypt(seed, ciphertext);
+		return decryptingCode;
 	}
 
 }

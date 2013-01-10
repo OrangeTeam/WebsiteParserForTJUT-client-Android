@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 
-import org.orange.querysystem.AboutActivity;
-import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
@@ -32,26 +30,22 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TabHost.TabSpec;
 
 public class AllListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int mYear = 0;
@@ -80,7 +74,6 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
 		
-		SharedPreferences shareData = getSharedPreferences("data", 0);
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -131,8 +124,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 	}
 		
 	public void readDB(){
-		SharedPreferences shareData = getSharedPreferences("data", 0);
-    	new ReadDB(this, this).execute(shareData.getString("userName", null));
+    	new ReadDB(this, this).execute(SettingsActivity.getAccountStudentID(this), "this");
     }
     
     @Override

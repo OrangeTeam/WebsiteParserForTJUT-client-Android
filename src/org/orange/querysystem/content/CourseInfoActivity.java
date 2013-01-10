@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.orange.querysystem.CourseAndUser;
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
@@ -114,8 +115,7 @@ public class CourseInfoActivity extends FragmentActivity{
         course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
         
-        SharedPreferences shareData = getSharedPreferences("data", 0);
-    	new ReadCourseInfo().execute(shareData.getString("userName", null));
+    	new ReadCourseInfo().execute(SettingsActivity.getAccountStudentID(this));
         
         Intent intent = getIntent();
         course_id = intent.getIntExtra("course_info", 0);
@@ -518,9 +518,8 @@ public class CourseInfoActivity extends FragmentActivity{
 			e1.printStackTrace();
 		}
         course.setKind(course_kind_input.getText().toString());
-        SharedPreferences shareData = getSharedPreferences("data", 0);
-        String userName = shareData.getString("userName", null);
-        String password = shareData.getString("password", null);
+        String userName = SettingsActivity.getAccountStudentID(this);
+        String password = SettingsActivity.getAccountPassword(this);
         CourseAndUser courseAndUser = new CourseAndUser(course, userName, password);
         new UpdateCoursesListToDatabase().execute(courseAndUser);
     }

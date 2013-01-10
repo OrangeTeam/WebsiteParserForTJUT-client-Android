@@ -3,6 +3,7 @@ package org.orange.querysystem.content;
 import java.io.IOException;
 
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Constant;
@@ -34,9 +35,8 @@ public class InsertDBFragmentActivity extends Activity{
     }
 	
 	public void loadCourses(){
-		SharedPreferences shareData = getSharedPreferences("data", 0);
-        userName = shareData.getString("userName", null);
-        password = shareData.getString("password", null);
+        userName = SettingsActivity.getAccountStudentID(this);
+        password = SettingsActivity.getAccountPassword(this);
 		new UpdateCoursesListToDatabase().execute(userName, password);
 	}
 	

@@ -17,8 +17,6 @@ package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 
-import org.orange.querysystem.AboutActivity;
-import org.orange.querysystem.LoginActivity;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
@@ -33,21 +31,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -129,6 +123,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 			editText.setCursorVisible(true);
 			editText.setLongClickable(true);
 			editText.setFocusable(true);
+			editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
        	 	
 			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -165,8 +160,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	}
 	
 	public void readDB(){
-		SharedPreferences shareData = getSharedPreferences("data", 0);
-    	new ReadDBForScores(this, this).execute(shareData.getString("userName", null));
+    	new ReadDBForScores(this, this).execute(SettingsActivity.getAccountStudentID(this));
     }
     
     @Override
@@ -178,7 +172,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     	mTabsAdapter.clear();
     	currentTime = (TextView)findViewById(R.id.currentTime);
     	currentTime.setText("成绩单");
-    	SharedPreferences shareData = getSharedPreferences("data", 0);
     	
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
     	System.out.println("Activity" + courses.size());

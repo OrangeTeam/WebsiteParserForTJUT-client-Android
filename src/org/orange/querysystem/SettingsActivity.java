@@ -7,12 +7,13 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.orange.querysystem.R.drawable;
 import org.orange.querysystem.content.AccountSettingPreference;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -31,6 +32,8 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		getListView().setBackgroundResource(R.drawable.lsybackground);
+		getListView().setCacheColorHint(Color.TRANSPARENT);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();

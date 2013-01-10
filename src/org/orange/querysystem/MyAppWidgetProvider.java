@@ -127,7 +127,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			Intent intent;
 			if(str == "你还没登入")
 			{
-				intent = new Intent(context, LoginActivity.class);
+				intent = new Intent(context, SettingsActivity.class);
 			}else{
 				intent = new Intent(context, MainMenuActivity.class);
 			}

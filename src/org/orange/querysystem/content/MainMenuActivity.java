@@ -2,14 +2,14 @@ package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.orange.querysystem.LoginActivity;
+
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.os.Bundle;
@@ -56,10 +56,9 @@ public class MainMenuActivity extends Activity{
 		}else{
 			
 		}				
-		SharedPreferences shareData = getSharedPreferences("data", 0);
     	//判断是否第一次登陆
-    	if(shareData.getString("userName", null) == null || shareData.getString("password", null) == null){
-        	startActivity(new Intent(this, LoginActivity.class));
+    	if(SettingsActivity.getAccountStudentID(this) == null || SettingsActivity.getAccountPassword(this) == null){
+        	startActivity(new Intent(this, SettingsActivity.class));
         }
 		
 		//生成动态数组，并且转入数据

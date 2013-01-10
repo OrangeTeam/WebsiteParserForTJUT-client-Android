@@ -31,14 +31,26 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 	protected ArrayList<Course> doInBackground(String... args) {
 		ArrayList<Course> result = null;
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
-		try {
-			studentInfDBAdapter.open();
-			result = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0, null, args[0]);
-		} catch(SQLException e){
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally{
-			studentInfDBAdapter.close();
+		if(args[1].equals("this")){
+			try {
+				studentInfDBAdapter.open();
+				result = studentInfDBAdapter.getThisTermCoursesFromDB(null, args[0]);
+			} catch(SQLException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally{
+				studentInfDBAdapter.close();
+			}
+		}else{
+			try {
+				studentInfDBAdapter.open();
+				result = studentInfDBAdapter.getNextTermCoursesFromDB(null, args[0]);
+			} catch(SQLException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally{
+				studentInfDBAdapter.close();
+			}
 		}
 		
 		return result;

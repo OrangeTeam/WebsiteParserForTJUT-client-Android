@@ -51,4 +51,6 @@
     <string name="prefs_student_account_summary">设置教务处查询账号</string>
     <string name="prefs_starting_date">第0周</string>
     <string name="prefs_starting_date_summary">设置本学期第0周日期（如开学日期），请参考教务处校历</string>
+    <string name="prefs_about">关于</string>
+    <string name="prefs_about_summary">有关此软件的基本信息</string>
 </resources>

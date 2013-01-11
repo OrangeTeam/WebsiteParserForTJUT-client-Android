@@ -4,10 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="@drawable/lsybackground">
+    <ScrollView  
+        android:id="@+id/myScrollView"  
+        android:layout_width="fill_parent"  
+        android:layout_height="fill_parent">  
     <TextView 
         android:id="@+id/about"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         style="@style/wordStyle"/>
-
+	</ScrollView>
 </LinearLayout>

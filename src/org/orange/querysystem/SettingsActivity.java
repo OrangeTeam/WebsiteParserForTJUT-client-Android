@@ -32,7 +32,7 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
-		getListView().setBackgroundResource(R.drawable.lsybackground);
+		getListView().setBackgroundResource(R.drawable.back);
 		getListView().setCacheColorHint(Color.TRANSPARENT);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

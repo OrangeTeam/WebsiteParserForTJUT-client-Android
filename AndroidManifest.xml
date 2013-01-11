@@ -29,7 +29,6 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
         </receiver>
-        <activity android:name=".LoginActivity"/>
 		<activity
             android:screenOrientation="portrait"
             android:label="学生信息查询系统"

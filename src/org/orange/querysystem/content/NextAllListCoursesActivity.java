@@ -13,17 +13,23 @@ import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnKeyListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
@@ -106,12 +112,54 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 	@Override
 	protected void onResume(){
 		super.onResume();
+		if(InsertDBFragmentActivity.logIn_error == true){
+			showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
+		}
 		if(start_resume == 0){
 			
 		}
 		else if(start_resume == 1){
 			readDB();
 		}
+	}
+	
+	@Override
+    protected Dialog onCreateDialog(int id) {
+		// TODO Auto-generated method stub
+		switch(id){
+		case InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID:
+			final TextView textView = new TextView(this);
+			textView.setText("用户名或密码错误，请重新设置！");
+			textView.setTextSize(14);
+			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout relativeLayout = new RelativeLayout(this);
+			
+			tvlp.addRule(RelativeLayout.CENTER_IN_PARENT);
+			relativeLayout.addView(textView, tvlp);
+			return new AlertDialog.Builder(this)
+            .setView(relativeLayout)
+            .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            	public void onClick(DialogInterface dialog, int whichButton) {
+                  	 
+            		/* User clicked OK so do some stuff */
+            		InsertDBFragmentActivity.logIn_error = false;
+            		startActivity(new Intent(NextAllListCoursesActivity.this, SettingsActivity.class));
+                      
+                }
+            })
+            .setOnKeyListener(new OnKeyListener(){
+
+				@Override
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
+					// TODO Auto-generated method stub
+					finish();
+					return false;
+				}
+				
+            	
+            }).create();
+		}
+		return null;
 	}
 		
 	public void readDB(){

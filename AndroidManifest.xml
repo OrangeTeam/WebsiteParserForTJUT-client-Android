@@ -40,8 +40,10 @@
         </activity>
         <activity android:name=".AboutActivity"></activity>
         <activity
-            android:screenOrientation="sensor"
             android:name=".content.InsertDBFragmentActivity"
+            android:theme="@android:style/Theme.Dialog"/>
+        <activity 
+            android:name=".content.RefreshScoresFragmentActivity"
             android:theme="@android:style/Theme.Dialog"/>
         <activity android:name=".content.ListPostsActivity" />
         <activity android:name=".content.ListCoursesActivity" />

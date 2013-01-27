@@ -32,7 +32,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -75,6 +74,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		showDialog(PASSWORD_PROMPT);
 	}
 	
+	@TargetApi(11)
 	public void enterActivity(){
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -158,6 +158,37 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 
             		/* User clicked cancel so do some stuff */
             		finish();
+                }
+            })
+            .setOnKeyListener(new OnKeyListener(){
+
+				@Override
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
+					// TODO Auto-generated method stub
+					finish();
+					return false;
+				}
+				
+            	
+            }).create();
+		case InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID:
+			final TextView textView2 = new TextView(this);
+			textView2.setText("用户名或密码错误，请重新设置！");
+			textView2.setTextSize(14);
+			RelativeLayout.LayoutParams tvlp2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RelativeLayout relativeLayout2 = new RelativeLayout(this);
+			
+			tvlp2.addRule(RelativeLayout.CENTER_IN_PARENT);
+			relativeLayout2.addView(textView2, tvlp2);
+			return new AlertDialog.Builder(this)
+            .setView(relativeLayout2)
+            .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            	public void onClick(DialogInterface dialog, int whichButton) {
+                  	 
+            		/* User clicked OK so do some stuff */
+            		InsertDBFragmentActivity.logIn_error = false;
+            		startActivity(new Intent(ListScoresActivity.this, SettingsActivity.class));
+                      
                 }
             })
             .setOnKeyListener(new OnKeyListener(){
@@ -261,7 +292,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     	if(item.getItemId() == 1){
     		if(isNetworkConnected()){
     			start_resume = 1;
-        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
+        		startActivity(new Intent(this, RefreshScoresFragmentActivity.class));
         		//TODO startActivity后不会继续运行
             }
             else{
@@ -288,6 +319,9 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     @Override
 	protected void onResume(){
 		super.onResume();
+		if(InsertDBFragmentActivity.logIn_error == true){
+			showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
+		}
 		if(start_resume == 0){
 			
 		}

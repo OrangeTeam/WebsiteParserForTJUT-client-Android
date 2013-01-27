@@ -18,16 +18,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class InsertDBFragmentActivity extends Activity{
+public class RefreshScoresFragmentActivity extends Activity{
 	private String userName = null;
 	private String password = null;
 	private TextView refresh;
 	private ProgressBar progressBar;
-	static final int LOG_IN_ERROR_DIALOG_ID = 2;
-	public static boolean logIn_error = false;
-//	private org.orange.querysystem.content.InsertDBFragmentActivity.UpdateCoursesListToDatabase.MyParserListener myParserListener;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,17 +43,21 @@ public class InsertDBFragmentActivity extends Activity{
 	
 	private class UpdateCoursesListToDatabase extends AsyncTask<String, Void, Void>{
 		public static final String TAG = "org.orange.querysystem";
-		MyParserListener myParserListener;
-		SchoolWebpageParser parser = null;
 		
 		@Override
 		protected Void doInBackground(String... args){
-			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(InsertDBFragmentActivity.this);
+			SchoolWebpageParser parser = null;
+			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(RefreshScoresFragmentActivity.this);
 			try {
-				parser.setUser(args[0], args[1]);
+				parser = new SchoolWebpageParser(new MyParserListener(), args[0], args[1]);
 				studentInfDBAdapter.open();
+				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.个人全部成绩),args[0]);
+				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.个人全部成绩));
+				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.期末最新成绩));
 				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.本学期修读课程),args[0]);
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.已选下学期课程),args[0]);
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} catch(SQLiteException e){
 				e.printStackTrace();
 			} catch (ParserException e) {
@@ -70,22 +70,6 @@ public class InsertDBFragmentActivity extends Activity{
 			studentInfDBAdapter.close();
 			return null;
 		}
-		
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			myParserListener = new MyParserListener();
-			try {
-				parser = new SchoolWebpageParser(myParserListener);
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-
-
 		@Override
 		protected void onPostExecute(Void course){
 			progressBar.setVisibility( ProgressBar.GONE);
@@ -102,7 +86,7 @@ public class InsertDBFragmentActivity extends Activity{
 				Log.e(TAG, message);
 				switch (code) {
 				case ParserListener.ERROR_CANNOT_LOGIN:
-					logIn_error = true;
+					InsertDBFragmentActivity.logIn_error = true;
 					break;
 				default:
 					break;

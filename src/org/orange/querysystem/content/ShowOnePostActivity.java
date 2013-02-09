@@ -6,6 +6,7 @@ package org.orange.querysystem.content;
 import java.io.IOException;
 
 import org.orange.querysystem.R;
+import org.orange.querysystem.util.Network;
 import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
@@ -27,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author Bai Jie
@@ -44,6 +46,8 @@ public class ShowOnePostActivity extends Activity {
 	ActionBar mActionBar = null;
 	
 	Post mPost;
+
+	private static UpdatePostMainBody updater;
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -98,6 +102,28 @@ public class ShowOnePostActivity extends Activity {
 		}
 	}
 
+	/**
+	 * 更新通知正文。自动管理异步更新线程。
+	 * @param target 要更新的通知
+	 * @return  若开始（正在）更新返回true；若无法连接网络，返回false 
+	 */
+	//TODO 完善。代替Toast
+	public boolean updatePostMainBody(Post target){
+		if(updater != null){
+			Toast.makeText(this, "正在更新，请稍后...", Toast.LENGTH_SHORT).show();
+			return true;
+		}
+		else if(!Network.getInstance(this).isConnected()){
+			Toast.makeText(this, "无网络连接", Toast.LENGTH_SHORT).show();
+			return false;
+		}else{
+			Toast.makeText(this, "正在更新，请稍后...", Toast.LENGTH_SHORT).show();
+			updater = new UpdatePostMainBody();
+			updater.execute(target);
+			return true;
+		}
+	}
+
 	public void loadPost(Post post){
 		if(post == null)
 			return;
@@ -143,7 +169,7 @@ public class ShowOnePostActivity extends Activity {
 				return;
 			loadPost(result);
 			if(result.getMainBody() == null)
-				new UpdatePostMainBody().execute(result);
+				updatePostMainBody(result);
 		}
 		
 	}
@@ -184,6 +210,7 @@ public class ShowOnePostActivity extends Activity {
 		protected void onPostExecute(Post result) {
 			if(result!=null)
 				loadPost(result);
+			updater = null;
 		}
 		
 	}

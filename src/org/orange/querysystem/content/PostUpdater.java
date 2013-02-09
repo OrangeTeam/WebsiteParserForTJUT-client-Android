@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.List;
 
+import org.orange.querysystem.util.Network;
 import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
@@ -25,6 +26,7 @@ import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * @author Bai Jie
@@ -55,7 +57,10 @@ public class PostUpdater {
 	 * @return 上次更新通知的时间
 	 */
 	public Date getLastUpdateTime(){
-		return (Date) lastUpdatedTime.clone();
+		if(lastUpdatedTime != null)
+			return (Date) lastUpdatedTime.clone();
+		else
+			return null;
 	}
 	/**
 	 * 更新通知。自动判断更新间隔、是否正在更新等。
@@ -69,9 +74,16 @@ public class PostUpdater {
 		if(lastUpdatedTime!=null && System.currentTimeMillis() - lastUpdatedTime.getTime() < updateInterval){
 			return false;
 		}
-		mWebUpdaterToDB = new UpdatePostsListToDatabase();
-		mWebUpdaterToDB.execute();
-		return true;
+		else if(!Network.getInstance(mContext).isConnected()){
+			//TODO 完善
+			Toast.makeText(mContext, "无网络连接", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		else{
+			mWebUpdaterToDB = new UpdatePostsListToDatabase();
+			mWebUpdaterToDB.execute();
+			return true;
+		}
 	}
 	/**
 	 * 正在向数据库更新通知
@@ -142,6 +154,7 @@ public class PostUpdater {
 			List<Post> posts = null;
 
 			//准备用Hessian连接GAE代理
+			//TODO 去掉timeout常量
 			int timeout = quickUpdateOrAllUpdate?2000:5000;
 			HessianProxyFactory factory = new HessianProxyFactory();
 			MyHessianSocketConnectionFactory mHessianSocketConnectionFactory =

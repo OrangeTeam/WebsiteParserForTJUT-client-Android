@@ -70,12 +70,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_tabs_pager);
-		
-		showDialog(PASSWORD_PROMPT);
-	}
-	
-	@TargetApi(11)
-	public void enterActivity(){
+
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -103,14 +98,14 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 
 				//child.getLayoutParams().height = tv.getHeight();
 			}
-		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			if(getResources().getConfiguration().orientation ==
-					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
-				getActionBar().hide();
 		}
+
+		showDialog(PASSWORD_PROMPT);
+	}
+
+	@TargetApi(11)
+	public void enterActivity(){
 		readDB();
-		}
 	}
 	
 	@Override
@@ -252,17 +247,6 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
 		}
 			
     }
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onWindowFocusChanged(boolean)
-	 */
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		// TODO Auto-generated method stub
-		super.onWindowFocusChanged(hasFocus);
-
-		mTabsAdapter.adjustSelectedTabToCenter();
-	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)

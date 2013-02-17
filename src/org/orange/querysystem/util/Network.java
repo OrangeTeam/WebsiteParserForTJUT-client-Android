@@ -1,8 +1,18 @@
 package org.orange.querysystem.util;
 
+import org.orange.querysystem.R;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 public class Network {
@@ -60,5 +70,57 @@ public class Network {
 	public boolean isWifiConnected(){
 		Integer type = getActiveNetworkType();
 		return type!=null && type==ConnectivityManager.TYPE_WIFI;
+	}
+
+	/**
+	 * 打开网络设置Activity。
+	 * @return 成功打开返回true，失败返回false
+	 * @see android.provider.Settings#ACTION_WIRELESS_SETTINGS
+	 */
+	public boolean openWirelessSettings(){
+		Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+		// 验证此intent可被响应
+		if(mContext.getPackageManager().queryIntentActivities(intent, 0).size() > 0){
+			mContext.startActivity(intent);
+			return true;
+		}else
+			return false;
+	}
+
+	/**
+	 * 打开“无网络连接”对话框，提问是否打开网络设置Activity。
+	 * @param fragmentActivity 要弹出对话框的支持包{@link FragmentActivity}
+	 */
+	public void openNoConnectionDialog(FragmentActivity fragmentActivity){
+		NoConnectionDialogFragment newDialog = new NoConnectionDialogFragment();
+		newDialog.show(fragmentActivity.getSupportFragmentManager(), "noConnectionDialog");
+	}
+
+	/**
+	 * “无网络连接”对话框。提问是否打开网络设置Activity。
+	 * @author Bai Jie
+	 */
+	public static class NoConnectionDialogFragment extends DialogFragment {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle(R.string.no_connection_title)
+			.setMessage(R.string.no_connection_message)
+			.setPositiveButton(android.R.string.yes, new OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Network.getInstance(getActivity()).openWirelessSettings();
+				}
+			})
+			.setNegativeButton(android.R.string.cancel, new OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					return;
+				}
+			});
+			return builder.create();
+		}
+
 	}
 }

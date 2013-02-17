@@ -53,4 +53,8 @@
     <string name="prefs_starting_date_summary">设置本学期第0周日期（如开学日期），请参考教务处校历</string>
     <string name="prefs_about">关于</string>
     <string name="prefs_about_summary">有关此软件的基本信息</string>
+
+    <!-- Network.java -->
+    <string name="no_connection_title">打开网络开关？</string>
+    <string name="no_connection_message">网络连接不可用，现在打开网络开关？</string>
 </resources>

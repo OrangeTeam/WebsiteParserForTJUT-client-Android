@@ -15,7 +15,6 @@ import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
@@ -23,6 +22,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +34,7 @@ import android.widget.Toast;
  * @author Bai Jie
  */
 @TargetApi(11)
-public class ShowOnePostActivity extends Activity {
+public class ShowOnePostActivity extends FragmentActivity {
 	public static final String EXTRA_POST_ID = ShowOnePostActivity.class.getName()+"EXTRA_POST_ID";
 	private static final String TAG = ShowOnePostActivity.class.getName();
 
@@ -114,7 +114,7 @@ public class ShowOnePostActivity extends Activity {
 			return true;
 		}
 		else if(!Network.getInstance(this).isConnected()){
-			Toast.makeText(this, "无网络连接", Toast.LENGTH_SHORT).show();
+			Network.getInstance(this).openNoConnectionDialog(this);
 			return false;
 		}else{
 			Toast.makeText(this, "正在更新，请稍后...", Toast.LENGTH_SHORT).show();

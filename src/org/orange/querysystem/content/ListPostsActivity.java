@@ -17,7 +17,8 @@ package org.orange.querysystem.content;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
-import org.orange.querysystem.content.PostUpdater.OnPostExecuteListener;
+import org.orange.querysystem.util.PostUpdater;
+import org.orange.querysystem.util.PostUpdater.OnPostExecuteListener;
 
 import util.webpage.Post;
 import android.annotation.TargetApi;
@@ -39,6 +40,7 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 /**
  * @author Bai Jie

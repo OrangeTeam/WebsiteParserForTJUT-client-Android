@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.orange.querysystem.content;
+package org.orange.querysystem.util;
 
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -29,6 +29,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
+ * 通知更新器，用于更新通知列表。
  * @author Bai Jie
  */
 public class PostUpdater {

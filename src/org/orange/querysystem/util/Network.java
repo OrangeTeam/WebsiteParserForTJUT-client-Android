@@ -91,7 +91,7 @@ public class Network {
 	 * 打开“无网络连接”对话框，提问是否打开网络设置Activity。
 	 * @param fragmentActivity 要弹出对话框的支持包{@link FragmentActivity}
 	 */
-	public void openNoConnectionDialog(FragmentActivity fragmentActivity){
+	public static void openNoConnectionDialog(FragmentActivity fragmentActivity){
 		NoConnectionDialogFragment newDialog = new NoConnectionDialogFragment();
 		newDialog.show(fragmentActivity.getSupportFragmentManager(), "noConnectionDialog");
 	}

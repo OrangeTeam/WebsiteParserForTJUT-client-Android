@@ -114,7 +114,7 @@ public class ShowOnePostActivity extends FragmentActivity {
 			return true;
 		}
 		else if(!Network.getInstance(this).isConnected()){
-			Network.getInstance(this).openNoConnectionDialog(this);
+			Network.openNoConnectionDialog(this);
 			return false;
 		}else{
 			Toast.makeText(this, "正在更新，请稍后...", Toast.LENGTH_SHORT).show();

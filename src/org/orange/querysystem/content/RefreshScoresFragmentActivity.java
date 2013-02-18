@@ -1,17 +1,18 @@
 package org.orange.querysystem.content;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Constant;
+import util.webpage.Course;
 import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.SchoolWebpageParser.ParserListener;
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,13 +49,15 @@ public class RefreshScoresFragmentActivity extends Activity{
 		protected Void doInBackground(String... args){
 			SchoolWebpageParser parser = null;
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(RefreshScoresFragmentActivity.this);
-			try {
+ 			try {
+ 				List<Course> result1 = parser.parseScores(Constant.url.个人全部成绩);
+ 				List<Course> result2 = parser.parseScores(Constant.url.期末最新成绩);
 				parser = new SchoolWebpageParser(new MyParserListener(), args[0], args[1]);
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.个人全部成绩),args[0]);
-				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.个人全部成绩));
-				studentInfDBAdapter.updateScoreInf(parser.parseScores(Constant.url.期末最新成绩));
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.本学期修读课程),args[0]);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(result1,args[0]);
+				studentInfDBAdapter.updateScoreInf(result1);
+				studentInfDBAdapter.updateScoreInf(result2);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(result2,args[0]);
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -10,10 +10,10 @@
         android:key = "pref_startingDate"
         android:title = "@string/prefs_starting_date"
         android:summary = "@string/prefs_starting_date_summary"
-        android:defaultValue="1348202825154L"
+        android:defaultValue="1362240000000L"
         orange:minDateComparedWithRunTime="-15811200000"
         orange:maxDateComparedWithRunTime="15811200000" />
-        <!-- 1348202825154 为2012年9月21日的时间戳; 15811200000ms 约为半年 -->
+        <!-- 1362240000000 为2013年3月3日的时间戳; 15811200000ms 约为半年 -->
      <Preference
         android:title="@string/prefs_about"
         android:summary="@string/prefs_about_summary" >

@@ -50,12 +50,13 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 
 	/**
-	 * 取得指定周的周一
+	 * 取得指定周的周一。以周一为一周的开始。
 	 * @param milliseconds 目标周中的一个时间戳，单位ms
 	 * @return milliseconds所在周的周一。小时、分、秒、毫秒都为0
 	 */
 	public static Calendar getMondayOfWeek(long milliseconds) {
 		Calendar result = Calendar.getInstance();
+		result.setFirstDayOfWeek(Calendar.MONDAY);
 		result.setTimeInMillis(milliseconds);
 		result.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		result.set(Calendar.HOUR_OF_DAY, 0);

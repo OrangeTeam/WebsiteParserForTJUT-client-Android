@@ -46,4 +46,26 @@
         <item >12</item>
         <item >13</item>
     </string-array>
+
+    <!-- used in preferences.xml -->
+    <string-array name="intervals_of_post_updating">
+        <item>6小时</item>
+        <item>12小时</item>
+        <item>1天</item>
+        <item>2天</item>
+        <item>4天</item>
+        <item>8天</item>
+        <item>16天</item>
+        <item>32天</item>
+    </string-array>
+    <string-array name="values_of_intervals">
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+        <item>172800000</item>
+        <item>345600000</item>
+        <item>691200000</item>
+        <item>1382400000</item>
+        <item>2764800000</item>
+    </string-array>
 </resources>

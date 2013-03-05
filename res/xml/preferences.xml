@@ -1,25 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:orange="org.orange">
-    <PreferenceCategory android:title="设置"/>
-    <org.orange.querysystem.content.AccountSettingPreference
-        android:key = "pref_account"
-        android:title = "@string/prefs_student_account"
-        android:summary = "@string/prefs_student_account_summary"/>
-    <org.orange.querysystem.content.DatePickerPreference
-        android:key = "pref_startingDate"
-        android:title = "@string/prefs_starting_date"
-        android:summary = "@string/prefs_starting_date_summary"
-        android:defaultValue="1362240000000L"
-        orange:minDateComparedWithRunTime="-15811200000"
-        orange:maxDateComparedWithRunTime="15811200000" />
-        <!-- 1362240000000 为2013年3月3日的时间戳; 15811200000ms 约为半年 -->
-     <Preference
-        android:title="@string/prefs_about"
-        android:summary="@string/prefs_about_summary" >
-        <intent android:targetPackage="org.orange.querysystem"
-                android:targetClass="org.orange.querysystem.AboutActivity" />
-    </Preference>
-     
+    <PreferenceCategory
+        android:key="prefs_general_settings"
+        android:title="@string/prefs_general_settings">
+        <org.orange.querysystem.content.AccountSettingPreference
+            android:key = "pref_account"
+            android:title = "@string/pref_student_account"
+            android:summary = "@string/pref_student_account_summary"/>
+        <org.orange.querysystem.content.DatePickerPreference
+            android:key = "pref_startingDate"
+            android:title = "@string/pref_starting_date"
+            android:summary = "@string/pref_starting_date_summary"
+            android:defaultValue="1362240000000L"
+            orange:minDateComparedWithRunTime="-15811200000"
+            orange:maxDateComparedWithRunTime="15811200000" />
+            <!-- 1362240000000 为2013年3月3日的时间戳; 15811200000ms 约为半年 -->
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="prefs_settings_of_post_updating"
+        android:title="@string/prefs_settings_of_post_updating">
+        <CheckBoxPreference
+            android:key="pref_update_post_automatically"
+            android:title="@string/pref_update_post_automatically"
+            android:summary="@string/pref_update_post_automatically_summary"
+            android:defaultValue="true" />
+        <ListPreference
+            android:dependency="pref_update_post_automatically"
+            android:key="pref_interval_of_post_updating"
+            android:title="@string/pref_interval_of_post_updating"
+            android:entries="@array/intervals_of_post_updating"
+            android:entryValues="@array/values_of_intervals"
+            android:defaultValue="86400000" />
+        <CheckBoxPreference
+            android:key="pref_use_alternative_in_mobile_connection"
+            android:title="@string/pref_use_alternative_in_mobile_connection"
+            android:summary="@string/pref_use_alternative_in_mobile_connection_summary"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="prefs_others"
+        android:title="@string/prefs_others" >
+        <Preference
+            android:title="@string/pref_about"
+            android:summary="@string/pref_about_summary" >
+            <intent android:targetPackage="org.orange.querysystem"
+                    android:targetClass="org.orange.querysystem.AboutActivity" />
+        </Preference>
+    </PreferenceCategory>
 </PreferenceScreen>

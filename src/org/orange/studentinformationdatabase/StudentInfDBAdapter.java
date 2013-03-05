@@ -171,7 +171,7 @@ public class StudentInfDBAdapter {
 	 * @param theCourseInf 类型为 List<Course>
 	 */
 	private void insertArrayCoursesToCourseInf1(List<Course> theCourseInf, String theUserName){
-		Cursor cursor;
+		Cursor cursor, cursor1;
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
@@ -197,7 +197,12 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_USER_NAME, theUserName);
 			//theCourseInf为ArrayList对象，get(i)顺序找到其中的一门课程。getCode()等方法得到相应实例变量的值。
 			
-			db.insert(DATABASE_COURSE_TABLE1,null, newCourseInfValues);
+			cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + aCourse.getCode() + "'", null, null, null, null);
+			if(cursor1.getCount() == 0){
+				db.insert(DATABASE_COURSE_TABLE1,null, newCourseInfValues);
+			}else{
+				newCourseInfValues.clear();
+			}
 		}
 		
 	}
@@ -241,13 +246,13 @@ public class StudentInfDBAdapter {
 		Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		if(cursor1.getCount() != 0)
 		{
-			String code = theCourseInf.get(0).getCode();
-			Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
-			if(cursor2.getCount() == 0)
-			{
+			//String code = theCourseInf.get(0).getCode();
+			//Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
+			//if(cursor2.getCount() == 0)
+			//{
 				insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
 				insertArrayCoursesToCourseInf2(theCourseInf);
-			}
+			//}
 		}else{
 			db.delete(DATABASE_COURSE_TABLE1, null, null);
 			db.delete(DATABASE_COURSE_TABLE2, null, null);

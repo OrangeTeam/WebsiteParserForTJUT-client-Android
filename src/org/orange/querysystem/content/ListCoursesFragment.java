@@ -4,8 +4,8 @@
 package org.orange.querysystem.content;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.orange.querysystem.R;
 
@@ -75,21 +75,51 @@ public class ListCoursesFragment extends ListFragment {
 		startActivity(intent);
 	}
 
-	/**合并课程列表中重复的项目*/
+	/**
+	 * 合并课程列表中重复的项目（除时间外相同）
+	 * @param courses 待合并的课程列表
+	 * @precondition 课程列表中无完全重复项且已被排序
+	 */
 	public void mergeRepeatedCourses(List<SimpleCourse> courses){
-		SimpleCourse lastCourse = null, currentCourse = null;
-		Iterator<SimpleCourse> iterator = courses.iterator();
-		while(iterator.hasNext()){
-			currentCourse = iterator.next();
-			if(lastCourse == null){
-				lastCourse = currentCourse;
-				continue;
+		if(!courses.isEmpty()){
+			SimpleCourse checkedCourse = null, currentCourse = null;
+			String checkedTime = null, nextTime = null;
+			int checkedPosition;
+			boolean merged = false;
+			ListIterator<SimpleCourse> iterator = courses.listIterator();
+			//一次合并一个SimpleCourse
+out:		while(iterator.hasNext()){
+				checkedPosition = iterator.nextIndex();
+				checkedCourse = iterator.next();
+				//找到检查中课程紧后边的课程时间
+				nextTime = checkedTime = checkedCourse.getTime();
+				while(checkedTime!=null ? checkedTime.equals(nextTime) : nextTime==null){
+					if(!iterator.hasNext())
+						break out;
+					currentCourse = iterator.next();
+					nextTime=currentCourse.getTime();
+				}
+				//检查是否有与checkedCourse相连的Course
+				while(nextTime!=null ? nextTime.equals(currentCourse.getTime()) : currentCourse.getTime()==null){
+					if(checkedCourse.equalsExceptTime(currentCourse)){
+						checkedCourse.time += ", "+currentCourse.time;
+						iterator.remove();
+						merged = true;
+						break;	//Attention: 这里只在无完全重复 SimpleCourse时有效
+					}else{
+						if(iterator.hasNext())
+							currentCourse = iterator.next();
+						else
+							break;
+					}
+				}
+				//恢复iterator位置
+				iterator = courses.listIterator(checkedPosition);
+				if(!merged)	//上次无重复项，则转至下一位置
+					iterator.next();
+				else		//上次有重复项，则再次检查当前checkedCourse；恢复merged状态 
+					merged = false;
 			}
-			if(lastCourse.equalsExceptTime(currentCourse)){
-				lastCourse.time += ", "+currentCourse.time;
-				iterator.remove();
-			}else
-				lastCourse = currentCourse;
 		}
 		hasRemovedRepeated = true;
 	}

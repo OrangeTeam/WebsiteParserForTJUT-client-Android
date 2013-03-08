@@ -17,6 +17,7 @@ import util.webpage.Post;
 import util.webpage.ReadPageHelper.OnReadPageListener;
 import util.webpage.SchoolWebpageParser;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
@@ -31,13 +32,15 @@ import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
  * @author Bai Jie
  */
 public class PostUpdater {
-	String TAG = PostUpdater.class.getName();
+	private static String TAG = PostUpdater.class.getName();
+	private static String KEY_OF_POST_UPDATER = PostUpdater.class.getName();
+	private static String KEY_OF_LAST_UPDATED_TIME = "last_updated_time";
 
-	Context mContext;
-	Date lastUpdatedTime;
+	private Context mContext;
+	private Date lastUpdatedTime;
 
-	UpdatePostsListToDatabase mWebUpdaterToDB;
-	OnPostExecuteListener mOnPostExecuteListener;
+	private UpdatePostsListToDatabase mWebUpdaterToDB;
+	private OnPostExecuteListener mOnPostExecuteListener;
 
 	public PostUpdater(Context context) {
 		mContext = context;
@@ -53,7 +56,7 @@ public class PostUpdater {
 
 	/**
 	 * 取得上次更新通知的时间。
-	 * @return 上次更新通知的时间
+	 * @return 如果尚未更新过，返回null；否则返回上次更新通知的时间
 	 */
 	public Date getLastUpdateTime(){
 		if(lastUpdatedTime != null)
@@ -61,11 +64,45 @@ public class PostUpdater {
 		else
 			return null;
 	}
+
+	/**
+	 * 保存指定的上次更新的时间到{@link SharedPreferences}
+	 * @param lastUpdatedTime 要保存的更新时间
+	 * @return Returns true if the new values were successfully written to persistent storage.
+	 */
+	private boolean saveLastUpdateTimeToSharedPreferences(Date lastUpdatedTime){
+		if(lastUpdatedTime == null)
+			return false;
+		SharedPreferences.Editor editor
+			= mContext.getSharedPreferences(KEY_OF_POST_UPDATER, Context.MODE_PRIVATE).edit();
+		editor.putLong(KEY_OF_LAST_UPDATED_TIME, lastUpdatedTime.getTime());
+		return editor.commit();
+	}
+	/**
+	 * 保存上次更新的时间到{@link SharedPreferences}
+	 * @return Returns true if the new values were successfully written to persistent storage.
+	 */
+	private boolean saveLastUpdateTimeToSharedPreferences(){
+		return saveLastUpdateTimeToSharedPreferences(lastUpdatedTime);
+	}
+	/**
+	 * 从{@link SharedPreferences}取得上次更新的时间
+	 * @return 如果{@link SharedPreferences}中有保存值，返回相应{@link Date}；如果没有保存值，返回null
+	 */
+	public Date getLastUpdatedTimeFromSharedPreferences(){
+		long time = mContext.getSharedPreferences(KEY_OF_POST_UPDATER,
+				Context.MODE_PRIVATE).getLong(KEY_OF_LAST_UPDATED_TIME, -1);
+		if(time == -1)
+			return null;
+		else
+			return new Date(time);
+	}
+
 	/**
 	 * 更新通知。自动判断更新间隔、是否正在更新等。
 	 * @return 若开始（正在）更新返回true；若已禁止自动更新或不足更新间隔时间而没有更新，返回false 
 	 */
-	public boolean autoUpdatePosts(){
+	public boolean updatePosts(){
 		if(mWebUpdaterToDB != null)
 			return true;
 		if(!SettingsActivity.isUpdatePostAutomatically(mContext))
@@ -110,11 +147,13 @@ public class PostUpdater {
 	private class UpdatePostsListToDatabase extends AsyncTask<Void, Void, Integer>{
 		private static final String hessianUrl = "http://schoolwebpageparser.appspot.com/getter";
 		private static final int maxAttempts = 10;
-		private StudentInfDBAdapter database = new StudentInfDBAdapter(mContext);;
+		private StudentInfDBAdapter database = new StudentInfDBAdapter(mContext);
 
 		@Override
 		protected Integer doInBackground(Void... params) {
-			return autoUpdatePosts();
+			int result = autoUpdatePosts();
+			end();
+			return result;
 		}
 
 		@Override
@@ -128,39 +167,60 @@ public class PostUpdater {
 
 		@Override
 		protected void onCancelled(Integer numberOfInsertedPosts) {
+			end();
+		}
+
+		private void end(){
 			if(database != null)
 				database.close();
 			mWebUpdaterToDB = null;
 		}
 
-		private void refreshLastUpdatedTime() {
+		/**
+		 * 取得最新通知的发布日期
+		 * @return 如果数据库中有通知，返回最新通知的发布日期；如果数据库中无通知或遇到其他异常，返回null
+		 */
+		private Date getTimeOfLatestPost(){
+			Date result = null;
 			try{
-				database.open();
+				if(!database.isOpen())
+					database.open();
 				Post lastPost = database.getPostsFromDB(null, Contract.Posts.COLUMN_NAME_DATE + " DESC", "1").get(0);
-				lastUpdatedTime = lastPost.getDate();
+				result = lastPost.getDate();
 			} catch (SQLiteException e){
 				Log.e(TAG, "打开数据库异常！");
 				e.printStackTrace();
 			} catch (SQLException e){
 				Log.e(TAG, "从数据库读取最新Post时遇到异常！");
 				e.printStackTrace();
-			} finally{
-				database.close();
 			}
+			return result;
+		}
+
+		private void refreshLastUpdatedTime(long updateInterval) {
+			if(lastUpdatedTime != null)
+				return;
+			Date updatedTime = getLastUpdatedTimeFromSharedPreferences();
+			if(updatedTime==null || System.currentTimeMillis() - updatedTime.getTime() >= updateInterval){
+				Date lastPostTime = getTimeOfLatestPost();
+				if((updatedTime==null) || (lastPostTime!=null && lastPostTime.compareTo(updatedTime)>0))
+					updatedTime = lastPostTime;
+			}
+			lastUpdatedTime = updatedTime;
 		}
 
 		/**
 		 * 更新通知
 		 * @param quickUpdateOrAllUpdate true for 快速（常用）更新；false for 完整更新
-		 * @return 更新的通知条数
+		 * @return 成功更新，返回更新的通知条数；更新失败，返回-1
 		 */
 		private int updatePosts(boolean quickUpdateOrAllUpdate){
 			List<Post> posts = null;
-			int numberOfInsertedPosts = 0;
+			int numberOfInsertedPosts = -1;
 
 			//准备用Hessian连接GAE代理
 			//TODO 去掉timeout常量
-			int timeout = quickUpdateOrAllUpdate?4000:50000;
+			int timeout = quickUpdateOrAllUpdate?15000:50000;
 			HessianProxyFactory factory = new HessianProxyFactory();
 			MyHessianSocketConnectionFactory mHessianSocketConnectionFactory =
 					new MyHessianSocketConnectionFactory();
@@ -214,16 +274,18 @@ public class PostUpdater {
 			//把新通知写入数据库
 			if(posts != null){
 				try{
-					database.open();
+					if(!database.isOpen())
+						database.open();
 					numberOfInsertedPosts = database.autoInsertArrayPostsInf(posts);
+					//更新 lastUpdatedTime
+					lastUpdatedTime = new Date();
+					saveLastUpdateTimeToSharedPreferences();
 				} catch (SQLiteException e){
 					Log.e(TAG, "打开数据库异常！");
 					e.printStackTrace();
 				} catch (SQLException e){
 					Log.e(TAG, "向数据库更新Posts时遇到异常！");
 					e.printStackTrace();
-				} finally{
-					database.close();
 				}
 			}else{
 				Log.i(TAG, "无新通知");
@@ -232,20 +294,18 @@ public class PostUpdater {
 		}
 
 		/**
-		 * 更新通知。自动判断更新间隔、是否正在更新等。
-		 * @return 更新的通知条数
+		 * 更新通知，刷新lastUpdatedTime。自动判断更新间隔。
+		 * @return 如果更新了，返回更新的通知条数；如果没有更新，返回-1
 		 */
 		private int autoUpdatePosts(){
-			int numberOfInsertedPosts = 0;
+			int numberOfInsertedPosts = -1;
 
 			//更新时间
-			refreshLastUpdatedTime();
-			long lastUpdated = 0;
-			if(lastUpdatedTime != null)
-				lastUpdated = lastUpdatedTime.getTime();
 			long now = System.currentTimeMillis();
 			long updateInterval = SettingsActivity.getIntervalOfPostUpdating(mContext);
 			long longUpdateInterval = updateInterval * 8L;
+			refreshLastUpdatedTime(updateInterval);
+			long lastUpdated = lastUpdatedTime!=null ? lastUpdatedTime.getTime() : 0;
 			//根据时间间隔更新
 			if(now - lastUpdated > longUpdateInterval){
 				if(lastUpdated == 0){
@@ -256,7 +316,6 @@ public class PostUpdater {
 			}else if(now - lastUpdated > updateInterval){
 				numberOfInsertedPosts = updatePosts(true);
 			}
-			lastUpdatedTime = new Date(now);
 			return numberOfInsertedPosts;
 		}
 

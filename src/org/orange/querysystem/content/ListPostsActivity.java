@@ -74,7 +74,7 @@ public class ListPostsActivity extends FragmentActivity{
 				loadPosts();
 			}
 		});
-		mWebUpdaterToDB.autoUpdatePosts();
+		mWebUpdaterToDB.updatePosts();
 
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();

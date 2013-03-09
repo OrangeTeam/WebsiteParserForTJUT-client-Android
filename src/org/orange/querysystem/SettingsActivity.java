@@ -12,13 +12,16 @@ import org.orange.querysystem.content.AccountSettingPreference;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener{
 	/** 设置项“帐号”的KEY */
 	public static final String KEY_PREF_ACCOUNT = "pref_account";
 	/** 设置项“帐号”中学号的KEY */
@@ -40,6 +43,8 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		refreshSummaryOfIntervalOfPostUpdating();
+
 		getListView().setBackgroundResource(R.drawable.back);
 		getListView().setCacheColorHint(Color.TRANSPARENT);
 
@@ -55,6 +60,36 @@ public class SettingsActivity extends PreferenceActivity {
 		
 		//导入静态数据库
 		importInitialDB();
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onPause() {
+		super.onPause();
+		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals(KEY_PREF_INTERVAL_OF_POST_UPDATING)) {
+			refreshSummaryOfIntervalOfPostUpdating();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void refreshSummaryOfIntervalOfPostUpdating(){
+		ListPreference intervalPref = (ListPreference) findPreference(KEY_PREF_INTERVAL_OF_POST_UPDATING);
+		// Set summary to be the user-description for the selected value
+		String newValue = getResources().getString(R.string.pref_interval_of_post_updating_summary,
+				intervalPref.getEntry().toString());
+		intervalPref.setSummary(newValue);
 	}
 
 	/**

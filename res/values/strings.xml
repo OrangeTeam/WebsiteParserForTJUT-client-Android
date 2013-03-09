@@ -46,6 +46,8 @@
     <string name="course_info_change">修改</string>
     <string name="course_info_submit">提交</string>
 
+    <!-- SettingsActivity.java -->
+    <string name="pref_interval_of_post_updating_summary">每隔 %s ，更新一次通知</string>
     <!-- preferences.xml -->
     <string name="prefs_general_settings">一般设置</string>
     <string name="pref_student_account">账号</string>

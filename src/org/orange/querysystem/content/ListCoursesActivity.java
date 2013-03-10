@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
@@ -28,6 +29,7 @@ import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
+import util.webpage.Course.TimeAndAddress;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -180,26 +182,32 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
         currentTime = (TextView)findViewById(R.id.currentTime);
         currentTime.setText("本周课程表" + "        " + DateFormat.getDateInstance().format(new Date()) + "    " + "第" + weekNumber + "周");
         
-    	Bundle[] args = new Bundle[7]; 
+		Bundle[] args = new Bundle[8];
     	
     	/*String[星期几][第几大节]*/
-    	LinkedList<SimpleCourse>[][] lesson = new LinkedList[7][14];
-    	for(int day=0;day<=6;day++)
+		LinkedList<SimpleCourse>[][] lesson = new LinkedList[8][14];
+		for(int day=0;day<=7;day++)
     		for(int period=1;period<=13;period++)
     			lesson[day][period] = new LinkedList<SimpleCourse>();
-    	for(Course course:courses)
-			for(Course.TimeAndAddress time:course.getTimeAndAddress())
-				for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
-					for(int period = 1; period<=13; period++)
-						try{
-							if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(weekNumber)){
-								lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period),time.getAddress()));
+		//根据课程时间，把课程排到课表中
+		for(Course course:courses){
+			List<TimeAndAddress> times = course.getTimeAndAddress();
+			if(!times.isEmpty())
+				for(TimeAndAddress time:times)
+					for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
+						for(int period = 1; period<=13; period++)
+							try{
+								if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(weekNumber)){
+									lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period),time.getAddress()));
+								}
+							} catch(BitOperateException e){
+								e.printStackTrace();
 							}
-						} catch(BitOperateException e){
-							e.printStackTrace();
-						}
-    	
-    	for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++){
+			else
+				lesson[7][1].addLast(new SimpleCourse(course.getId(),course.getName(), null, null));
+		}
+		//把每天的课程放到传到ListCoursesFragment的参数容器中
+		for(int dayOfWeek = 0; dayOfWeek<=7; dayOfWeek++){
     		ArrayList<SimpleCourse> coursesInADay = new ArrayList<SimpleCourse>();
     		for(int period = 1; period<=13; period++){
     			for(SimpleCourse course:lesson[dayOfWeek][period])
@@ -209,14 +217,17 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     		argForFragment.putParcelableArrayList(ListCoursesFragment.COURSES_KEY, coursesInADay);
     		args[dayOfWeek] = argForFragment;
     	}
-    	
+		//交换周日args[0]和时间未定args[7]，把周日显示在最后
+		args[7] = args[0];
+
 		String[] daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 		
-		for(int day = 0;day<=6;day++){
+		for(int day = 1;day<=7;day++){
 			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
 			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
 		}
+
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
@@ -233,10 +244,11 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 				//{@link http://developer.android.com/intl/zh-CN/guide/practices/screens_support.html#screen-independence}
 				child.getLayoutParams().height = 80;
 			}
-		}else{
+		}else
 			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
-		}
-		mTabHost.setCurrentTab(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY);
+
+		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY-1 : 6);
 		
     }
 

@@ -23,13 +23,14 @@
         <item >20</item>
     </string-array>
     <string-array name="days_of_week">
-        <item >星期日</item>
+        <item >时间未定</item>
         <item >星期一</item>
         <item >星期二</item>
         <item >星期三</item>
         <item >星期四</item>
         <item >星期五</item>
         <item >星期六</item>
+        <item >星期日</item>
     </string-array>
     <string-array name="period">
         <item >1</item>

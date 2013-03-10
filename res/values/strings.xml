@@ -46,13 +46,23 @@
     <string name="course_info_change">修改</string>
     <string name="course_info_submit">提交</string>
 
+    <!-- SettingsActivity.java -->
+    <string name="pref_interval_of_post_updating_summary">每隔 %s ，更新一次通知</string>
     <!-- preferences.xml -->
-    <string name="prefs_student_account">账号</string>
-    <string name="prefs_student_account_summary">设置教务处查询账号</string>
-    <string name="prefs_starting_date">第0周</string>
-    <string name="prefs_starting_date_summary">设置本学期第0周日期（如开学日期），请参考教务处校历</string>
-    <string name="prefs_about">关于</string>
-    <string name="prefs_about_summary">有关此软件的基本信息</string>
+    <string name="prefs_general_settings">一般设置</string>
+    <string name="pref_student_account">账号</string>
+    <string name="pref_student_account_summary">设置教务处查询账号</string>
+    <string name="pref_starting_date">第0周</string>
+    <string name="pref_starting_date_summary">设置本学期第0周日期（如开学日期），请参考教务处校历</string>
+    <string name="prefs_settings_of_post_updating">通知更新设置</string>
+    <string name="pref_update_post_automatically">自动更新通知</string>
+    <string name="pref_update_post_automatically_summary">是否自动更新通知</string>
+    <string name="pref_interval_of_post_updating">通知更新间隔</string>
+    <string name="pref_use_alternative_in_mobile_connection">移动网络下使用后备方案</string>
+    <string name="pref_use_alternative_in_mobile_connection_summary">移动网络下，当首选网络更新方案失效时，使用后备方案（费较多流量）。</string>
+    <string name="prefs_others">其它</string>
+    <string name="pref_about">关于</string>
+    <string name="pref_about_summary">有关此软件的基本信息</string>
 
     <!-- Network.java -->
     <string name="no_connection_title">打开网络开关？</string>

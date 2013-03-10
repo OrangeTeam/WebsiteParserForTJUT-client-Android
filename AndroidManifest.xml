@@ -44,7 +44,7 @@
             android:theme="@android:style/Theme.Dialog"/>
         <activity 
             android:name=".content.RefreshScoresFragmentActivity"
-            android:theme="@android:style/Theme.Dialog"/>
+            android:theme="@android:style/Theme.Dialog" />
         <activity android:name=".content.ListPostsActivity" />
         <activity android:name=".content.ListCoursesActivity" />
         <activity android:name=".content.ShowOnePostActivity" />

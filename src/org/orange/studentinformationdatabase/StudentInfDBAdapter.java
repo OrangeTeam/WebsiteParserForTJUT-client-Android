@@ -171,7 +171,7 @@ public class StudentInfDBAdapter {
 	 * @param theCourseInf 类型为 List<Course>
 	 */
 	private void insertArrayCoursesToCourseInf1(List<Course> theCourseInf, String theUserName){
-		Cursor cursor;
+		Cursor cursor, cursor1;
 		ContentValues newCourseInfValues = new ContentValues();
 		
 		cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + 0, null, null, null, null);
@@ -197,7 +197,12 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_USER_NAME, theUserName);
 			//theCourseInf为ArrayList对象，get(i)顺序找到其中的一门课程。getCode()等方法得到相应实例变量的值。
 			
-			db.insert(DATABASE_COURSE_TABLE1,null, newCourseInfValues);
+			cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + aCourse.getCode() + "'", null, null, null, null);
+			if(cursor1.getCount() == 0){
+				db.insert(DATABASE_COURSE_TABLE1,null, newCourseInfValues);
+			}else{
+				newCourseInfValues.clear();
+			}
 		}
 		
 	}
@@ -241,13 +246,13 @@ public class StudentInfDBAdapter {
 		Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		if(cursor1.getCount() != 0)
 		{
-			String code = theCourseInf.get(0).getCode();
-			Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
-			if(cursor2.getCount() == 0)
-			{
+			//String code = theCourseInf.get(0).getCode();
+			//Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
+			//if(cursor2.getCount() == 0)
+			//{
 				insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
 				insertArrayCoursesToCourseInf2(theCourseInf);
-			}
+			//}
 		}else{
 			db.delete(DATABASE_COURSE_TABLE1, null, null);
 			db.delete(DATABASE_COURSE_TABLE2, null, null);
@@ -393,6 +398,14 @@ public class StudentInfDBAdapter {
 		return db.delete(DATABASE_POST_TABLE, KEY_TITLE + "= '" + theTitle + "'", null) > 0;
 	}
 	
+	/**
+	 * 当刷新课程时判断周数很小或很大时就会调用这个方法进行把下个学期的课程显示到本学期来。就是把KEY_CURRENT_SEMESTER字段变为0.
+	 */
+	public void updateCurrentSemester(){
+		ContentValues newCurrentSemester = new ContentValues();
+		newCurrentSemester.put(KEY_CURRENT_SEMESTER, 0);
+		db.update(DATABASE_COURSE_TABLE1, newCurrentSemester, KEY_YEAR + "=" + 0 + " AND " + KEY_CURRENT_SEMESTER + "=" + 0, null);
+	}
 	
 	/**
 	 * 对课程的更新操作，从参数传递进来一门课程，再从数据库中找到这门课的记录，然后进行比较，比较结果不一样就对数据库中的这条记录相应的字段进行更改。

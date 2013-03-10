@@ -7,31 +7,44 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.orange.querysystem.R.drawable;
 import org.orange.querysystem.content.AccountSettingPreference;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener{
+	/** 设置项“帐号”的KEY */
 	public static final String KEY_PREF_ACCOUNT = "pref_account";
-	public static final String KEY_PREF_ACCOUNT_STUDENT_ID =
-			KEY_PREF_ACCOUNT + AccountSettingPreference.STUDENT_ID_SUFFIX;
-	public static final String KEY_PREF_ACCOUNT_PASSWORD =
-			KEY_PREF_ACCOUNT + AccountSettingPreference.PASSWORD_SUFFIX;
+	/** 设置项“帐号”中学号的KEY */
+	public static final String KEY_PREF_ACCOUNT_STUDENT_ID = KEY_PREF_ACCOUNT + AccountSettingPreference.STUDENT_ID_SUFFIX;
+	/** 设置项“帐号”中密码的KEY */
+	public static final String KEY_PREF_ACCOUNT_PASSWORD = KEY_PREF_ACCOUNT + AccountSettingPreference.PASSWORD_SUFFIX;
+	/** 设置项“第0周”的KEY */
 	public static final String KEY_PREF_SCHOOL_STARTING_DATE = "pref_startingDate";
+	/** 设置项“自动更新通知”的KEY */
+	public static final String KEY_PREF_UPDATE_POST_AUTOMATICALLY = "pref_update_post_automatically";
+	/** 设置项“通知更新间隔”的KEY */
+	public static final String KEY_PREF_INTERVAL_OF_POST_UPDATING = "pref_interval_of_post_updating";
+	/** 设置项“移动网络下使用后备方案”的KEY */
+	public static final String KEY_PREF_USE_ALTERNATIVE_IN_MOBILE_CONNECTION = "pref_use_alternative_in_mobile_connection";
 
+	@SuppressWarnings("deprecation")
 	@TargetApi(11)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		refreshSummaryOfIntervalOfPostUpdating();
+
 		getListView().setBackgroundResource(R.drawable.back);
 		getListView().setCacheColorHint(Color.TRANSPARENT);
 
@@ -49,13 +62,44 @@ public class SettingsActivity extends PreferenceActivity {
 		importInitialDB();
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onPause() {
+		super.onPause();
+		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals(KEY_PREF_INTERVAL_OF_POST_UPDATING)) {
+			refreshSummaryOfIntervalOfPostUpdating();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void refreshSummaryOfIntervalOfPostUpdating(){
+		ListPreference intervalPref = (ListPreference) findPreference(KEY_PREF_INTERVAL_OF_POST_UPDATING);
+		// Set summary to be the user-description for the selected value
+		String newValue = getResources().getString(R.string.pref_interval_of_post_updating_summary,
+				intervalPref.getEntry().toString());
+		intervalPref.setSummary(newValue);
+	}
+
 	/**
-	 * 取得指定周的周一
+	 * 取得指定周的周一。以周一为一周的开始。
 	 * @param milliseconds 目标周中的一个时间戳，单位ms
 	 * @return milliseconds所在周的周一。小时、分、秒、毫秒都为0
 	 */
 	public static Calendar getMondayOfWeek(long milliseconds) {
 		Calendar result = Calendar.getInstance();
+		result.setFirstDayOfWeek(Calendar.MONDAY);
 		result.setTimeInMillis(milliseconds);
 		result.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		result.set(Calendar.HOUR_OF_DAY, 0);
@@ -124,7 +168,41 @@ public class SettingsActivity extends PreferenceActivity {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * 是否自动更新通知
+	 * @param context 上下文环境
+	 * @return 如果应当自动更新通知，返回true；如果已禁用自动更新通知，返回false
+	 */
+	public static boolean isUpdatePostAutomatically(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context)
+				.getBoolean(KEY_PREF_UPDATE_POST_AUTOMATICALLY, true);
+	}
+
+	/**
+	 * 取得通知更新的间隔时间
+	 * @param context 上下文环境
+	 * @return 通知更新的间隔时间。单位：毫秒
+	 */
+	public static long getIntervalOfPostUpdating(Context context){
+		String updateIntervalString = PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_INTERVAL_OF_POST_UPDATING, null);
+		long updateInterval = 4L*24*60*60*1000;
+		if(updateIntervalString != null)
+			updateInterval = Long.parseLong(updateIntervalString);
+		return updateInterval;
+	}
+
+	/**
+	 * 移动网络下，当首选网络更新通知方案失效时，是否使用后备方案（费较多流量）。
+	 * @param context 上下文环境
+	 * @return 如果使用，返回true；如果禁止使用，返回false
+	 */
+	public static boolean useAlternativeInMobileConnection(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context)
+				.getBoolean(KEY_PREF_USE_ALTERNATIVE_IN_MOBILE_CONNECTION, false);
+	}
+
 	/**
 	 * 导入静态数据库
 	 */

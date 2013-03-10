@@ -56,8 +56,13 @@ public class InsertDBFragmentActivity extends Activity{
 			try {
 				parser.setUser(args[0], args[1]);
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.本学期修读课程),args[0]);
-				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseScores(Constant.url.已选下学期课程),args[0]);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.本学期修读课程),args[0]);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.已选下学期课程),args[0]);
+				int currentWeek = 0;
+				currentWeek = SettingsActivity.getCurrentWeekNumber(InsertDBFragmentActivity.this);
+		        if(currentWeek < 5 || currentWeek > 22){
+		        	studentInfDBAdapter.updateCurrentSemester();
+		        }
 			} catch(SQLiteException e){
 				e.printStackTrace();
 			} catch (ParserException e) {

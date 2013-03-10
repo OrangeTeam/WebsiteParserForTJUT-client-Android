@@ -49,15 +49,16 @@ public class RefreshScoresFragmentActivity extends Activity{
 		protected Void doInBackground(String... args){
 			SchoolWebpageParser parser = null;
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(RefreshScoresFragmentActivity.this);
- 			try {
- 				List<Course> result1 = parser.parseScores(Constant.url.个人全部成绩);
- 				List<Course> result2 = parser.parseScores(Constant.url.期末最新成绩);
+			try {
 				parser = new SchoolWebpageParser(new MyParserListener(), args[0], args[1]);
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertArrayCoursesInf(result1,args[0]);
-				studentInfDBAdapter.updateScoreInf(result1);
-				studentInfDBAdapter.updateScoreInf(result2);
-				studentInfDBAdapter.autoInsertArrayCoursesInf(result2,args[0]);
+				List<Course> result = null;
+				result = parser.parseScores(Constant.url.个人全部成绩);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(result, args[0]);
+				studentInfDBAdapter.updateScoreInf(result);
+				result = parser.parseScores(Constant.url.期末最新成绩);
+				studentInfDBAdapter.updateScoreInf(result);
+				studentInfDBAdapter.autoInsertArrayCoursesInf(result, args[0]);
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

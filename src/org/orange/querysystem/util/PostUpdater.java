@@ -40,7 +40,7 @@ public class PostUpdater {
 	private Date lastUpdatedTime;
 
 	private UpdatePostsListToDatabase mWebUpdaterToDB;
-	private OnPostExecuteListener mOnPostExecuteListener;
+	private OnPostUpdateListener mOnPostUpdateListener;
 
 	public PostUpdater(Context context) {
 		mContext = context;
@@ -50,8 +50,8 @@ public class PostUpdater {
 	 * 设置通知更新监听器，在更新完通知时回调。
 	 * @param mOnPostExecuteListener 通知更新监听器
 	 */
-	public void setOnPostExecuteListener(OnPostExecuteListener mOnPostExecuteListener) {
-		this.mOnPostExecuteListener = mOnPostExecuteListener;
+	public void setOnPostExecuteListener(OnPostUpdateListener mOnPostExecuteListener) {
+		this.mOnPostUpdateListener = mOnPostExecuteListener;
 	}
 
 	/**
@@ -99,30 +99,44 @@ public class PostUpdater {
 	}
 
 	/**
-	 * 更新通知。自动判断更新间隔、是否正在更新等。
-	 * @return 若开始（正在）更新返回true；若已禁止自动更新或不足更新间隔时间而没有更新，返回false 
+	 * 更新通知。自动判断是否正在更新、网络连通性。如果是自动更新，自动确认更新间隔。
+	 * @param mandatorily true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新
+	 * @return 若开始（正在）更新返回true；若已禁止自动更新或不足更新间隔时间而没有更新，返回false
 	 */
-	public boolean updatePosts(){
+	public boolean updatePosts(boolean mandatorily){
 		if(mWebUpdaterToDB != null)
 			return true;
-		if(!SettingsActivity.isUpdatePostAutomatically(mContext))
-			return false;
-		long updateInterval = SettingsActivity.getIntervalOfPostUpdating(mContext);
-		// lastUpdatedTime==null时仍然继续，以刷新lastUpdatedTime
-		if(lastUpdatedTime!=null && System.currentTimeMillis() - lastUpdatedTime.getTime() < updateInterval){
-			return false;
+		if(!mandatorily){
+			if(!SettingsActivity.isUpdatePostAutomatically(mContext))
+				return false;
+			long updateInterval = SettingsActivity.getIntervalOfPostUpdating(mContext);
+			Date updatedTime = lastUpdatedTime==null ?
+					getLastUpdatedTimeFromSharedPreferences() : lastUpdatedTime;
+			// updatedTime==null时仍然继续，以刷新lastUpdatedTime
+			if(updatedTime!=null && System.currentTimeMillis() - updatedTime.getTime() < updateInterval){
+				return false;
+			}
 		}
-		else if(!Network.getInstance(mContext).isConnected()){
+		if(!Network.getInstance(mContext).isConnected()){
 			//TODO 完善
 			Toast.makeText(mContext, "无网络连接", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		else{
-			mWebUpdaterToDB = new UpdatePostsListToDatabase();
+			mWebUpdaterToDB = new UpdatePostsListToDatabase(mandatorily);
 			mWebUpdaterToDB.execute();
 			return true;
 		}
 	}
+
+	/**
+	 * 自动更新通知。自动判断是否正在更新、网络连通性，自动确认更新间隔。
+	 * @return 若开始（正在）更新返回true；若已禁止自动更新或不足更新间隔时间而没有更新，返回false
+	 */
+	public boolean updatePostsAutomatically(){
+		return updatePosts(false);
+	}
+
 	/**
 	 * 正在向数据库更新通知
 	 * @return 正在向数据库更新通知时放回true；没有更新（空闲）返回false
@@ -133,6 +147,7 @@ public class PostUpdater {
 	/**
 	 * 如果曾经开始了更新，停止更新。
 	 */
+	//TODO stop未实现
 	public void stop(){
 		if(mWebUpdaterToDB != null){
 			mWebUpdaterToDB.cancel(false);
@@ -140,18 +155,34 @@ public class PostUpdater {
 		}
 	}
 
-	public interface OnPostExecuteListener{
-		public void onPostExecute();
+	public interface OnPostUpdateListener{
+		/**
+		 * 当异步线程更新完通后，被回调
+		 * @param numberOfInsertedPosts 如果更新了，返回更新的通知条数；如果没有更新，返回-1
+		 * @param mandatorily true表示这是手动强制更新(不管上次更新时间)触发的更新；false表示这是自动更新触发的更新
+		 */
+		public void onPostUpdate(int numberOfInsertedPosts, boolean mandatorily);
 	}
 
 	private class UpdatePostsListToDatabase extends AsyncTask<Void, Void, Integer>{
 		private static final String hessianUrl = "http://schoolwebpageparser.appspot.com/getter";
 		private static final int maxAttempts = 10;
+
 		private StudentInfDBAdapter database = new StudentInfDBAdapter(mContext);
+		/** true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新 */
+		private boolean mandatorily= false;
+
+		/**
+		 * 构造方法.
+		 * @param mandatorily true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新
+		 */
+		public UpdatePostsListToDatabase(boolean mandatorily){
+			this.mandatorily = mandatorily;
+		}
 
 		@Override
 		protected Integer doInBackground(Void... params) {
-			int result = autoUpdatePosts();
+			int result = updatePosts(mandatorily);
 			end();
 			return result;
 		}
@@ -159,10 +190,11 @@ public class PostUpdater {
 		@Override
 		protected void onPostExecute(Integer numberOfInsertedPosts) {
 			//TODO 字符串常量放资源文件
-			if(numberOfInsertedPosts > 0)
-				Toast.makeText(mContext, "更新了"+numberOfInsertedPosts+"条通知", Toast.LENGTH_SHORT).show();
-			if(mOnPostExecuteListener != null)
-				mOnPostExecuteListener.onPostExecute();
+			if(mOnPostUpdateListener == null){
+				if(numberOfInsertedPosts > 0)
+					Toast.makeText(mContext, "更新了"+numberOfInsertedPosts+"条通知", Toast.LENGTH_SHORT).show();
+			}else
+				mOnPostUpdateListener.onPostUpdate(numberOfInsertedPosts, mandatorily);
 		}
 
 		@Override
@@ -214,7 +246,7 @@ public class PostUpdater {
 		 * @param quickUpdateOrAllUpdate true for 快速（常用）更新；false for 完整更新
 		 * @return 成功更新，返回更新的通知条数；更新失败，返回-1
 		 */
-		private int updatePosts(boolean quickUpdateOrAllUpdate){
+		private int doUpdatePosts(boolean quickUpdateOrAllUpdate){
 			List<Post> posts = null;
 			int numberOfInsertedPosts = -1;
 
@@ -295,9 +327,10 @@ public class PostUpdater {
 
 		/**
 		 * 更新通知，刷新lastUpdatedTime。自动判断更新间隔。
+		 * @param mandatorily true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新
 		 * @return 如果更新了，返回更新的通知条数；如果没有更新，返回-1
 		 */
-		private int autoUpdatePosts(){
+		private int updatePosts(boolean mandatorily){
 			int numberOfInsertedPosts = -1;
 
 			//更新时间
@@ -312,9 +345,9 @@ public class PostUpdater {
 					Log.w(TAG, "第一次更新，费较大流量");
 					//警告
 				}
-				numberOfInsertedPosts = updatePosts(false);
-			}else if(now - lastUpdated > updateInterval){
-				numberOfInsertedPosts = updatePosts(true);
+				numberOfInsertedPosts = doUpdatePosts(false);
+			}else if(mandatorily || (now - lastUpdated >= updateInterval)){
+				numberOfInsertedPosts = doUpdatePosts(true);
 			}
 			return numberOfInsertedPosts;
 		}

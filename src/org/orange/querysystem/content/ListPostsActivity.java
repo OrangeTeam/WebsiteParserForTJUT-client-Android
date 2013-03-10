@@ -18,7 +18,7 @@ package org.orange.querysystem.content;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.util.PostUpdater;
-import org.orange.querysystem.util.PostUpdater.OnPostExecuteListener;
+import org.orange.querysystem.util.PostUpdater.OnPostUpdateListener;
 
 import util.webpage.Post;
 import android.annotation.TargetApi;
@@ -68,13 +68,24 @@ public class ListPostsActivity extends FragmentActivity{
 		currentTime.setText(R.string.post);
 
 		mWebUpdaterToDB = new PostUpdater(this);
-		mWebUpdaterToDB.setOnPostExecuteListener(new OnPostExecuteListener() {
+		mWebUpdaterToDB.setOnPostExecuteListener(new OnPostUpdateListener() {
 			@Override
-			public void onPostExecute() {
-				loadPosts();
+			public void onPostUpdate(int numberOfInsertedPosts, boolean mandatorily) {
+				//TODO 常量
+				if(mandatorily || numberOfInsertedPosts>0){
+					if(numberOfInsertedPosts > 0){
+						loadPosts();
+						Toast.makeText(ListPostsActivity.this, "更新了"+numberOfInsertedPosts+"条通知", Toast.LENGTH_SHORT).show();
+					}
+					else if(numberOfInsertedPosts == 0)
+						Toast.makeText(ListPostsActivity.this, "无新通知", Toast.LENGTH_SHORT).show();
+					else	//numberOfInsertedPosts < 0
+						Toast.makeText(ListPostsActivity.this, "更新通知失败", Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
-		mWebUpdaterToDB.updatePosts();
+		if(mWebUpdaterToDB.updatePostsAutomatically())
+			Toast.makeText(this, "开始自动更新通知", Toast.LENGTH_SHORT).show();//TODO 常量
 
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -191,17 +202,10 @@ public class ListPostsActivity extends FragmentActivity{
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	// TODO Auto-generated method stub\
+		// TODO 常量
     	if(item.getItemId() == 1){
-    		if(isNetworkConnected()){
-    			start_resume = 1;
-        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
-        		//TODO startActivity后不会继续运行
-
-            }
-            else{
-            	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
-            }
+			if(mWebUpdaterToDB.updatePosts(true))
+				Toast.makeText(this, "正在更新", Toast.LENGTH_SHORT).show();
     	}
     	else if(item.getItemId() == 2){
     		startActivity(new Intent(this, SettingsActivity.class));

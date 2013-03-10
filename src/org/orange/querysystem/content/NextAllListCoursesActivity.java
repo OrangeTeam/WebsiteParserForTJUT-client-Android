@@ -8,7 +8,6 @@ import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
-
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import android.annotation.TargetApi;
@@ -168,7 +167,7 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-			showCoursesInfo(courses);
+		showCoursesInfo(courses);
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){

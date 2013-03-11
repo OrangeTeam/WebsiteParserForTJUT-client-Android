@@ -13,11 +13,8 @@ import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
-<<<<<<< Updated upstream
 import util.webpage.Course.TimeAndAddress;
-=======
 import util.webpage.Student;
->>>>>>> Stashed changes
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -329,10 +326,6 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 	        }
     		studentInfDBAdapter.close();
     		return null;
-    	}
-    	
-    	protected void onPostExecute(){
-    		
     	}
     }
 }

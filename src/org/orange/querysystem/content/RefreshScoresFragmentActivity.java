@@ -57,8 +57,8 @@ public class RefreshScoresFragmentActivity extends Activity{
 				studentInfDBAdapter.autoInsertArrayCoursesInf(result, args[0]);
 				studentInfDBAdapter.updateScoreInf(result);
 				result = parser.parseScores(Constant.url.期末最新成绩);
-				studentInfDBAdapter.updateScoreInf(result);
 				studentInfDBAdapter.autoInsertArrayCoursesInf(result, args[0]);
+				studentInfDBAdapter.updateScoreInf(result);
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

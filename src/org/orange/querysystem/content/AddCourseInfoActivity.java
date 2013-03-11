@@ -277,7 +277,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
     
     public void showDialog(){
     	DialogFragment newFragment = MyAlertDialogFragment.newInstance(
-                android.R.string.cancel);
+                android.R.string.ok);
         newFragment.show(getSupportFragmentManager(), "dialog");
     }
     

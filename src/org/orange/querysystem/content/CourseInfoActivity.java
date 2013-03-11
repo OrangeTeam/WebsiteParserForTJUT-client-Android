@@ -388,7 +388,7 @@ public class CourseInfoActivity extends FragmentActivity{
 				} 
             }
         })
-        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
 
                 /* User clicked cancel so do some stuff */

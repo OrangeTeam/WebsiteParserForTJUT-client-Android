@@ -1,20 +1,17 @@
 package org.orange.querysystem.content;
 import java.util.ArrayList;
 
-import org.orange.querysystem.CourseAndUser;
 import org.orange.querysystem.R;
+import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.TimeAndAddress;
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
-import util.webpage.SchoolWebpageParser;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
@@ -32,12 +29,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 public class AddCourseInfoActivity extends FragmentActivity{
@@ -411,67 +405,27 @@ public class AddCourseInfoActivity extends FragmentActivity{
 			 e.printStackTrace();
 		 }
         course.setKind(course_kind_input.getText().toString());
-    	SharedPreferences shareData = getSharedPreferences("data", 0);
-        String userName = shareData.getString("userName", null);
-        String password = shareData.getString("password", null);
-        CourseAndUser courseAndUser = new CourseAndUser(course, userName, password);
-        new UpdateCoursesListToDatabase().execute(courseAndUser);
+        String userName = SettingsActivity.getAccountStudentID(this);
+        new AddCourseToDatabase().execute(course, userName);
     }
-    
-    class UpdateCoursesListToDatabase extends AsyncTask<CourseAndUser,Void,Void>{
-		public static final String TAG = "org.orange.querysystem";
-		public static final int PARSE_COURSE = 1;
-		public static final int PARSE_SCORE = 2;
 
+    /**
+     * 向数据库添加新课程。用execute(Course course, String userName)启动异步线程
+     * @author ChenCheng
+     */
+    class AddCourseToDatabase extends AsyncTask<Object,Void,Void>{
 		@Override
-		protected Void doInBackground(CourseAndUser... args) {
-			SchoolWebpageParser parser = null;
+		protected Void doInBackground(Object... args) {
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
 			try {
-				parser = new SchoolWebpageParser(new MyParserListener(), args[0].getUserName(), args[0].getPassword());
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertCourseInf(args[0].getCourse(), args[0].getUserName());
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				studentInfDBAdapter.autoInsertCourseInf((Course)args[0], (String)args[1]);
 			} catch(SQLiteException e){
 				e.printStackTrace();
 			} 
 			studentInfDBAdapter.close();
 			return null;
 		}
-		
-		@Override
-		protected void onPostExecute(Void course){
-			
-		}
-		
-		class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
-			 */
-			@Override
-			public void onError(int code, String message) {
-				Log.e(TAG, message);
-			}
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onWarn(int, java.lang.String)
-			 */
-			@Override
-			public void onWarn(int code, String message) {
-				Log.w(TAG, message);
-			}
-
-			/* (non-Javadoc)
-			 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onInformation(int, java.lang.String)
-			 */
-			@Override
-			public void onInformation(int code, String message) {
-				Log.i(TAG, message);
-			}
-		}	
 	}
     
     @Override

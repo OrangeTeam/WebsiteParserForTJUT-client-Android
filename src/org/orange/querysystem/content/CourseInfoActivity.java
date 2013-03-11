@@ -360,7 +360,7 @@ public class CourseInfoActivity extends FragmentActivity{
 		 });
         return new AlertDialog.Builder(this)
         .setView(textEntryView)
-        .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
            	 
                 /* User clicked OK so do some stuff */
@@ -388,7 +388,7 @@ public class CourseInfoActivity extends FragmentActivity{
 				} 
             }
         })
-        .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
 
                 /* User clicked cancel so do some stuff */
@@ -399,7 +399,7 @@ public class CourseInfoActivity extends FragmentActivity{
     
     public void showDialog(){
     	DialogFragment newFragment = MyAlertDialogFragment.newInstance(
-                R.string.alert_dialog_ok);
+                android.R.string.ok);
         newFragment.show(getSupportFragmentManager(), "dialog");
     }
     
@@ -450,7 +450,7 @@ public class CourseInfoActivity extends FragmentActivity{
     	               }
     	           })
     	    // Set the action buttons
-    	           .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+    	           .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
     	               @Override
     	               public void onClick(DialogInterface dialog, int id) {
     	                   // User clicked OK, so save the mSelectedItems results somewhere
@@ -492,7 +492,7 @@ public class CourseInfoActivity extends FragmentActivity{
     	            	   
     	               }
     	           })
-    	           .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+    	           .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
     	               @Override
     	               public void onClick(DialogInterface dialog, int id) {
 //    	                   ...

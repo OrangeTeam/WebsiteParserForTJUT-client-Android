@@ -108,7 +108,7 @@ public class StudentInfoActivity extends ListActivity{
 			relativeLayout.addView(editText, etlp);
 			return new AlertDialog.Builder(this)
             .setView(relativeLayout)
-            .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             	public void onClick(DialogInterface dialog, int whichButton) {
                   	 
             		/* User clicked OK so do some stuff */
@@ -122,7 +122,7 @@ public class StudentInfoActivity extends ListActivity{
                       
                 }
             })
-            .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             	public void onClick(DialogInterface dialog, int whichButton) {
 
             		/* User clicked cancel so do some stuff */

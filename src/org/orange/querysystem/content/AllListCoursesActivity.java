@@ -149,7 +149,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 			relativeLayout.addView(textView, tvlp);
 			return new AlertDialog.Builder(this)
             .setView(relativeLayout)
-            .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             	public void onClick(DialogInterface dialog, int whichButton) {
                   	 
             		/* User clicked OK so do some stuff */

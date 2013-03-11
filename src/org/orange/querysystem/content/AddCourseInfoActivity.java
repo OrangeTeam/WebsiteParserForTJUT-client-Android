@@ -245,7 +245,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
      		 
              return new AlertDialog.Builder(this)
                  .setView(textEntryView)
-                 .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                      public void onClick(DialogInterface dialog, int whichButton) {
                     	 
                          /* User clicked OK so do some stuff */
@@ -264,7 +264,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
                          updateCoursesListToDatabase();
                      }
                  })
-                 .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                      public void onClick(DialogInterface dialog, int whichButton) {
 
                          /* User clicked cancel so do some stuff */
@@ -277,7 +277,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
     
     public void showDialog(){
     	DialogFragment newFragment = MyAlertDialogFragment.newInstance(
-                R.string.alert_dialog_ok);
+                android.R.string.cancel);
         newFragment.show(getSupportFragmentManager(), "dialog");
     }
     
@@ -328,7 +328,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
     	               }
     	           })
     	    // Set the action buttons
-    	           .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+    	           .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
     	               @Override
     	               public void onClick(DialogInterface dialog, int id) {
     	                   // User clicked OK, so save the mSelectedItems results somewhere
@@ -370,7 +370,7 @@ public class AddCourseInfoActivity extends FragmentActivity{
     	            	   
     	               }
     	           })
-    	           .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+    	           .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
     	               @Override
     	               public void onClick(DialogInterface dialog, int id) {
 //    	                   ...

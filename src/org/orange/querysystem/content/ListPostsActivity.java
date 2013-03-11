@@ -23,10 +23,7 @@ import org.orange.querysystem.util.PostUpdater.OnPostUpdateListener;
 import util.webpage.Post;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -46,8 +43,6 @@ import android.widget.Toast;
  * @author Bai Jie
  */
 public class ListPostsActivity extends FragmentActivity{
-	
-	private int start_resume = 0;
 	private TextView currentTime;
 	TabHost mTabHost;
 	ViewPager  mViewPager;
@@ -71,21 +66,22 @@ public class ListPostsActivity extends FragmentActivity{
 		mWebUpdaterToDB.setOnPostExecuteListener(new OnPostUpdateListener() {
 			@Override
 			public void onPostUpdate(int numberOfInsertedPosts, boolean mandatorily) {
-				//TODO 常量
 				if(mandatorily || numberOfInsertedPosts>0){
 					if(numberOfInsertedPosts > 0){
 						loadPosts();
-						Toast.makeText(ListPostsActivity.this, "更新了"+numberOfInsertedPosts+"条通知", Toast.LENGTH_SHORT).show();
+						String message = ListPostsActivity.this.getResources()
+								.getString(R.string.has_updated_posts, numberOfInsertedPosts);
+						Toast.makeText(ListPostsActivity.this, message, Toast.LENGTH_SHORT).show();
 					}
 					else if(numberOfInsertedPosts == 0)
-						Toast.makeText(ListPostsActivity.this, "无新通知", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ListPostsActivity.this, R.string.no_new_post, Toast.LENGTH_SHORT).show();
 					else	//numberOfInsertedPosts < 0
-						Toast.makeText(ListPostsActivity.this, "更新通知失败", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ListPostsActivity.this, R.string.fail_to_update_post, Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
 		if(mWebUpdaterToDB.updatePostsAutomatically())
-			Toast.makeText(this, "开始自动更新通知", Toast.LENGTH_SHORT).show();//TODO 常量
+			Toast.makeText(this, R.string.start_to_update_post_automatically, Toast.LENGTH_SHORT).show();
 
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
@@ -183,17 +179,6 @@ public class ListPostsActivity extends FragmentActivity{
 		addTab(Post.SOURCES.STUDENT_WEBSITE_OF_SCCE);
 		addTab(Post.SOURCES.WEBSITE_OF_SCCE);
 	}
-	public boolean isNetworkConnected(){
-    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		if(networkInfo !=null && networkInfo.isConnected()){
-			return true;
-		}
-		else{
-		    return false;
-		}
-    }
-	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, 1, 1, R.string.refresh);
@@ -202,10 +187,9 @@ public class ListPostsActivity extends FragmentActivity{
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		// TODO 常量
     	if(item.getItemId() == 1){
 			if(mWebUpdaterToDB.updatePosts(true))
-				Toast.makeText(this, "正在更新", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.updating, Toast.LENGTH_SHORT).show();
     	}
     	else if(item.getItemId() == 2){
     		startActivity(new Intent(this, SettingsActivity.class));

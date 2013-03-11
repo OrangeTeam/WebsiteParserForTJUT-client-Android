@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.List;
 
+import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -118,8 +119,7 @@ public class PostUpdater {
 			}
 		}
 		if(!Network.getInstance(mContext).isConnected()){
-			//TODO 完善
-			Toast.makeText(mContext, "无网络连接", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext, R.string.no_network, Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		else{
@@ -157,7 +157,7 @@ public class PostUpdater {
 
 	public interface OnPostUpdateListener{
 		/**
-		 * 当异步线程更新完通后，被回调
+		 * 当异步线程更新完通知后，被回调
 		 * @param numberOfInsertedPosts 如果更新了，返回更新的通知条数；如果没有更新，返回-1
 		 * @param mandatorily true表示这是手动强制更新(不管上次更新时间)触发的更新；false表示这是自动更新触发的更新
 		 */
@@ -189,10 +189,9 @@ public class PostUpdater {
 
 		@Override
 		protected void onPostExecute(Integer numberOfInsertedPosts) {
-			//TODO 字符串常量放资源文件
 			if(mOnPostUpdateListener == null){
 				if(numberOfInsertedPosts > 0)
-					Toast.makeText(mContext, "更新了"+numberOfInsertedPosts+"条通知", Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext, mContext.getResources().getString(R.string.has_updated_posts, numberOfInsertedPosts), Toast.LENGTH_SHORT).show();
 			}else
 				mOnPostUpdateListener.onPostUpdate(numberOfInsertedPosts, mandatorily);
 		}

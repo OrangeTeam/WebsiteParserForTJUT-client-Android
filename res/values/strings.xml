@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- common -->
     <string name="app_name">学生信息查询系统</string>
-    <string name="menu_refresh">refresh</string>
-	<string name="menu_settings">setting</string>    
     <string name="userName">学号： </string>
     <string name="password">密码： </string>
-    <string name="denglu">登陆</string>
-    <string name="rememberPS">记住密码</string>
-    <string name="autoDengLu">自动登录</string>
     <string name="title">天津理工大学学生信息查询系统</string>
     <string name="exit">退出</string>
     <string name="about">关于</string>
     <string name="main_menu">主菜单</string>
     <string name="settings">设置</string>
     <string name="refresh">刷新</string>
-    <string name="alert_dialog_ok">OK</string>
-    <string name="alert_dialog_cancel">Cancel</string>
 
     <string name="course_query">课程表</string>
     <string name="score_query">成绩单</string>
     <string name="all_post_query">全部通知</string>
     <string name="day_and_week_courses">日周课表</string>
     <string name="student_info">学生信息</string>
-    
+
+    <string name="updating">正在更新</string>
+    <string name="no_network">无网络连接</string>
     <!-- used in ListCoursesFragment.java -->
     <string name="no_course">今日无课</string>
     <!-- used in ShowOnePostActivity.java -->
     <string name="open_with_browser">用浏览器打开</string>
+    <!-- used in PostUpdater.java and ListPostsActivity.java -->
+    <string name="start_to_update_post_automatically">开始自动更新通知</string>
+    <string name="has_updated_posts">更新了 %d 条通知</string>
+    <string name="no_new_post">无新通知</string>
+    <string name="fail_to_update_post">更新通知失败</string>
     <!-- used in ListPostsActivity.java -->
     <string name="post">通知</string>
     <!-- used in ListPostsFragment.java -->

@@ -158,14 +158,18 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
             .setOnKeyListener(new OnKeyListener(){
 
 				@Override
-				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
 					// TODO Auto-generated method stub
-					finish();
+					if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
+						finish();
+					}
 					return false;
+					
 				}
 				
             	
-            }).create();
+            })
+            .create();
 		case InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID:
 			final TextView textView2 = new TextView(this);
 			textView2.setText("用户名或密码错误，请重新设置！");
@@ -217,7 +221,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
     	
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
     	System.out.println("Activity" + courses.size());
-		for(int semester = 1;semester<courses.size();semester++){
+		for(int semester = 0;semester<courses.size();semester++){
 			float totalGradePoint = 0;
 			byte totalCredit = 0;
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();

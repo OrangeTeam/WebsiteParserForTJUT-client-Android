@@ -53,7 +53,8 @@
 		<activity android:name=".content.NextAllListCoursesActivity"/>
 		<activity android:name=".content.CourseInfoActivity"/>
 		<activity android:name=".content.AddCourseInfoActivity"/>
-		<activity android:name=".content.ListScoresActivity"/>
+		<activity android:name=".content.ListScoresActivity"
+		    android:configChanges="orientation|keyboardHidden|navigation"/>
         <activity android:name=".SettingsActivity"/>
     </application>
 

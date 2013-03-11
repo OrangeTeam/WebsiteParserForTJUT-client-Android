@@ -131,9 +131,11 @@ public class StudentInfoActivity extends ListActivity{
             }).setOnKeyListener(new OnKeyListener(){
 
 				@Override
-				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
 					// TODO Auto-generated method stub
-					finish();
+					if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
+						finish();
+					}
 					return false;
 				}
 				

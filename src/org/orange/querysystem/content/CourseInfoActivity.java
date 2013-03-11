@@ -265,7 +265,7 @@ public class CourseInfoActivity extends FragmentActivity{
         menu.add(0, 1, 1, R.string.course_info_change);
         menu.add(0, 2, 2, R.string.course_info_submit);
         
-        return super.onCreateOptionsMenu(menu); 
+        return super.onCreateOptionsMenu(menu);
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
@@ -513,9 +513,15 @@ public class CourseInfoActivity extends FragmentActivity{
         course.setTeachers(course_teacher_input.getText().toString());
         try {
         	course.setTimeAndAddresse(timeAndAddresses);
-		} catch (NumberFormatException e1) {
+			course.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
+			course.setTestScore(Integer.parseInt(course_test_score_input.getText().toString()));
+			course.setTotalScore(Integer.parseInt(course_total_score_input.getText().toString()));
+		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+		} catch (CourseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
         course.setKind(course_kind_input.getText().toString());
         String userName = SettingsActivity.getAccountStudentID(this);
@@ -540,6 +546,7 @@ public class CourseInfoActivity extends FragmentActivity{
 				studentInfDBAdapter.open();
 				System.out.println(args[0].getCourse());
 				studentInfDBAdapter.updateCourseInf(args[0].getCourse());
+				studentInfDBAdapter.updateScoreInf(args[0].getCourse());
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

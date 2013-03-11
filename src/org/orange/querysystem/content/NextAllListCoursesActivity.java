@@ -9,9 +9,15 @@ import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import org.orange.studentinformationdatabase.StudentInfDBAdapter;
+
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
+<<<<<<< Updated upstream
 import util.webpage.Course.TimeAndAddress;
+=======
+import util.webpage.Student;
+>>>>>>> Stashed changes
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -22,6 +28,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -108,6 +115,7 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
         mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
         mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         readDB();
+        new RefreshCurrentSemester().execute();
 	}
 	
 	@Override
@@ -308,5 +316,23 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 		else{
 		    return false;
 		}
+    }
+    
+    private class RefreshCurrentSemester extends AsyncTask<Object,Void,Student>{
+    	protected Student doInBackground(Object... args){
+    		int currentWeek = 0;
+    		StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(NextAllListCoursesActivity.this);
+    		studentInfDBAdapter.open();
+    		currentWeek = SettingsActivity.getCurrentWeekNumber(NextAllListCoursesActivity.this);
+    		if(currentWeek < 5){
+	        	studentInfDBAdapter.updateCurrentSemester();
+	        }
+    		studentInfDBAdapter.close();
+    		return null;
+    	}
+    	
+    	protected void onPostExecute(){
+    		
+    	}
     }
 }

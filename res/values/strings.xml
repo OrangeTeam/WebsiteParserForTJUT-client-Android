@@ -13,6 +13,7 @@
     <string name="refresh">刷新</string>
 
     <string name="course_query">课程表</string>
+    <string name="add_course">增加课程</string>
     <string name="score_query">成绩单</string>
     <string name="all_post_query">全部通知</string>
     <string name="day_and_week_courses">日周课表</string>
@@ -20,6 +21,17 @@
 
     <string name="updating">正在更新</string>
     <string name="no_network">无网络连接</string>
+
+	<!-- used in add_course_info.xml -->
+	<string name="course_code">课程代码</string>
+	<string name="class_number">教学班号</string>
+	<string name="teachers">任课老师</string>
+	<string name="credit">课程学分</string>
+	<string name="test_score">结课成绩</string>
+	<string name="total_score">期末总评</string>
+	<string name="grade_point">课程绩点</string>
+	<string name="time_and_address">时间地点</string>
+
     <!-- used in ListCoursesFragment.java -->
     <string name="no_course">今日无课</string>
     <!-- used in ShowOnePostActivity.java -->

@@ -8,171 +8,172 @@
     <RelativeLayout 
         android:id="@+id/relativeLayout"
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:orientation="vertical"
-	    android:layout_margin="20dp"
+	    android:layout_height="wrap_content"
+	    android:paddingLeft="5sp"
+	    android:paddingRight="5sp"
 	    style="@style/wordStyle" >
 	    <TextView 
 	        android:id="@+id/course_name"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_marginTop="15dp"
 	   	 	android:layout_alignBaseline="@+id/course_name_input"
-	   	 	android:textSize="18dp"
+	        android:text="@string/course_name"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_name_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_marginTop="15dp"
-	   	 	android:layout_toRightOf="@+id/course_name"/>
+	   	 	android:layout_toRightOf="@+id/course_name"
+	   	 	android:inputType="text"/>
 	    <TextView 
 	        android:id="@+id/course_code"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_name_input"
-	   	 	android:layout_marginTop="15dp"
 	   	 	android:layout_alignBaseline="@+id/course_code_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/course_code"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_code_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_name_input"
-	   	 	android:layout_marginTop="15dp"
-	   	 	android:layout_toRightOf="@+id/course_code"/>
+	   	 	android:layout_toRightOf="@+id/course_code"
+	   	 	android:inputType="number"/>
 	    <TextView 
 	        android:id="@+id/course_class_number"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_code_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_class_number_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/class_number"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_class_number_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_code_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_class_number"/>
+	   	 	android:layout_toRightOf="@+id/course_class_number"
+	   	 	android:inputType="text"/>
 	    <TextView 
 	        android:id="@+id/course_teacher"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_class_number_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_teacher_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/teachers"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_teacher_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_class_number_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_teacher"/>
+	   	 	android:layout_toRightOf="@+id/course_teacher"
+	   	 	android:inputType="text"/>
 	    <TextView 
 	        android:id="@+id/course_credit"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_teacher_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_credit_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/credit"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_credit_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_teacher_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_credit"/>
+	   	 	android:layout_toRightOf="@+id/course_credit"
+	   	 	android:inputType="number"/>
 	    <TextView 
 	        android:id="@+id/course_kind"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_credit_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_kind_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/course_kind"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_kind_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_credit_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_kind"/>
+	   	 	android:layout_toRightOf="@+id/course_kind"
+	   	 	android:inputType="text"/>
 	    <TextView 
 	        android:id="@+id/course_test_score"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_kind_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_test_score_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/test_score"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_test_score_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_kind_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_test_score"/>
+	   	 	android:layout_toRightOf="@+id/course_test_score"
+	   	 	android:inputType="number"/>
 	    <TextView 
 	        android:id="@+id/course_total_score"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_test_score_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_total_score_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/total_score"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_total_score_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_test_score_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_total_score"/>
+	   	 	android:layout_toRightOf="@+id/course_total_score"
+	   	 	android:inputType="number"/>
 	    <TextView 
 	        android:id="@+id/course_grade_point"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_total_score_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_grade_point_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/grade_point"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_grade_point_input"
 	        android:layout_width="fill_parent"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_total_score_input"
-	   	 	android:layout_marginTop="5dp"
-	   	 	android:layout_toRightOf="@+id/course_grade_point"/>
+	   	 	android:layout_toRightOf="@+id/course_grade_point"
+	   	 	android:inputType="none"
+	   	 	android:cursorVisible="false"
+	   	 	android:focusable="false"/>
 	    <TextView 
 	        android:id="@+id/course_time_and_adress"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_grade_point_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_alignBaseline="@+id/course_time_and_adress_input"
-	   	 	android:textSize="18dp"
+	   	 	android:text="@string/time_and_address"
+	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
 	    <EditText 
 	        android:id="@+id/course_time_and_adress_input"
 	        android:layout_width="160dp"
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_grade_point_input"
-	   	 	android:layout_marginTop="5dp"
 	   	 	android:layout_toRightOf="@+id/course_time_and_adress"
+	   	 	android:inputType="none"
 	   	 	android:cursorVisible="false"
 	   	 	android:longClickable="false"
-	   	 	android:editable="false"
 	   	 	android:focusable="false"/>
 	    <Button 
 	        android:id="@+id/add"

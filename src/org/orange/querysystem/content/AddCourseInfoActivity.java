@@ -9,6 +9,8 @@ import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.TimeAndAddress;
 import util.webpage.Course.TimeAndAddress.TimeAndAddressException;
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -35,16 +38,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class AddCourseInfoActivity extends FragmentActivity{
-	private TextView course_name;
-	private TextView course_time_and_adress;
-	private TextView course_code;
-	private TextView course_class_number;
-	private TextView course_teacher;
-	private TextView course_credit;
-	private TextView course_kind;
-	private TextView course_test_score;
-	private TextView course_total_score;
-	private TextView course_grade_point;
 	private EditText course_code_input;
 	private EditText course_class_number_input;
 	private EditText course_teacher_input;
@@ -55,10 +48,6 @@ public class AddCourseInfoActivity extends FragmentActivity{
 	private EditText course_grade_point_input;
 	private EditText course_name_input;
 	private EditText course_time_and_adress_input;
-	private TextView week;
-	private TextView day_of_week;
-	private TextView period;
-	private TextView classroom;
 	private static EditText week_input;
 	private static EditText day_of_week_input;
 	private static EditText period_input;
@@ -75,31 +64,18 @@ public class AddCourseInfoActivity extends FragmentActivity{
 	private static int choice_num = 0;
 	private static String address_choice_title = "";
 	private static ArrayList mSelectedItems;
-	
-	
+
 	private static final int DIALOG_TEXT_ENTRY = 1;
-	
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_course_info);
-        
-        course_name = (TextView)findViewById(R.id.course_name);
-        course_time_and_adress = (TextView)findViewById(R.id.course_time_and_adress);
+
         course_name_input = (EditText)findViewById(R.id.course_name_input);
         course_time_and_adress_input = (EditText)findViewById(R.id.course_time_and_adress_input);
-        
-        course_name.setText("课程名称：");
-        course_time_and_adress.setText("时间地点1：");
-        course_code = (TextView)findViewById(R.id.course_code);
-        course_class_number = (TextView)findViewById(R.id.course_class_number);
-        course_teacher = (TextView)findViewById(R.id.course_teacher);
-        course_credit = (TextView)findViewById(R.id.course_credit);
-        course_kind = (TextView)findViewById(R.id.course_kind);
-        course_test_score = (TextView)findViewById(R.id.course_test_score);
-        course_total_score = (TextView)findViewById(R.id.course_total_score);
-        course_grade_point = (TextView)findViewById(R.id.course_grade_point);
-        
+
         course_code_input = (EditText)findViewById(R.id.course_code_input);
         course_class_number_input = (EditText)findViewById(R.id.course_class_number_input);
         course_teacher_input = (EditText)findViewById(R.id.course_teacher_input);
@@ -108,25 +84,16 @@ public class AddCourseInfoActivity extends FragmentActivity{
         course_test_score_input = (EditText)findViewById(R.id.course_test_score_input);
         course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
         course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
-        
+
         add = (Button)findViewById(R.id.add);
         add.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				add_num++;
 				addTimeAndAddress();
 			}
 		});
         
-        course_code.setText("课程代码：");
-		course_class_number.setText("教学班号：");
-		course_teacher.setText("任课老师：");
-		course_credit.setText( "学        分：");
-		course_kind.setText("课程性质：");
-		course_test_score.setText("结课成绩：");
-		course_total_score.setText("期末总评：");
-		course_grade_point.setText("绩        点：");
 		course_time_and_adress_input.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -134,6 +101,15 @@ public class AddCourseInfoActivity extends FragmentActivity{
 				showDialog(DIALOG_TEXT_ENTRY);
 			}
 		});
+		//3.0以上版本，使用ActionBar
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar mActionBar = getActionBar();
+			mActionBar.setTitle(R.string.add_course);
+			//横屏时，为节省空间隐藏ActionBar
+			if(getResources().getConfiguration().orientation == 
+					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
+				mActionBar.hide();
+		}
 	}
 	
 	public void addTimeAndAddress(){
@@ -181,16 +157,12 @@ public class AddCourseInfoActivity extends FragmentActivity{
              // This example shows how to add a custom layout to an AlertDialog
              LayoutInflater factory = LayoutInflater.from(this);
              final View textEntryView = factory.inflate(R.layout.time_and_adress_entry, null);
-             
-             week = (TextView)textEntryView.findViewById(R.id.week);
-             day_of_week = (TextView)textEntryView.findViewById(R.id.day_of_week);
-             period = (TextView)textEntryView.findViewById(R.id.period);
-             classroom = (TextView)textEntryView.findViewById(R.id.classroom);
+
              week_input = (EditText)textEntryView.findViewById(R.id.week_input);
              day_of_week_input = (EditText)textEntryView.findViewById(R.id.day_of_week_input);
              period_input = (EditText)textEntryView.findViewById(R.id.period_input);
              classroom_input = (EditText)textEntryView.findViewById(R.id.classroom_input);
-             
+
              week_input.setCursorVisible(false);
              week_input.setLongClickable(false);
      		 week_input.setFocusable(false);

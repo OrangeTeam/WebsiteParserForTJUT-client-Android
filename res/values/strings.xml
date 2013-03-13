@@ -22,6 +22,11 @@
     <string name="updating">正在更新</string>
     <string name="no_network">无网络连接</string>
 
+	<!-- used in time_and_address_entry.xml -->
+	<string name="week_number">周数</string>
+	<string name="day_of_week">星期</string>
+	<string name="period">节数</string>
+	<string name="address">地点</string>
 	<!-- used in add_course_info.xml -->
 	<string name="course_code">课程代码</string>
 	<string name="class_number">教学班号</string>

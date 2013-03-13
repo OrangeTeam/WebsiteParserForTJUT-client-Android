@@ -56,9 +56,11 @@ public class ListScoresFragment extends ListFragment {
 	public void applyArguments(){
 		Bundle args = getArguments();
 		if(args != null){
+			//创建Adapter
 			ArrayList<SimpleScore> scores = args.getParcelableArrayList(SCORES_KEY);
 			mScoresAdapter = new ScoresAdapter(getActivity(), scores);
 			setListAdapter(mScoresAdapter);
+			//计算绩点和通过率
 			for(int i = 0; i<scores.size(); i++){
 				allGradePoint = allGradePoint + scores.get(i).gradePoint * scores.get(i).credit;
 				allCredit = allCredit + scores.get(i).credit;

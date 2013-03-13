@@ -152,7 +152,7 @@ out:		while(iterator.hasNext()){
 			this.time = time;
 			this.otherInfo = otherInfo;
 		}
-		public SimpleCourse(Parcel in){
+		private SimpleCourse(Parcel in){
 			this(in.readInt(), in.readString(), in.readString(), in.readString());
 		}
 		/**

@@ -309,10 +309,7 @@ public class CourseInfoActivity extends FragmentActivity{
         day_of_week_input = (EditText)textEntryView.findViewById(R.id.day_of_week_input);
         period_input = (EditText)textEntryView.findViewById(R.id.period_input);
         classroom_input = (EditText)textEntryView.findViewById(R.id.classroom_input);
-        
-        week_input.setCursorVisible(false);
-        week_input.setLongClickable(false);
-		 week_input.setFocusable(false);
+
         week_input.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -326,9 +323,6 @@ public class CourseInfoActivity extends FragmentActivity{
 				showDialog();
 			}
 		 });
-        day_of_week_input.setCursorVisible(false);
-        day_of_week_input.setLongClickable(false);
-        day_of_week_input.setFocusable(false);
         day_of_week_input.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -342,9 +336,6 @@ public class CourseInfoActivity extends FragmentActivity{
 				showDialog();
 			}
 		 });
-        period_input.setCursorVisible(false);
-        period_input.setLongClickable(false);
-        period_input.setFocusable(false);
         period_input.setOnClickListener(new OnClickListener() {
 			
 			@Override

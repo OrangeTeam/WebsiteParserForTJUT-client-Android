@@ -355,7 +355,7 @@ public class CourseInfoActivity extends FragmentActivity{
             public void onClick(DialogInterface dialog, int whichButton) {
            	 
                 /* User clicked OK so do some stuff */
-           	 week = (TextView)textEntryView.findViewById(R.id.week);
+           	 	week = (TextView)textEntryView.findViewById(R.id.week);
                 day_of_week = (TextView)textEntryView.findViewById(R.id.day_of_week);
                 period = (TextView)textEntryView.findViewById(R.id.period);
                 classroom = (TextView)textEntryView.findViewById(R.id.classroom);
@@ -364,19 +364,19 @@ public class CourseInfoActivity extends FragmentActivity{
                 day_of_week_get = day_of_week_input.getText().toString();
                 period_get = period_input.getText().toString();
                 classroom_get = classroom_input.getText().toString();
-                ((EditText) findViewById(id*2 + 2 )).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
+                ((EditText) findViewById((id-1) * 2 + 2)).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
                 try {
-					timeAndAddresses.get(id).addWeeks(week_get);
-					timeAndAddresses.get(id).addDays(day_of_week_get); 
-					timeAndAddresses.get(id).addPeriods(period_get);
-					timeAndAddresses.get(id).setAddress(classroom_get);
-				} catch (TimeAndAddressException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					timeAndAddresses.get(id-1).addWeeks(week_get);
+					timeAndAddresses.get(id-1).addDays(day_of_week_get);
+					timeAndAddresses.get(id-1).addPeriods(period_get);
+					timeAndAddresses.get(id-1).setAddress(classroom_get);
 				} catch (BitOperateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
+				} catch (TimeAndAddressException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         })
         .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

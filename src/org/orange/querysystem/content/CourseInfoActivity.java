@@ -357,9 +357,9 @@ public class CourseInfoActivity extends FragmentActivity{
                 classroom_get = classroom_input.getText().toString();
                 ((EditText) findViewById((id-1) * 2 + 2)).setText(week_get + "周" + " " + day_of_week_get + " " + period_get + "节" + " " + classroom_get);
                 try {
-					timeAndAddresses.get(id-1).addWeeks(week_get);
-					timeAndAddresses.get(id-1).addDays(day_of_week_get);
-					timeAndAddresses.get(id-1).addPeriods(period_get);
+					timeAndAddresses.get(id-1).setWeek(0).addWeeks(week_get);
+					timeAndAddresses.get(id-1).setDay(0).addDays(day_of_week_get);
+					timeAndAddresses.get(id-1).setPeriod(0).addPeriods(period_get);
 					timeAndAddresses.get(id-1).setAddress(classroom_get);
 				} catch (BitOperateException e) {
 					// TODO Auto-generated catch block

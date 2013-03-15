@@ -80,7 +80,7 @@ public class WeekSettingDialog extends DialogFragment{
 		} catch (ClassCastException e) {
 			// The parent doesn't implement the interface, throw exception
 			throw new ClassCastException(host.toString()
-					+ " must implement NoticeDialogListener");
+					+ " must implement " + WeekSettingDialogListener.class.getSimpleName());
 		}
 	}
 	@Override

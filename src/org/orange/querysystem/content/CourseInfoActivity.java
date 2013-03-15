@@ -160,26 +160,14 @@ public class CourseInfoActivity extends FragmentActivity{
 			textView.setTextColor(Color.rgb(0, 0, 0));
 			EditText editText = new EditText(this);
 			editText.setText(course.getTimeAndAddress().get(time_and_adress_counter).toString());
-			timeAndAddress.setAddress(course.getTimeAndAddress().get(time_and_adress_counter).getAddress());
-			try {
-				timeAndAddress.addWeeks(String.valueOf(course.getTimeAndAddress().get(time_and_adress_counter).getWeek()));
-				timeAndAddress.addDays(course.getTimeAndAddress().get(time_and_adress_counter).getDayString());
-				timeAndAddress.addPeriods(course.getTimeAndAddress().get(time_and_adress_counter).getPeriodString());
-			} catch (TimeAndAddressException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (BitOperateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
+
+			timeAndAddresses.add(new TimeAndAddress(course.getTimeAndAddress().get(time_and_adress_counter)));
 			editText.setId(time_and_adress_counter*2 + 2);
 			editText.setEnabled(false);
 			editText.setCursorVisible(false);
 			editText.setLongClickable(false);
 			editText.setFocusable(false);
-			
+
 			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			if(time_and_adress_counter == 0){
@@ -194,7 +182,10 @@ public class CourseInfoActivity extends FragmentActivity{
 			etlp.addRule(RelativeLayout.RIGHT_OF, time_and_adress_counter*2 + 1);
 			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(textView, tvlp);
 			((RelativeLayout)findViewById(R.id.relativeLayout)).addView(editText, etlp);
-		}	
+		}
+		//为了与原代码一致，让timeAndAddress成为timeAndAddresses的最后一个
+		if(!course.getTimeAndAddress().isEmpty())
+			timeAndAddress = new TimeAndAddress(timeAndAddresses.get(timeAndAddresses.size()-1));
 	}
 	
 	public class ReadCourseInfo extends AsyncTask<String,Void,Course>{

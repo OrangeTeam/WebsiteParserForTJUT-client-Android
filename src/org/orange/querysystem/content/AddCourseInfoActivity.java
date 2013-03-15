@@ -383,6 +383,8 @@ public class AddCourseInfoActivity extends FragmentActivity{
 			try {
 				studentInfDBAdapter.open();
 				studentInfDBAdapter.autoInsertCourseInf((Course)args[0], (String)args[1]);
+				//此处调用的方法返回布尔值，当为true是表示成功插入了新增课程，且能显示在本学期课程项中，当为false时表示插入不成功，用户输入的课程代码在数据库中已经有了。要给用户一个提示。
+				studentInfDBAdapter.updateCurrentSemesterOfAddCourseInf((Course)args[0]);
 			} catch(SQLiteException e){
 				e.printStackTrace();
 			} 

@@ -399,12 +399,29 @@ public class StudentInfDBAdapter {
 	}
 	
 	/**
-	 * 当刷新课程时判断周数很小或很大时就会调用这个方法进行把下个学期的课程显示到本学期来。就是把KEY_CURRENT_SEMESTER字段变为1.
+	 * 当刷新课程时判断周数很小时就会调用这个方法进行把下个学期的课程显示到本学期来。就是把KEY_CURRENT_SEMESTER字段变为1.
 	 */
 	public void updateCurrentSemester(){
 		ContentValues newCurrentSemester = new ContentValues();
 		newCurrentSemester.put(KEY_CURRENT_SEMESTER, 1);
 		db.update(DATABASE_COURSE_TABLE1, newCurrentSemester, KEY_YEAR + "=" + 0 + " AND " + KEY_CURRENT_SEMESTER + "=" + 0, null);
+	}
+	
+	/**
+	 * 当增加课程时就会调用这个方法，把新曾的课程的KEY_CURRENT_SEMESTER字段的值变为1.
+	 * @param theCourse， Course类型
+	 * @return boolean值false时表示用户插入的课程不成功，true时表示已经插入了。
+	 */
+	public boolean updateCurrentSemesterOfAddCourseInf(Course theCourse){
+		ContentValues newCurrentSemester = new ContentValues();
+		newCurrentSemester.put(KEY_CURRENT_SEMESTER, 1);
+		Cursor theCursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + " = '" + theCourse.getCode() + "'", null, null, null, null);
+		if(theCursor.getCount() != 0){
+			db.update(DATABASE_COURSE_TABLE1, newCurrentSemester, KEY_CODE + " = " + theCourse.getCode(), null);
+			return true;
+		} 
+		else
+			return false;
 	}
 	
 	/**

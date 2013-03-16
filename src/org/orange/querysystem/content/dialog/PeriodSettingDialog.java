@@ -104,7 +104,7 @@ public class PeriodSettingDialog extends DialogFragment{
 						else
 							mPeriod.removePeriod(which);
 					} catch (BitOperateException e) {
-						throw new IllegalArgumentException("非法参数" + which, e);
+						throw new IllegalArgumentException("非法参数：" + which, e);
 					}
 				}
 			})

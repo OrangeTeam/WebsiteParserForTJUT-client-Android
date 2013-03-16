@@ -139,6 +139,7 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
 			.setPositiveButton(android.R.string.ok, new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					mTimeAndAddress.setAddress(mAddressInput.getText().toString());
 					mListener.onDialogPositiveClick(TimeAndAddressSettingDialog.this, getArguments().getString(TAG_KEY), getTimeAndAddress());
 				}
 			})
@@ -152,6 +153,10 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
 		return builder.create();
 	}
 
+	/**
+	 * 根据{@link #mTimeAndAddress}刷新对话框
+	 * @param id 要刷新的对话框元素
+	 */
 	private void refreshDialog(int id){
 		boolean isNotAll = id != DIALOG_ALL;
 		switch(id){

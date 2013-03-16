@@ -160,28 +160,19 @@
 	        android:id="@+id/course_time_and_adress"
 	        android:layout_width="wrap_content"
 	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_below="@+id/course_grade_point_input"
-	   	 	android:layout_alignBaseline="@+id/course_time_and_adress_input"
+			android:layout_below="@id/course_grade_point_input"
+			android:layout_alignBaseline="@+id/course_time_and_address_placeholder"
+			android:layout_alignParentLeft="true"
 	   	 	android:text="@string/time_and_address"
 	   	 	android:textSize="18sp"
 	   	 	style="@style/wordStyle"/>
-	    <EditText 
-	        android:id="@+id/course_time_and_adress_input"
-	        android:layout_width="160dp"
-	   	 	android:layout_height="wrap_content"
-	   	 	android:layout_below="@+id/course_grade_point_input"
-	   	 	android:layout_toRightOf="@+id/course_time_and_adress"
-	   	 	android:inputType="none"
-	   	 	android:cursorVisible="false"
-	   	 	android:longClickable="false"
-	   	 	android:focusable="false"/>
-	    <Button 
-	        android:id="@+id/add"
-	        android:background="@drawable/add"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignBaseline="@+id/course_time_and_adress_input"
-	        android:layout_below="@+id/course_grade_point_input"
-	        android:layout_toRightOf="@+id/course_time_and_adress_input"/>
+		<LinearLayout
+			android:id="@id/course_time_and_address_placeholder"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/course_grade_point_input"
+			android:layout_toRightOf="@id/course_time_and_adress"
+			android:layout_alignParentRight="true"
+			android:orientation="vertical" />
 	</RelativeLayout>
 </ScrollView>

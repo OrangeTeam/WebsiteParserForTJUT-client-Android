@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.util.Network;
 
 import util.webpage.Constant;
 import util.webpage.SchoolWebpageParser;
@@ -288,7 +289,7 @@ public class StudentInfoActivity extends ListActivity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		if(isNetworkConnected()){
+    		if(Network.getInstance(this).isConnected()){
     			new StudentInfoFromWeb().execute();
 //    			start_resume = 1;
 //        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
@@ -303,17 +304,6 @@ public class StudentInfoActivity extends ListActivity{
     		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
-    }
-    
-    public boolean isNetworkConnected(){
-    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		if(networkInfo !=null && networkInfo.isConnected()){
-			return true;
-		}
-		else{
-		    return false;
-		}
     }
     
     @Override

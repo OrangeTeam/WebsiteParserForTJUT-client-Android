@@ -26,6 +26,7 @@ import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import org.orange.querysystem.util.Network;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
@@ -278,13 +279,13 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		if(isNetworkConnected()){
+    		if(Network.getInstance(getApplicationContext()).isConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
             }
             else{
-            	Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
+            	Network.openNoConnectionDialog(this);
             }
     	}
     	else if(item.getItemId() == 2){
@@ -292,16 +293,5 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
-    }
-    
-    public boolean isNetworkConnected(){
-    	ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		if(networkInfo !=null && networkInfo.isConnected()){
-			return true;
-		}
-		else{
-		    return false;
-		}
     }
 }

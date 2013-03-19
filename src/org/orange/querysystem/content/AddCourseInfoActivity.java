@@ -10,7 +10,6 @@ import util.webpage.Course;
 import util.webpage.Course.TimeAndAddress;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,7 +17,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -179,9 +177,6 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
     		updateCoursesListToDatabase();
     		finish();
     	}

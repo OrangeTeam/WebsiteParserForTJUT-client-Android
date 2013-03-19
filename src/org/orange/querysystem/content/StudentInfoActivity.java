@@ -37,6 +37,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -99,6 +100,7 @@ public class StudentInfoActivity extends ListActivity{
 			editText.setCursorVisible(true);
 			editText.setLongClickable(true);
 			editText.setFocusable(true);
+			editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
        	 	
 			RelativeLayout.LayoutParams tvlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			RelativeLayout.LayoutParams etlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -305,15 +307,4 @@ public class StudentInfoActivity extends ListActivity{
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
-    
-    @Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-		}
-		finish();
-		return super.onKeyDown(keyCode, event);
-	}
 }

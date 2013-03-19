@@ -127,11 +127,6 @@ public class MainMenuActivity extends Activity{
 				Toast.makeText(this, "再一次点击返回键退出程序", Toast.LENGTH_SHORT).show();
 				exit++;
 				return false;
-			}else{
-				Editor editor = getSharedPreferences("data", 0).edit();
-                editor.putString("passMainMenu", "false");
-                editor.commit();
-				finish();
 			}
 			
 		}

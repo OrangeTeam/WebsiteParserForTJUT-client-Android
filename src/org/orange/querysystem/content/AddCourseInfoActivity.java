@@ -187,14 +187,4 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
-    
-    @Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK){
-			Editor editor = getSharedPreferences("data", 0).edit();
-			editor.putString("passMainMenu", "true");
-            editor.commit();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
 }

@@ -11,14 +11,12 @@ import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.SchoolWebpageParser.ParserListener;
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class InsertDBFragmentActivity extends Activity{
 	private String userName = null;

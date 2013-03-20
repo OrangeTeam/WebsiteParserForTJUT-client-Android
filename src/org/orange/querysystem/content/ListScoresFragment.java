@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.orange.querysystem.R;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;

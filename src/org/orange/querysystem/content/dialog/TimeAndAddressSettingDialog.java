@@ -4,6 +4,7 @@ import org.orange.querysystem.R;
 import org.orange.querysystem.content.dialog.DayOfWeekSettingDialog.DayOfWeekSettingDialogListener;
 import org.orange.querysystem.content.dialog.PeriodSettingDialog.PeriodSettingDialogListener;
 import org.orange.querysystem.content.dialog.WeekSettingDialog.WeekSettingDialogListener;
+import org.orange.querysystem.util.ParcelableTimeAndAddress;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course.TimeAndAddress;
@@ -13,8 +14,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.EditText;
@@ -228,45 +227,6 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
 	public void onDialogNegativeClick(DayOfWeekSettingDialog dialog) {}
 	@Override
 	public void onDialogNegativeClick(PeriodSettingDialog dialog) {}
-
-	public static class ParcelableTimeAndAddress extends TimeAndAddress implements Parcelable{
-		public ParcelableTimeAndAddress(TimeAndAddress aTimeAndAddress){
-			super(aTimeAndAddress);
-		}
-		private ParcelableTimeAndAddress(Parcel in) throws BitOperateException{
-			super(in.readInt(), in.readByte(), in.readInt(), in.readString());
-		}
-
-		@Override
-		public int describeContents() {
-			return 0;
-		}
-
-		@Override
-		public void writeToParcel(Parcel dest, int flags) {
-			dest.writeInt(getWeek());
-			dest.writeByte(getDay());
-			dest.writeInt(getPeriod());
-			dest.writeString(getAddress());
-		}
-
-		public static final Parcelable.Creator<ParcelableTimeAndAddress> CREATOR =
-				new Parcelable.Creator<ParcelableTimeAndAddress>(){
-					@Override
-					public ParcelableTimeAndAddress createFromParcel(Parcel in) {
-						try {
-							return new ParcelableTimeAndAddress(in);
-						} catch (BitOperateException e) {
-							e.printStackTrace();
-							return null;
-						}
-					}
-					@Override
-					public ParcelableTimeAndAddress[] newArray(int size) {
-						return new ParcelableTimeAndAddress[size];
-					}
-		};
-	}
 
 	/** The activity that creates an instance of this {@link TimeAndAddressSettingDialog} must
 	 * implement this interface in order to receive event callbacks.

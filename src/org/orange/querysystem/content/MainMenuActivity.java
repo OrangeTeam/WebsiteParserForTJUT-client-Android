@@ -107,7 +107,7 @@ public class MainMenuActivity extends Activity{
 				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));
 			}
 			if(args3 == 6){
-				startActivity(new Intent(MainMenuActivity.this, AddCourseInfoActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, CourseDetailsActivity.class));
 			}
 			if(args3 == 7){
 				startActivity(new Intent(MainMenuActivity.this, SettingsActivity.class));

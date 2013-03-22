@@ -29,11 +29,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 //TODO 测试不同生命周期状态下的正确性
-public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAddressSettingDialogListener{
-	public static final String KEY_COURSE_CODE = AddCourseInfoActivity.class.getName() + ".key_course_code";
+public class CourseDetailsActivity extends FragmentActivity implements TimeAndAddressSettingDialogListener{
+	public static final String KEY_COURSE_CODE = CourseDetailsActivity.class.getName() + ".key_course_code";
 
 	private static final String KEY_INSTANCE_STATE_TIME_AND_ADDRESS =
-			AddCourseInfoActivity.class.getName() + ".key_instance_state_time_and_address";
+			CourseDetailsActivity.class.getName() + ".key_instance_state_time_and_address";
 	private static final int NONE			= 0;
 	private static final int ADD_COURSE		= 1;
 	private static final int SHOW_COURSE	= 2;
@@ -288,7 +288,7 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 		@Override
 		protected Void doInBackground(Object... args) {
 			int mode = (Integer) args[0];
-			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
+			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(CourseDetailsActivity.this);
 			try {
 				studentInfDBAdapter.open();
 				switch(mode){
@@ -318,7 +318,7 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 		@Override
 		protected Course doInBackground(String... params) {
 			Course result = null;
-			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
+			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(CourseDetailsActivity.this);
 			try{
 				studentInfDBAdapter.open();
 				result = studentInfDBAdapter.getCourseFromDB(StudentInfDBAdapter.KEY_ID + "=" + params[0], params[1]);

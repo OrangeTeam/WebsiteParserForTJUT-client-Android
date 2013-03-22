@@ -70,8 +70,8 @@ public class ListCoursesFragment extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View view, int position, long id){
-		Intent intent = new Intent(getActivity(), CourseInfoActivity.class);
-		intent.putExtra("course_info", (int)id);
+		Intent intent = new Intent(getActivity(), CourseDetailsActivity.class);
+		intent.putExtra(CourseDetailsActivity.KEY_COURSE_CODE, (int)id);
 		startActivity(intent);
 	}
 

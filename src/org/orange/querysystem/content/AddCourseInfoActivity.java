@@ -30,8 +30,16 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 //TODO 测试不同生命周期状态下的正确性
 public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAddressSettingDialogListener{
+	public static final String KEY_COURSE_CODE = AddCourseInfoActivity.class.getName() + ".key_course_code";
+
 	private static final String KEY_INSTANCE_STATE_TIME_AND_ADDRESS =
 			AddCourseInfoActivity.class.getName() + ".key_instance_state_time_and_address";
+	private static final int NONE			= 0;
+	private static final int ADD_COURSE		= 1;
+	private static final int SHOW_COURSE	= 2;
+	private static final int MODIFY_COURSE	= 3;
+	private static final int COMMIT			= 4;
+	private int mode = NONE;
 	/** 正在设置的课程 */
 	private Course mCourse = new Course();
 	private EditText course_code_input;
@@ -62,23 +70,31 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 		course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
 		course_time_and_address_placeholder = (LinearLayout) findViewById(R.id.course_time_and_address_placeholder);
 
+		//如果有课程代码额外信息，显示此课程的详情
+		if(savedInstanceState == null){
+			int courseCode = getIntent().getIntExtra(KEY_COURSE_CODE, -1);
+			if(courseCode != -1){
+				new QueryCourseInformationFromDatabase().execute(String.valueOf(courseCode),
+						SettingsActivity.getAccountStudentID(this));
+			}
+		}
 		//用于输入新的时间地点的输入框
 		addTimeAndAddressEditText();
 
+		setMode(ADD_COURSE);
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle(R.string.add_course);
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
-				mActionBar.hide();
+				getActionBar().hide();
 		}
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
+		//恢复时间地点设置
 		ArrayList<ParcelableTimeAndAddress> saved =
 				savedInstanceState.getParcelableArrayList(KEY_INSTANCE_STATE_TIME_AND_ADDRESS);
 		mCourse.getTimeAndAddress().addAll(saved);
@@ -87,10 +103,61 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		//保存当前时间地点设置
 		ArrayList<ParcelableTimeAndAddress> saving = new ArrayList<ParcelableTimeAndAddress>();
 		for(TimeAndAddress aTimeAndAddress:mCourse.getTimeAndAddress())
 			saving.add(new ParcelableTimeAndAddress(aTimeAndAddress));
 		outState.putParcelableArrayList(KEY_INSTANCE_STATE_TIME_AND_ADDRESS, saving);
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setMode(int mode){
+		if(this.mode == mode) return;
+		this.mode = mode;
+		ActionBar mActionBar = null;
+		//3.0以上版本，使用ActionBar
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			mActionBar = getActionBar();
+			/*On Android 3.0 and higher, the options menu is considered to always be open
+			when menu items are presented in the action bar. When an event occurs and you
+			want to perform a menu update, you must call invalidateOptionsMenu() to request
+			that the system call onPrepareOptionsMenu().*/
+			invalidateOptionsMenu();
+		}
+		switch(mode){
+		case ADD_COURSE:
+			setEditable(true);
+			if(mActionBar != null) mActionBar.setTitle(R.string.add_course);
+			break;
+		case SHOW_COURSE:
+			setEditable(false);
+			if(mActionBar != null) mActionBar.setTitle(R.string.course_details);
+			break;
+		case MODIFY_COURSE:
+			setEditable(true);
+			course_code_input.setEnabled(false);
+			if(mActionBar != null) mActionBar.setTitle(R.string.modify_course);
+			break;
+		}
+	}
+	private void setEditable(boolean editable){
+		if(course_grade_point_input.isEnabled() == editable)
+			return;
+		course_name_input.setEnabled(editable);
+		course_code_input.setEnabled(editable);
+		course_class_number_input.setEnabled(editable);
+		course_teacher_input.setEnabled(editable);
+		course_credit_input.setEnabled(editable);
+		course_kind_input.setEnabled(editable);
+		course_test_score_input.setEnabled(editable);
+		course_total_score_input.setEnabled(editable);
+		course_grade_point_input.setEnabled(editable);
+		for(int i=0;i<course_time_and_address_placeholder.getChildCount();i++)
+			course_time_and_address_placeholder.getChildAt(i).setEnabled(editable);
+		if(editable)
+			addTimeAndAddressEditText();
+		else
+			removeTimeAndAddressEditText(false, course_time_and_address_placeholder.getChildCount()-1);
 	}
 
 	private void loadCourse(){
@@ -106,13 +173,13 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 		//TODO 检测方法
 		if(!Float.isNaN(course.getTestScore()))
 			course_test_score_input.setText(String.valueOf(course.getTestScore()));
-		if(!Float.isNaN(course.getTotalScore()))
+		if(!Float.isNaN(course.getTotalScore())){
 			course_total_score_input.setText(String.valueOf(course.getTotalScore()));
-		try {
-			course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
-		} catch (CourseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
+			} catch (CourseException e) {
+				throw new IllegalStateException("尚未设置期末总评成绩", e);
+			}
 		}
 
 		//添加时间地点
@@ -186,7 +253,7 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 	@Override
 	public void onDialogNegativeClick(TimeAndAddressSettingDialog dialog, String tag) {}
 
-	private void updateCoursesListToDatabase(){
+	private void saveCoursesInDatabase(){
 		mCourse.setCode(course_code_input.getText().toString());
 		mCourse.setName(course_name_input.getText().toString());
 		mCourse.setClassNumber(course_class_number_input.getText().toString());
@@ -211,23 +278,32 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 			//TODO 提示
 		}
         String userName = SettingsActivity.getAccountStudentID(this);
-		new AddCourseToDatabase().execute(mCourse, userName);
+		new SaveCourseInDatabase().execute(mode, mCourse, userName);
     }
 
-    /**
-     * 向数据库添加新课程。用execute(Course course, String userName)启动异步线程
-     * @author ChenCheng
-     */
-	private class AddCourseToDatabase extends AsyncTask<Object,Void,Void>{
+	/**
+	 * 把课程信息存储到数据库。用execute(Integer mode, Course course, String userName)启动异步线程
+	 */
+	private class SaveCourseInDatabase extends AsyncTask<Object,Void,Void>{
 		@Override
 		protected Void doInBackground(Object... args) {
+			int mode = (Integer) args[0];
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
 			try {
 				studentInfDBAdapter.open();
-				studentInfDBAdapter.autoInsertCourseInf((Course)args[0], (String)args[1]);
-				//TODO 失败提示及处理
-				//此处调用的方法返回布尔值，当为true是表示成功插入了新增课程，且能显示在本学期课程项中，当为false时表示插入不成功，用户输入的课程代码在数据库中已经有了。要给用户一个提示。
-				studentInfDBAdapter.updateCurrentSemesterOfAddCourseInf((Course)args[0]);
+				switch(mode){
+				case ADD_COURSE:
+					studentInfDBAdapter.autoInsertCourseInf((Course)args[1], (String)args[2]);
+					//TODO 失败提示及处理
+					//此处调用的方法返回布尔值，当为true是表示成功插入了新增课程，且能显示在本学期课程项中，当为false时表示插入不成功，用户输入的课程代码在数据库中已经有了。要给用户一个提示。
+					studentInfDBAdapter.updateCurrentSemesterOfAddCourseInf((Course)args[1]);
+					break;
+				case MODIFY_COURSE:
+					studentInfDBAdapter.updateCourseInf((Course)args[1]);
+					studentInfDBAdapter.updateScoreInf((Course)args[1]);
+					break;
+				default:throw new IllegalArgumentException("非法参数：mode = " + mode);
+				}
 			} catch(SQLiteException e){
 				//TODO 异常处理
 				e.printStackTrace();
@@ -238,19 +314,74 @@ public class AddCourseInfoActivity extends FragmentActivity implements TimeAndAd
 		}
 	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.course_info_submit);
-        
-        return super.onCreateOptionsMenu(menu); 
-    }
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	// TODO Auto-generated method stub\
-    	if(item.getItemId() == 1){
-    		updateCoursesListToDatabase();
-    		finish();
-    	}
-    	return super.onMenuItemSelected(featureId, item);
-    }
+	private class QueryCourseInformationFromDatabase extends AsyncTask<String, Void, Course>{
+		@Override
+		protected Course doInBackground(String... params) {
+			Course result = null;
+			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AddCourseInfoActivity.this);
+			try{
+				studentInfDBAdapter.open();
+				result = studentInfDBAdapter.getCourseFromDB(StudentInfDBAdapter.KEY_ID + "=" + params[0], params[1]);
+			} catch (SQLiteException e){
+				//TODO 异常处理
+				e.printStackTrace();
+			} finally {
+				studentInfDBAdapter.close();
+			}
+			return result;
+		}
+		@Override
+		protected void onPostExecute(Course result) {
+			if(result != null){
+				mCourse = result;
+				loadCourse();
+				setMode(SHOW_COURSE);
+			}
+		}
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(Menu.NONE, MODIFY_COURSE, Menu.NONE, R.string.course_info_change);
+		menu.add(Menu.NONE, COMMIT, Menu.NONE, R.string.course_info_submit);
+		return true;
+	}
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		MenuItem modify = menu.findItem(MODIFY_COURSE);
+		MenuItem commit = menu.findItem(COMMIT);
+		switch(mode){
+		case ADD_COURSE:case MODIFY_COURSE:
+			modify.setVisible(false);
+			modify.setEnabled(false);
+			commit.setVisible(true);
+			commit.setEnabled(true);
+			break;
+		case SHOW_COURSE:
+			modify.setVisible(true);
+			modify.setEnabled(true);
+			commit.setVisible(false);
+			commit.setEnabled(false);
+			break;
+		}
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case COMMIT:
+			saveCoursesInDatabase();
+			finish();
+			return true;
+		case MODIFY_COURSE:
+			setMode(MODIFY_COURSE);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 }

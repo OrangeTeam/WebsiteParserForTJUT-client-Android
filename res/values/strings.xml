@@ -27,6 +27,9 @@
 	<string name="day_of_week">星期</string>
 	<string name="period">节数</string>
 	<string name="address">地点</string>
+	<!-- used in AddCourseInfoActivity.java -->
+	<string name="course_details">课程详情</string>
+	<string name="modify_course">修改课程</string>
 	<!-- used in add_course_info.xml -->
 	<string name="course_code">课程代码</string>
 	<string name="class_number">教学班号</string>

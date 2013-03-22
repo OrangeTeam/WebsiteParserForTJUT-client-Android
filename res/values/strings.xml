@@ -27,9 +27,11 @@
 	<string name="day_of_week">星期</string>
 	<string name="period">节数</string>
 	<string name="address">地点</string>
-	<!-- used in AddCourseInfoActivity.java -->
+	<!-- used in CourseDetailsActivity.java -->
 	<string name="course_details">课程详情</string>
 	<string name="modify_course">修改课程</string>
+	<string name="course_info_change">修改</string>
+	<string name="course_info_submit">提交</string>
 	<!-- used in add_course_info.xml -->
 	<string name="course_code">课程代码</string>
 	<string name="class_number">教学班号</string>
@@ -64,8 +66,6 @@
     <string name="course_grade_point">绩点</string>
     <string name="course_credit">学分</string>
     <string name="course_kind">课程性质</string>
-    <string name="course_info_change">修改</string>
-    <string name="course_info_submit">提交</string>
 
     <!-- SettingsActivity.java -->
     <string name="pref_interval_of_post_updating_summary">每隔 %s ，更新一次通知</string>

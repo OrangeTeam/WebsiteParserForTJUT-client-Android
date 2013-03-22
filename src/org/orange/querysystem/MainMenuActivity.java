@@ -1,4 +1,4 @@
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,19 +89,19 @@ public class MainMenuActivity extends Activity{
 								long args3 //The row id of the item that was clicked
 								){
 			if(args3 == 0){
-				startActivity(new Intent(MainMenuActivity.this, ListCoursesActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, CoursesInThisWeekActivity.class));
 			}
 			if(args3 == 1){
-				startActivity(new Intent(MainMenuActivity.this, AllListCoursesActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, AllCoursesActivity.class));
 			}
 			if(args3 == 2){
-				startActivity(new Intent(MainMenuActivity.this, NextAllListCoursesActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, AllCoursesInNextSemesterActivity.class));
 			}
 			if(args3 == 3){
-				startActivity(new Intent(MainMenuActivity.this, ListScoresActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, ScoresActivity.class));
 			}
 			if(args3 == 4){
-				startActivity(new Intent(MainMenuActivity.this, ListPostsActivity.class));
+				startActivity(new Intent(MainMenuActivity.this, PostsActivity.class));
 			}
 			if(args3 == 5){
 				startActivity(new Intent(MainMenuActivity.this, StudentInfoActivity.class));

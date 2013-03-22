@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
 import java.io.IOException;
 
@@ -34,9 +34,9 @@ import android.widget.Toast;
  * @author Bai Jie
  */
 @TargetApi(11)
-public class ShowOnePostActivity extends FragmentActivity {
-	public static final String EXTRA_POST_ID = ShowOnePostActivity.class.getName()+"EXTRA_POST_ID";
-	private static final String TAG = ShowOnePostActivity.class.getName();
+public class PostDetailsActivity extends FragmentActivity {
+	public static final String EXTRA_POST_ID = PostDetailsActivity.class.getName()+"EXTRA_POST_ID";
+	private static final String TAG = PostDetailsActivity.class.getName();
 
 	TextView titleView;
 	WebView mainBodyView;
@@ -144,7 +144,7 @@ public class ShowOnePostActivity extends FragmentActivity {
 		@Override
 		protected Post doInBackground(Long... id) {
 			Post post = null;
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowOnePostActivity.this);
+			StudentInfDBAdapter database = new StudentInfDBAdapter(PostDetailsActivity.this);
 			try{
 				database.open();
 				post = database.getPostsFromDB(Contract.Posts._ID+" = "+id[0], null, null).get(0);
@@ -182,7 +182,7 @@ public class ShowOnePostActivity extends FragmentActivity {
 			if(result == null)
 				return null;
 			SchoolWebpageParser parser = new SchoolWebpageParser();
-			StudentInfDBAdapter database = new StudentInfDBAdapter(ShowOnePostActivity.this);
+			StudentInfDBAdapter database = new StudentInfDBAdapter(PostDetailsActivity.this);
 			try {
 				parser.parsePostMainBody(result);
 				database.open();

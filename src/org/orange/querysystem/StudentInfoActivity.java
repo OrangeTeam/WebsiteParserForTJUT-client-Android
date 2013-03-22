@@ -1,4 +1,4 @@
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.content.ListViewAdapter;
 import org.orange.querysystem.util.Network;
 
 import util.webpage.Constant;

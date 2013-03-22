@@ -1,4 +1,4 @@
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
 import java.util.ArrayList;
 

@@ -1,43 +1,33 @@
-/*
- * Copyright (C) 2011 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.content.InsertDBFragmentActivity;
+import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
-import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.Network;
+import org.orange.querysystem.util.ReadDB;
+import org.orange.querysystem.util.ReadDB.OnPostExcuteListerner;
+import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.TimeAndAddress;
+import util.webpage.Student;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -54,15 +44,19 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
-public class ListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
+public class AllCoursesInNextSemesterActivity extends FragmentActivity implements OnPostExcuteListerner{
+	private int mYear = 0;
+	private int mMonth = 0;
+	private int mDay = 0;
+	private int mWeek = 0;
+	private int mDayOfWeek = 0;
 	private int start_resume = 0;
 	
 	private TextView currentTime;
 	
 	protected static final int COURSE_NUMBER = 6;
 	public static final String ARRAYLIST_OF_COURSES_KEY
-		= ListCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
-	static final int DATE_DIALOG_ID = 1;
+		= AllCoursesInNextSemesterActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
 	
 	TabHost mTabHost;
     ViewPager  mViewPager;
@@ -87,7 +81,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle("本周课程表");
+			mActionBar.setTitle("下学期课程表");
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
@@ -104,9 +98,22 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 
 				//child.getLayoutParams().height = tv.getHeight();
 			}
-		}		
+		}						
 		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			if(getResources().getConfiguration().orientation == 
+					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
+				getActionBar().hide();
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		mYear = calendar.get(Calendar.YEAR);
+		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
+		mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
+        mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         readDB();
+        new RefreshCurrentSemester().execute();
 	}
 	
 	@Override
@@ -143,7 +150,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
                   	 
             		/* User clicked OK so do some stuff */
             		InsertDBFragmentActivity.logIn_error = false;
-            		startActivity(new Intent(ListCoursesActivity.this, SettingsActivity.class));
+            		startActivity(new Intent(AllCoursesInNextSemesterActivity.this, SettingsActivity.class));
                       
                 }
             })
@@ -163,19 +170,18 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 	}
 		
 	public void readDB(){
-    	new ReadDB(this, this).execute(SettingsActivity.getAccountStudentID(this), "this");
+    	new ReadDB(this, this).execute(SettingsActivity.getAccountStudentID(this), "next");
     }
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-			showCoursesInfo(courses);
+		showCoursesInfo(courses);
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){
 		mTabsAdapter.clear();
-		Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
         currentTime = (TextView)findViewById(R.id.currentTime);
-        currentTime.setText("本周课程表" + "        " + DateFormat.getDateInstance().format(new Date()) + "    " + "第" + weekNumber + "周");
+        currentTime.setText("下学期总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
         
 		Bundle[] args = new Bundle[8];
     	
@@ -192,8 +198,8 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 					for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
 						for(int period = 1; period<=13; period++)
 							try{
-								if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(weekNumber)){
-									lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period),time.getAddress()));
+								if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)){
+									lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period), time.getWeekString()+ "          " + time.getAddress()));
 								}
 							} catch(BitOperateException e){
 								e.printStackTrace();
@@ -213,11 +219,13 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     		args[dayOfWeek] = argForFragment;
     	}
 		//交换周日args[0]和时间未定args[7]，把周日显示在最后
-		args[7] = args[0];
+		Bundle temp = args[0];
+		args[0] = args[7];
+		args[7] = temp;
 
 		String[] daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 		
-		for(int day = 1;day<=7;day++){
+		for(int day = 0;day<=7;day++){
 			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
 			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
@@ -226,7 +234,7 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
-				View child = tabWidget.getChildAt(i);  
+				View child = tabWidget.getChildAt(i);
 
 				child.setBackgroundResource(R.drawable.tab);
 
@@ -242,10 +250,20 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
 		}else
 			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 
-		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY-1 : 6);
-		
+		mTabHost.setCurrentTab(mDayOfWeek!=Calendar.SUNDAY ? mDayOfWeek-Calendar.SUNDAY : 7);
     }
+	
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onWindowFocusChanged(boolean)
+	 */
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		// TODO Auto-generated method stub
+		super.onWindowFocusChanged(hasFocus);
+
+		mTabsAdapter.adjustSelectedTabToCenter();
+	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
@@ -266,14 +284,13 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, 1, 1, R.string.refresh);
         menu.add(0, 2, 2, R.string.settings);
-        
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		if(Network.getInstance(getApplicationContext()).isConnected()){
+    		if(Network.getInstance(this).isConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
@@ -283,9 +300,22 @@ public class ListCoursesActivity extends FragmentActivity implements OnPostExcut
             }
     	}
     	else if(item.getItemId() == 2){
-    		start_resume = 1;
     		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
+    }
+    
+    private class RefreshCurrentSemester extends AsyncTask<Object,Void,Student>{
+    	protected Student doInBackground(Object... args){
+    		int currentWeek = 0;
+    		StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AllCoursesInNextSemesterActivity.this);
+    		studentInfDBAdapter.open();
+    		currentWeek = SettingsActivity.getCurrentWeekNumber(AllCoursesInNextSemesterActivity.this);
+    		if(currentWeek < 5){
+	        	studentInfDBAdapter.updateCurrentSemester();
+	        }
+    		studentInfDBAdapter.close();
+    		return null;
+    	}
     }
 }

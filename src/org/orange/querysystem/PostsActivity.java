@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.content.ListPostsFragment;
+import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.PostUpdater;
 import org.orange.querysystem.util.PostUpdater.OnPostUpdateListener;
 
@@ -42,7 +44,7 @@ import android.widget.Toast;
 /**
  * @author Bai Jie
  */
-public class ListPostsActivity extends FragmentActivity{
+public class PostsActivity extends FragmentActivity{
 	private TextView currentTime;
 	TabHost mTabHost;
 	ViewPager  mViewPager;
@@ -69,14 +71,14 @@ public class ListPostsActivity extends FragmentActivity{
 				if(mandatorily || numberOfInsertedPosts>0){
 					if(numberOfInsertedPosts > 0){
 						loadPosts();
-						String message = ListPostsActivity.this.getResources()
+						String message = PostsActivity.this.getResources()
 								.getString(R.string.has_updated_posts, numberOfInsertedPosts);
-						Toast.makeText(ListPostsActivity.this, message, Toast.LENGTH_SHORT).show();
+						Toast.makeText(PostsActivity.this, message, Toast.LENGTH_SHORT).show();
 					}
 					else if(numberOfInsertedPosts == 0)
-						Toast.makeText(ListPostsActivity.this, R.string.no_new_post, Toast.LENGTH_SHORT).show();
+						Toast.makeText(PostsActivity.this, R.string.no_new_post, Toast.LENGTH_SHORT).show();
 					else	//numberOfInsertedPosts < 0
-						Toast.makeText(ListPostsActivity.this, R.string.fail_to_update_post, Toast.LENGTH_SHORT).show();
+						Toast.makeText(PostsActivity.this, R.string.fail_to_update_post, Toast.LENGTH_SHORT).show();
 				}
 			}
 		});

@@ -3,6 +3,7 @@ package org.orange.querysystem.content;
 import java.io.File;
 
 import org.orange.querysystem.R;
+import org.orange.querysystem.util.Crypto;
 
 import android.content.Context;
 import android.content.SharedPreferences;

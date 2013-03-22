@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.content.InsertDBFragmentActivity;
+import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
-import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.Network;
+import org.orange.querysystem.util.ReadDB;
+import org.orange.querysystem.util.ReadDB.OnPostExcuteListerner;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
@@ -52,19 +58,15 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
-public class AllListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
-	private int mYear = 0;
-	private int mMonth = 0;
-	private int mDay = 0;
-	private int mWeek = 0;
-	private int mDayOfWeek = 0;
+public class CoursesInThisWeekActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int start_resume = 0;
 	
 	private TextView currentTime;
 	
 	protected static final int COURSE_NUMBER = 6;
 	public static final String ARRAYLIST_OF_COURSES_KEY
-		= ListCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
+		= CoursesInThisWeekActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
+	static final int DATE_DIALOG_ID = 1;
 	
 	TabHost mTabHost;
     ViewPager  mViewPager;
@@ -89,7 +91,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle("总课程表");
+			mActionBar.setTitle("本周课程表");
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
@@ -106,14 +108,8 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 
 				//child.getLayoutParams().height = tv.getHeight();
 			}
-		}				
+		}		
 		
-		Calendar calendar = Calendar.getInstance();
-		mYear = calendar.get(Calendar.YEAR);
-		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
-		mDay = calendar.get(Calendar.DAY_OF_MONTH);
-        mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
-        mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         readDB();
 	}
 	
@@ -151,7 +147,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
                   	 
             		/* User clicked OK so do some stuff */
             		InsertDBFragmentActivity.logIn_error = false;
-            		startActivity(new Intent(AllListCoursesActivity.this, SettingsActivity.class));
+            		startActivity(new Intent(CoursesInThisWeekActivity.this, SettingsActivity.class));
                       
                 }
             })
@@ -181,8 +177,9 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     
     public void showCoursesInfo(ArrayList<Course> courses){
 		mTabsAdapter.clear();
+		Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
         currentTime = (TextView)findViewById(R.id.currentTime);
-        currentTime.setText("总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
+        currentTime.setText("本周课程表" + "        " + DateFormat.getDateInstance().format(new Date()) + "    " + "第" + weekNumber + "周");
         
 		Bundle[] args = new Bundle[8];
     	
@@ -199,8 +196,8 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 					for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
 						for(int period = 1; period<=13; period++)
 							try{
-								if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)){
-									lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period), time.getWeekString()+ "          " + time.getAddress()));
+								if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)&&time.hasSetWeek(weekNumber)){
+									lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period),time.getAddress()));
 								}
 							} catch(BitOperateException e){
 								e.printStackTrace();
@@ -220,13 +217,11 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     		args[dayOfWeek] = argForFragment;
     	}
 		//交换周日args[0]和时间未定args[7]，把周日显示在最后
-		Bundle temp = args[0];
-		args[0] = args[7];
-		args[7] = temp;
+		args[7] = args[0];
 
 		String[] daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 		
-		for(int day = 0;day<=7;day++){
+		for(int day = 1;day<=7;day++){
 			TabSpec tabSpec = mTabHost.newTabSpec(daysOfWeek[day]);
 			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
@@ -235,7 +230,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
-				View child = tabWidget.getChildAt(i);
+				View child = tabWidget.getChildAt(i);  
 
 				child.setBackgroundResource(R.drawable.tab);
 
@@ -251,20 +246,10 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
 		}else
 			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 
-		mTabHost.setCurrentTab(mDayOfWeek!=Calendar.SUNDAY ? mDayOfWeek-Calendar.SUNDAY : 7);
+		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY-1 : 6);
+		
     }
-	
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onWindowFocusChanged(boolean)
-	 */
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		// TODO Auto-generated method stub
-		super.onWindowFocusChanged(hasFocus);
-
-		mTabsAdapter.adjustSelectedTabToCenter();
-	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
@@ -285,13 +270,14 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, 1, 1, R.string.refresh);
         menu.add(0, 2, 2, R.string.settings);
+        
         return super.onCreateOptionsMenu(menu); 
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		if(Network.getInstance(this).isConnected()){
+    		if(Network.getInstance(getApplicationContext()).isConnected()){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行
@@ -301,6 +287,7 @@ public class AllListCoursesActivity extends FragmentActivity implements OnPostEx
             }
     	}
     	else if(item.getItemId() == 2){
+    		start_resume = 1;
     		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);

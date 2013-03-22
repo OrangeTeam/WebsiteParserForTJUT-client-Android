@@ -1,4 +1,4 @@
-package org.orange.querysystem.content;
+package org.orange.querysystem.util;
 
 import java.security.SecureRandom;   
 

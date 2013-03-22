@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.LinkedList;
 
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
-import org.orange.querysystem.content.MainMenuActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.BitOperate.BitOperateException;

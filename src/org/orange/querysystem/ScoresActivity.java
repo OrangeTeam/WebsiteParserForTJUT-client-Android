@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.orange.querysystem.content;
+package org.orange.querysystem;
 
 import java.util.ArrayList;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.content.InsertDBFragmentActivity;
+import org.orange.querysystem.content.ListScoresFragment;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
-import org.orange.querysystem.content.ReadDBForScores.OnPostExcuteListerner;
+import org.orange.querysystem.content.RefreshScoresFragmentActivity;
+import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.Network;
+import org.orange.querysystem.util.ReadDBForScores;
+import org.orange.querysystem.util.ReadDBForScores.OnPostExcuteListerner;
 
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
@@ -51,7 +56,7 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ListScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
+public class ScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int start_resume = 0;
 
 	TabHost mTabHost;
@@ -136,11 +141,11 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
             	public void onClick(DialogInterface dialog, int whichButton) {
                   	 
             		/* User clicked OK so do some stuff */
-            		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(ListScoresActivity.this))){
+            		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(ScoresActivity.this))){
             			enterActivity();
-            		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(ListScoresActivity.this))){
+            		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(ScoresActivity.this))){
             			editText.setText("");
-            			Toast.makeText(ListScoresActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
+            			Toast.makeText(ScoresActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
             			finish();
             		}
                       
@@ -184,7 +189,7 @@ public class ListScoresActivity extends FragmentActivity implements OnPostExcute
                   	 
             		/* User clicked OK so do some stuff */
             		InsertDBFragmentActivity.logIn_error = false;
-            		startActivity(new Intent(ListScoresActivity.this, SettingsActivity.class));
+            		startActivity(new Intent(ScoresActivity.this, SettingsActivity.class));
                       
                 }
             })

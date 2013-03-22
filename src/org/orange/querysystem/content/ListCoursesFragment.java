@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.orange.querysystem.CourseDetailsActivity;
 import org.orange.querysystem.R;
 
 import android.content.Context;

@@ -1,4 +1,19 @@
-package org.orange.querysystem.content;
+/*
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.orange.querysystem;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,23 +22,24 @@ import java.util.List;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.content.InsertDBFragmentActivity;
+import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
-import org.orange.querysystem.content.ReadDB.OnPostExcuteListerner;
+import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.Network;
-import org.orange.studentinformationdatabase.StudentInfDBAdapter;
+import org.orange.querysystem.util.ReadDB;
+import org.orange.querysystem.util.ReadDB.OnPostExcuteListerner;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.TimeAndAddress;
-import util.webpage.Student;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -40,7 +56,7 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
-public class NextAllListCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
+public class AllCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int mYear = 0;
 	private int mMonth = 0;
 	private int mDay = 0;
@@ -52,7 +68,7 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 	
 	protected static final int COURSE_NUMBER = 6;
 	public static final String ARRAYLIST_OF_COURSES_KEY
-		= ListCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
+		= AllCoursesActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
 	
 	TabHost mTabHost;
     ViewPager  mViewPager;
@@ -77,7 +93,7 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle("下学期课程表");
+			mActionBar.setTitle("总课程表");
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
@@ -94,13 +110,7 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 
 				//child.getLayoutParams().height = tv.getHeight();
 			}
-		}						
-		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			if(getResources().getConfiguration().orientation == 
-					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
-				getActionBar().hide();
-		}
+		}				
 		
 		Calendar calendar = Calendar.getInstance();
 		mYear = calendar.get(Calendar.YEAR);
@@ -109,7 +119,6 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
         mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
         mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
         readDB();
-        new RefreshCurrentSemester().execute();
 	}
 	
 	@Override
@@ -146,7 +155,7 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
                   	 
             		/* User clicked OK so do some stuff */
             		InsertDBFragmentActivity.logIn_error = false;
-            		startActivity(new Intent(NextAllListCoursesActivity.this, SettingsActivity.class));
+            		startActivity(new Intent(AllCoursesActivity.this, SettingsActivity.class));
                       
                 }
             })
@@ -166,18 +175,18 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
 	}
 		
 	public void readDB(){
-    	new ReadDB(this, this).execute(SettingsActivity.getAccountStudentID(this), "next");
+    	new ReadDB(this, this).execute(SettingsActivity.getAccountStudentID(this), "this");
     }
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-		showCoursesInfo(courses);
+			showCoursesInfo(courses);
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses){
 		mTabsAdapter.clear();
         currentTime = (TextView)findViewById(R.id.currentTime);
-        currentTime.setText("下学期总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
+        currentTime.setText("总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
         
 		Bundle[] args = new Bundle[8];
     	
@@ -299,19 +308,5 @@ public class NextAllListCoursesActivity extends FragmentActivity implements OnPo
     		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
-    }
-    
-    private class RefreshCurrentSemester extends AsyncTask<Object,Void,Student>{
-    	protected Student doInBackground(Object... args){
-    		int currentWeek = 0;
-    		StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(NextAllListCoursesActivity.this);
-    		studentInfDBAdapter.open();
-    		currentWeek = SettingsActivity.getCurrentWeekNumber(NextAllListCoursesActivity.this);
-    		if(currentWeek < 5){
-	        	studentInfDBAdapter.updateCurrentSemester();
-	        }
-    		studentInfDBAdapter.close();
-    		return null;
-    	}
     }
 }

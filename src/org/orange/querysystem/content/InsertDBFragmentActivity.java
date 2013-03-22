@@ -23,7 +23,7 @@ public class InsertDBFragmentActivity extends Activity{
 	private String password = null;
 	private TextView refresh;
 	private ProgressBar progressBar;
-	static final int LOG_IN_ERROR_DIALOG_ID = 2;
+	public static final int LOG_IN_ERROR_DIALOG_ID = 2;
 	public static boolean logIn_error = false;
 //	private org.orange.querysystem.content.InsertDBFragmentActivity.UpdateCoursesListToDatabase.MyParserListener myParserListener;
 	

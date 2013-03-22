@@ -18,6 +18,7 @@ package org.orange.querysystem.content;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.orange.querysystem.PostDetailsActivity;
 import org.orange.querysystem.R;
 import org.orange.studentinformationdatabase.Contract;
 
@@ -135,8 +136,8 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
     	l.setCacheColorHint(Color.TRANSPARENT);
-        Intent intent = new Intent(getActivity(), ShowOnePostActivity.class);
-        intent.putExtra(ShowOnePostActivity.EXTRA_POST_ID, id);
+        Intent intent = new Intent(getActivity(), PostDetailsActivity.class);
+        intent.putExtra(PostDetailsActivity.EXTRA_POST_ID, id);
         startActivity(intent);
     }
 

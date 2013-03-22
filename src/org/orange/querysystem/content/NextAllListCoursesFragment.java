@@ -3,6 +3,8 @@ package org.orange.querysystem.content;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.orange.querysystem.CourseDetailsActivity;
 import org.orange.querysystem.R;
 import android.content.Context;
 import android.content.Intent;

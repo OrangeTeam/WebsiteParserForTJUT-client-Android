@@ -135,7 +135,6 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 			break;
 		case MODIFY_COURSE:
 			setEditable(true);
-			course_code_input.setEnabled(false);
 			if(mActionBar != null) mActionBar.setTitle(R.string.modify_course);
 			break;
 		}

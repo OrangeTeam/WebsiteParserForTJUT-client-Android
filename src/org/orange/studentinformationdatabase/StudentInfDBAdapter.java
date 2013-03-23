@@ -552,7 +552,6 @@ public class StudentInfDBAdapter {
 				}
 			}
 			
-			
 			//用于当修改课程时增加了时间地点，进行插入数据库中，count + j代表要插入的时间地点的下标
 			if(theCourseInf.getTimeAndAddress().size() > count){
 				for(int j=0;j < theCourseInf.getTimeAndAddress().size() - count; j++){
@@ -581,6 +580,8 @@ public class StudentInfDBAdapter {
 		}
 		
 		//这里是做检查使用，当检查到week等于0时表明这个时间地点已经是出去的，这里就会把它从数据库中删除
+		cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + rowIndex, null, null, null, null);
+		cursor2.moveToFirst();
 		for(int i=0; i < theCourseInf.getTimeAndAddress().size(); i++){
 			cursor2.moveToPosition(i);
 			if(cursor2.getInt(2) == 0){

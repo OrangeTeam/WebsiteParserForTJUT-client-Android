@@ -6,11 +6,9 @@ import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Course;
 import util.webpage.Course.CourseException;
-import util.webpage.SchoolWebpageParser;
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<Course>>>{
@@ -60,35 +58,6 @@ public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<C
 		else{
 			Toast.makeText(context, "数据库无数据，请刷新！", Toast.LENGTH_LONG).show();			
 		}
-	}
-	
-	class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter{
-
-		/* (non-Javadoc)
-		 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
-		 */
-		@Override
-		public void onError(int code, String message) {
-			Log.e(TAG, message);
-		}
-
-		/* (non-Javadoc)
-		 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onWarn(int, java.lang.String)
-		 */
-		@Override
-		public void onWarn(int code, String message) {
-			Log.w(TAG, message);
-		}
-
-		/* (non-Javadoc)
-		 * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onInformation(int, java.lang.String)
-		 */
-		@Override
-		public void onInformation(int code, String message) {
-			Log.i(TAG, message);
-		}
 	}	
 }
-	
-	
 

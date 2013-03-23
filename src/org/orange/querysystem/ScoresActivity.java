@@ -62,7 +62,6 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 	TabHost mTabHost;
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
-	private TextView currentTime;
 	public static final int PASSWORD_PROMPT = 1;
 
 	/* (non-Javadoc)
@@ -80,11 +79,13 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 		mViewPager = (ViewPager)findViewById(R.id.pager);
 
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-		
+
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			//去掉低版本使用的Title
+			findViewById(R.id.currentTime).setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle("成绩单");
+			mActionBar.setTitle(R.string.score_query);
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
@@ -219,20 +220,19 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     
     public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
     	mTabsAdapter.clear();
-    	currentTime = (TextView)findViewById(R.id.currentTime);
-    	currentTime.setText("成绩单");
-    	
+
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
-		for(int semester = 0;semester<courses.size();semester++){
+		for(ArrayList<Course> coursesInASemester:courses){
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
-			for(int counter = 0;counter<courses.get(semester).size();counter++)
-			try {
-					scores.add(new SimpleScore(courses.get(semester).get(counter).getId(), courses.get(semester).get(counter).getName(), (short)(courses.get(semester).get(counter).getTestScore()), (short)(courses.get(semester).get(counter).getTotalScore()), (float)courses.get(semester).get(counter).getGradePoint(), (byte)courses.get(semester).get(counter).getCredit(), courses.get(semester).get(counter).getKind()));
-			} catch (CourseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-			currentTime.setText("成绩单");
+			for(Course course:coursesInASemester)
+				try {
+					scores.add(new SimpleScore(course.getId(), course.getName(),
+							course.getTestScore(), course.getTotalScore(),
+							course.getGradePoint(), course.getCredit(), course.getKind()));
+				} catch (CourseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			Bundle arg = new Bundle();
 			arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);
 			args.add(arg);
@@ -242,13 +242,10 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			TabSpec tabSpec = mTabHost.newTabSpec(counter+"学期");
 			mTabsAdapter.addTab(tabSpec.setIndicator((counter++)+"学期"),
 					ListScoresFragment.class, arg);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
-			}else{
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 				mTabHost.getTabWidget().getChildAt(counter-2).setBackgroundResource(R.drawable.tab);
 			}		
 		}
-			
     }
 
 	/* (non-Javadoc)

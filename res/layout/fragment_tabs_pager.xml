@@ -33,6 +33,7 @@
             android:id="@+id/currentTime"
             android:layout_width="fill_parent"
             android:layout_height="20dp"
+            android:text="@string/score_query"
             style="@style/wordStyle"/>
 
         <HorizontalScrollView

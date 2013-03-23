@@ -128,9 +128,9 @@ public class ListScoresFragment extends ListFragment {
 		/**课程名称*/
 		private String name;
 		/**结课考核成绩*/
-		private short testScore;
+		private float testScore;
 		/**期末总评成绩*/
-		private short totalScore;
+		private float totalScore;
 		/**绩点*/
 		private float gradePoint;
 		/**学分*/
@@ -147,8 +147,8 @@ public class ListScoresFragment extends ListFragment {
 		 * @param credit 学分
 		 * @param kind 课程性质
 		 */
-		public SimpleScore(int id, String name, short testScore,
-				short totalScore, float gradePoint, byte credit, String kind) {
+		public SimpleScore(int id, String name, float testScore,
+				float totalScore, float gradePoint, byte credit, String kind) {
 			super();
 			this.id = id;
 			this.name = name;
@@ -159,7 +159,7 @@ public class ListScoresFragment extends ListFragment {
 			this.kind = kind;
 		}
 		private SimpleScore(Parcel in){
-			this(in.readInt(),in.readString(),(short)in.readInt(),(short)in.readInt(),
+			this(in.readInt(),in.readString(),in.readFloat(),in.readFloat(),
 					in.readFloat(),in.readByte(),in.readString());
 		}
 
@@ -172,15 +172,16 @@ public class ListScoresFragment extends ListFragment {
 		}
 
 		public String getTestScore() {
-			if(testScore == -1){
+			//TODO 常量
+			if(Float.isNaN(testScore)){
 				return "无";
 			}else{
-				return String.valueOf(testScore);
+				return format(testScore);
 			}
 		}
 
 		public String getTotalScore() {
-			return String.valueOf(totalScore);
+			return format(totalScore);
 		}
 
 		public String getGradePoint() {
@@ -195,6 +196,13 @@ public class ListScoresFragment extends ListFragment {
 			return kind;
 		}
 
+		private static String format(float number){
+			if((int)number == number)
+				return String.valueOf((int)number);
+			else
+				return String.valueOf(number);
+		}
+
 		@Override
 		public int describeContents() {
 			return 0;
@@ -204,8 +212,8 @@ public class ListScoresFragment extends ListFragment {
 		public void writeToParcel(Parcel dest, int flags) {
 			dest.writeInt(id);
 			dest.writeString(name);
-			dest.writeInt(totalScore);
-			dest.writeInt(totalScore);
+			dest.writeFloat(totalScore);
+			dest.writeFloat(totalScore);
 			dest.writeFloat(gradePoint);
 			dest.writeByte(credit);
 			dest.writeString(kind);

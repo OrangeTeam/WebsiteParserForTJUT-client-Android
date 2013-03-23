@@ -197,6 +197,7 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_USER_NAME, theUserName);
 			//theCourseInf为ArrayList对象，get(i)顺序找到其中的一门课程。getCode()等方法得到相应实例变量的值。
 			
+			//判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入
 			cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + aCourse.getCode() + "'", null, null, null, null);
 			if(cursor1.getCount() == 0){
 				db.insert(DATABASE_COURSE_TABLE1,null, newCourseInfValues);
@@ -212,6 +213,8 @@ public class StudentInfDBAdapter {
 	 * @param theCourseInf  List<Course>类型
 	 */
 	private void insertArrayCoursesToCourseInf2(List<Course> theCourseInf){
+		Cursor theCursor;
+		String theViceId;
 		ContentValues newCourseInfTAValues = new ContentValues();
 		int counter = 0;
 		for(Course aCourse:theCourseInf){
@@ -222,7 +225,8 @@ public class StudentInfDBAdapter {
 			for(TimeAndAddress aTimeAndAddress:aCourse.getTimeAndAddress()){
 				newCourseInfTAValues.put(KEY_LINK, cursor.getInt(0));
 				//link列是courseInf1和courseInf2相‘连接’的字段以执行相应的操作，所以link列须和_id列值相等。cursor.getInt(0)是得到id字段值。
-				newCourseInfTAValues.put(KEY_VICEID, Integer.toString(cursor.getInt(0)) + Integer.toString(counter++));
+				theViceId = Integer.toString(cursor.getInt(0)) + Integer.toString(counter++);
+				newCourseInfTAValues.put(KEY_VICEID, theViceId);
 				//一门课有多个TimeAndAddress与之相对应，viceid列是为了对其中一个TimeAndAddress进行操作。例如当link列为1时viceid就为11、12、、、等
 				//当然link的1是整数型的而viceid的11、12为字符串类型的。
 				newCourseInfTAValues.put(KEY_WEEK, aTimeAndAddress.getWeek());
@@ -230,14 +234,19 @@ public class StudentInfDBAdapter {
 				newCourseInfTAValues.put(KEY_PERIOD, aTimeAndAddress.getPeriod());
 				newCourseInfTAValues.put(KEY_ADDRESS, aTimeAndAddress.getAddress());
 				
-				db.insert(DATABASE_COURSE_TABLE2,null,newCourseInfTAValues);
+				//判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入
+				theCursor = db.query(DATABASE_COURSE_TABLE2, null, KEY_VICEID + "= '" + theViceId + "'", null, null, null, null);
+				if(theCursor.getCount() == 0){
+					db.insert(DATABASE_COURSE_TABLE2,null,newCourseInfTAValues);
+				}else{
+					newCourseInfTAValues.clear();
+				}
 			}
 		}
 	}
 	
 	/**
-	 * 先判断数据库课程的记录是否为当前用户的，如果不是就清空课程的记录，建立当前用户的课程信息记录。是当前用户的就继续操作。
-	 *  判断数据库课程表中是否已经有要查入的课程，如果已经有就不会再次插入，当然没有时就会调用insertArrayCoursesToCourseInf1方法和insertArrayCoursesToCourseInf2。
+	 * 先判断数据库课程的记录是否为当前用户的，如果不是就清空课程的记录，建立当前用户的课程信息记录。是当前用户的就继续操作
 	 * @param theCourseInf List<Course>类型
 	 * @param theUserName String类型
 	 */
@@ -246,13 +255,8 @@ public class StudentInfDBAdapter {
 		Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		if(cursor1.getCount() != 0)
 		{
-			//String code = theCourseInf.get(0).getCode();
-			//Cursor cursor2 = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + "= '" + code + "'", null, null, null, null);
-			//if(cursor2.getCount() == 0)
-			//{
-				insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
-				insertArrayCoursesToCourseInf2(theCourseInf);
-			//}
+			insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
+			insertArrayCoursesToCourseInf2(theCourseInf);
 		}else{
 			db.delete(DATABASE_COURSE_TABLE1, null, null);
 			db.delete(DATABASE_COURSE_TABLE2, null, null);

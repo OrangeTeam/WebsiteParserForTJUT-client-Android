@@ -5,11 +5,15 @@ import java.util.HashMap;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.util.Network;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -57,8 +61,8 @@ public class MainMenuActivity extends Activity{
 		}				
     	//判断是否第一次登陆
     	if(SettingsActivity.getAccountStudentID(this) == null || SettingsActivity.getAccountPassword(this) == null){
-    		Toast.makeText(this, "请设置帐号和开学时间！", Toast.LENGTH_LONG).show();
-        	startActivity(new Intent(this, SettingsActivity.class));
+    		promptOfDownloadDataDialog();
+        	//startActivity(new Intent(this, SettingsActivity.class));
         }
 		
 		//生成动态数组，并且转入数据
@@ -130,5 +134,18 @@ public class MainMenuActivity extends Activity{
 			
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	
+	private void promptOfDownloadDataDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
+		builder.setTitle(R.string.prompt_of_download_data_title)
+		.setMessage(R.string.prompt_of_download_data_message)
+		.setPositiveButton(android.R.string.yes, new OnClickListener(){
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				startActivity(new Intent(MainMenuActivity.this, SettingsActivity.class));
+			}
+		});
+		builder.create().show();
 	}
 }

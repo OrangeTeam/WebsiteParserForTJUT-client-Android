@@ -21,6 +21,10 @@
 
     <string name="updating">正在更新</string>
     <string name="no_network">无网络连接</string>
+    
+    <!-- used in promptOfDownloadDataDialog of MainMenuActivity.java  -->
+    <string name="prompt_of_download_data_title">初次使用提示</string>
+    <string name="prompt_of_download_data_message">请先设置账户和开学时间，返回主菜单后请进入本周课程，点击主菜单按钮->刷新</string>
 
 	<!-- used in time_and_address_entry.xml -->
 	<string name="week_number">周数</string>
@@ -57,7 +61,7 @@
     <string name="no_post">尚无通知</string>
     <string name="unknown_source">未知来源</string>
     <string name="teaching_affairs">教务处</string>
-    <string name="school_of_computer_and_communication_engineering">计算机与通讯工程学院</string>
+    <string name="school_of_computer_and_communication_engineering">计算机与通信工程学院</string>
     <string name="student_website_of_SCCE">计算机与通信工程学院学生网站</string>
     <!-- used in ListScoresFragment.java -->
     <string name="course_name">课程名称</string>

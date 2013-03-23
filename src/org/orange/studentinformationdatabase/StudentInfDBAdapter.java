@@ -437,6 +437,7 @@ public class StudentInfDBAdapter {
 		ContentValues newCourseInfValues1 = new ContentValues();
 		ContentValues newCourseInfValues2 = new ContentValues();
 		ContentValues newCourseInfValues3 = new ContentValues();
+		ContentValues newCourseInfValues4 = new ContentValues();
 		
 		//从传递进来的参数获得这门课程的记录的_id，进行查询，获得courseInf1和courseInf2中的这门课的记录。
 		int rowIndex = theCourseInf.getId();
@@ -444,6 +445,7 @@ public class StudentInfDBAdapter {
 		Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + rowIndex, null, null, null, null);
 		cursor1.moveToFirst();
 		cursor2.moveToFirst();
+		int count = cursor2.getCount();
 		
 		if(cursor1.getString(1) != null)//数据库里的字符串初始化值一般都为空，所以从数据库中获得字符串时要进行判断是否为空。为空是直接进行更新操作，不为空时进行数据库相应课程对应的字段的值与传递进来的课程相比较
 		{
@@ -515,9 +517,9 @@ public class StudentInfDBAdapter {
 			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_ID + "=" + rowIndex, null);
 		}
 		
-		if(cursor2.getCount() != 0)//判断这门课的TimeAndAddress是否没有。如外教的时间和地点就没此时ArrayList对象的TimeAndAddress的size就为0，数据库中的courseInf2中就没了这条记录，
+		if(count != 0)//判断这门课的TimeAndAddress是否没有。如外教的时间和地点就没此时ArrayList对象的TimeAndAddress的size就为0，数据库中的courseInf2中就没了这条记录，
 		{                          //当没这天记录时就进行插入操作，当有时就要进行比较是否一样，不一样就要进行更改。
-			for(int i = 0; i < theCourseInf.getTimeAndAddress().size(); i++){
+			for(int i = 0; i < count; i++){
 				cursor2.moveToPosition(i);
 				if(cursor2.getInt(2) != theCourseInf.getTimeAndAddress().get(i).getWeek())
 				{
@@ -549,16 +551,40 @@ public class StudentInfDBAdapter {
 					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
 				}
 			}
-		}else{
-			for(int j=0; j < theCourseInf.getTimeAndAddress().size(); j++){
+			
+			
+			//用于当修改课程时增加了时间地点，进行插入数据库中，count + j代表要插入的时间地点的下标
+			if(theCourseInf.getTimeAndAddress().size() > count){
+				for(int j=0;j < theCourseInf.getTimeAndAddress().size() - count; j++){
 					newCourseInfValues3.put(KEY_LINK, rowIndex);
-					newCourseInfValues3.put(KEY_VICEID, (Integer.toString(rowIndex) + (j + 1)));
-					newCourseInfValues3.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(j).getWeek());
-					newCourseInfValues3.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(j).getDay());
-					newCourseInfValues3.put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(j).getPeriod());
-					newCourseInfValues3.put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(j).getAddress());
+					newCourseInfValues3.put(KEY_VICEID, Integer.toString(rowIndex) + (count + j));
+					newCourseInfValues3.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(count + j).getWeek());
+					newCourseInfValues3.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(count + j).getDay());
+					newCourseInfValues3.put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(count + j).getPeriod());
+					newCourseInfValues3.put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(count + j ).getAddress());
 					
-					db.insert(DATABASE_COURSE_TABLE2,null,newCourseInfValues3);
+					db.insert(DATABASE_COURSE_TABLE2, null, newCourseInfValues3);
+				}
+			}
+		}else{
+			//这是当没有时间地点的课程的时间地点的插入
+			for(int j=0; j < theCourseInf.getTimeAndAddress().size(); j++){
+					newCourseInfValues4.put(KEY_LINK, rowIndex);
+					newCourseInfValues4.put(KEY_VICEID, (Integer.toString(rowIndex) + (j + 1)));
+					newCourseInfValues4.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(j).getWeek());
+					newCourseInfValues4.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(j).getDay());
+					newCourseInfValues4.put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(j).getPeriod());
+					newCourseInfValues4.put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(j).getAddress());
+					
+					db.insert(DATABASE_COURSE_TABLE2,null,newCourseInfValues4);
+			}
+		}
+		
+		//这里是做检查使用，当检查到week等于0时表明这个时间地点已经是出去的，这里就会把它从数据库中删除
+		for(int i=0; i < theCourseInf.getTimeAndAddress().size(); i++){
+			cursor2.moveToPosition(i);
+			if(cursor2.getInt(2) == 0){
+				db.delete(DATABASE_COURSE_TABLE2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
 			}
 		}
 	}

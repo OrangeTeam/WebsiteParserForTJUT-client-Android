@@ -30,7 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 //TODO 测试不同生命周期状态下的正确性
 public class CourseDetailsActivity extends FragmentActivity implements TimeAndAddressSettingDialogListener{
-	public static final String KEY_COURSE_CODE = CourseDetailsActivity.class.getName() + ".key_course_code";
+	public static final String KEY_COURSE_ID = CourseDetailsActivity.class.getName() + ".key_course_id";
 
 	private static final String KEY_INSTANCE_STATE_TIME_AND_ADDRESS =
 			CourseDetailsActivity.class.getName() + ".key_instance_state_time_and_address";
@@ -72,9 +72,9 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 
 		//如果有课程代码额外信息，显示此课程的详情
 		if(savedInstanceState == null){
-			int courseCode = getIntent().getIntExtra(KEY_COURSE_CODE, -1);
-			if(courseCode != -1){
-				new QueryCourseInformationFromDatabase().execute(String.valueOf(courseCode),
+			int courseId = getIntent().getIntExtra(KEY_COURSE_ID, -1);
+			if(courseId != -1){
+				new QueryCourseInformationFromDatabase().execute(String.valueOf(courseId),
 						SettingsActivity.getAccountStudentID(this));
 			}
 		}

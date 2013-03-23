@@ -223,15 +223,11 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     	currentTime.setText("成绩单");
     	
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
-    	System.out.println("Activity" + courses.size());
 		for(int semester = 0;semester<courses.size();semester++){
-			float totalGradePoint = 0;
-			byte totalCredit = 0;
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
 			for(int counter = 0;counter<courses.get(semester).size();counter++)
 			try {
-					totalGradePoint = totalGradePoint + (float)courses.get(semester).get(counter).getGradePoint();
-					scores.add(new SimpleScore(semester+1, courses.get(semester).get(counter).getName(), (short)(courses.get(semester).get(counter).getTestScore()), (short)(courses.get(semester).get(counter).getTotalScore()), (float)courses.get(semester).get(counter).getGradePoint(), (byte)courses.get(semester).get(counter).getCredit(), courses.get(semester).get(counter).getKind()));
+					scores.add(new SimpleScore(courses.get(semester).get(counter).getId(), courses.get(semester).get(counter).getName(), (short)(courses.get(semester).get(counter).getTestScore()), (short)(courses.get(semester).get(counter).getTotalScore()), (float)courses.get(semester).get(counter).getGradePoint(), (byte)courses.get(semester).get(counter).getCredit(), courses.get(semester).get(counter).getKind()));
 			} catch (CourseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

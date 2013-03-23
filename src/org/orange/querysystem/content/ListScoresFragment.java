@@ -2,8 +2,11 @@ package org.orange.querysystem.content;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.orange.querysystem.CourseDetailsActivity;
 import org.orange.querysystem.R;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -92,6 +95,7 @@ public class ListScoresFragment extends ListFragment {
 		((TextView)mHeaderView.findViewById(R.id.course_kind)).setText(R.string.course_kind);
 		mFootView = new TextView(getActivity());
 		mFootView.setTextColor(Color.BLACK);
+		//TODO 常量
 		mFootView.setText("    平均绩点： " + GPA + "         学分通过率： " + creditPassPercentage);
 		
 		return super.onCreateView(inflater, container, savedInstanceState);
@@ -108,10 +112,16 @@ public class ListScoresFragment extends ListFragment {
 		this.getListView().setCacheColorHint(Color.TRANSPARENT);
 	}
 	
-	 @Override
-	    public void onListItemClick(ListView l, View v, int position, long id) {
-	    	l.setCacheColorHint(Color.TRANSPARENT);
-	    }
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		//TODO 重复？
+		l.setCacheColorHint(Color.TRANSPARENT);
+		if(v.equals(mHeaderView) || v.equals(mFootView))
+			return;
+		Intent intent = new Intent(getActivity(), CourseDetailsActivity.class);
+		intent.putExtra(CourseDetailsActivity.KEY_COURSE_ID, (int)id);
+		startActivity(intent);
+	}
 
 	public static class SimpleScore implements Parcelable{
 		private int id;
@@ -129,7 +139,7 @@ public class ListScoresFragment extends ListFragment {
 		private String kind;
 
 		/**
-		 * @param id　课程ID
+		 * @param id 课程ID
 		 * @param name 课程名称
 		 * @param testScore 结课考核成绩
 		 * @param totalScore 总评成绩

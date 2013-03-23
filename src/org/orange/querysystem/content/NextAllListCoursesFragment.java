@@ -65,7 +65,7 @@ public class NextAllListCoursesFragment extends ListFragment {
 	public void onListItemClick(ListView l, View view, int position, long id){
 		l.setCacheColorHint(Color.TRANSPARENT);
 		Intent intent = new Intent(getActivity(), CourseDetailsActivity.class);
-		intent.putExtra(CourseDetailsActivity.KEY_COURSE_CODE, (int)id);
+		intent.putExtra(CourseDetailsActivity.KEY_COURSE_ID, (int)id);
 		startActivity(intent);
 	}
 

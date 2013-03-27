@@ -91,10 +91,10 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 		//3.0以上版本，使用ActionBar
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar mActionBar = getActionBar();
-			String title =getResources().getString(R.string.curriculum_schedule_in_this_week)
-					+ "(" +
-					getResources().getString(R.string.week_of_semester,
-							SettingsActivity.getCurrentWeekNumber(this)) + ")";
+			String title = getResources().getString(R.string.curriculum_schedule_in_this_week);
+			Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
+			if(weekNumber != null)
+				title +="("+getResources().getString(R.string.week_of_semester,weekNumber)+")";
 			mActionBar.setTitle(title);
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 

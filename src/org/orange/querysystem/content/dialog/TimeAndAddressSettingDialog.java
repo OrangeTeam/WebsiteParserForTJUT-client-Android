@@ -161,13 +161,22 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
 		switch(id){
 		case DIALOG_ALL:
 		case DIALOG_WEEK:
-			mWeekInput.setText(mTimeAndAddress.getWeekString());
+			if(!mTimeAndAddress.isEmpty(TimeAndAddress.Property.WEEK))
+				mWeekInput.setText(mTimeAndAddress.getWeekString());
+			else
+				mWeekInput.setText(null);
 			if(isNotAll) return;
 		case DIALOG_DAY_OF_WEEK:
-			mDayOfWeekInput.setText(mTimeAndAddress.getDayString(false));
+			if(!mTimeAndAddress.isEmpty(TimeAndAddress.Property.DAY))
+				mDayOfWeekInput.setText(mTimeAndAddress.getDayString(false));
+			else
+				mDayOfWeekInput.setText(null);
 			if(isNotAll) return;
 		case DIALOG_PERIOD:
-			mPeriodInput.setText(mTimeAndAddress.getPeriodString());
+			if(!mTimeAndAddress.isEmpty(TimeAndAddress.Property.PERIOD))
+				mPeriodInput.setText(mTimeAndAddress.getPeriodString());
+			else
+				mPeriodInput.setText(null);
 			if(isNotAll) return;
 		case DIALOG_ADDRESS:
 			mAddressInput.setText(mTimeAndAddress.getAddress());

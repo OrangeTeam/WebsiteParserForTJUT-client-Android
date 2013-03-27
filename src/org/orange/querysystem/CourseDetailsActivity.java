@@ -169,10 +169,9 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 		course_teacher_input.setText(course.getTeacherString());
 		course_credit_input.setText(String.valueOf(course.getCredit()));
 		course_kind_input.setText(course.getKind());
-		//TODO 检测方法
-		if(!Float.isNaN(course.getTestScore()))
+		if(!course.isEmpty(Course.Property.TEST_SCORE))
 			course_test_score_input.setText(String.valueOf(course.getTestScore()));
-		if(!Float.isNaN(course.getTotalScore())){
+		if(!course.isEmpty(Course.Property.TOTAL_SCORE)){
 			course_total_score_input.setText(String.valueOf(course.getTotalScore()));
 			try {
 				course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
@@ -198,13 +197,20 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 	private void addTimeAndAddress(int index, TimeAndAddress aTimeAndAddress){
 		if(index < 0)
 			throw new IllegalArgumentException("非法索引：" + index);
-		((EditText)course_time_and_address_placeholder.getChildAt(index)).setText(aTimeAndAddress.toString());
+		boolean isEmptyTimeAndAddress = aTimeAndAddress.isEmpty();
+		if(!isEmptyTimeAndAddress)
+			((EditText)course_time_and_address_placeholder.getChildAt(index)).setText(aTimeAndAddress.toString());
 		//如果这是新时间地点，应该有index==mCourse.getTimeAndAddress().size()
 		if(index < mCourse.getTimeAndAddress().size()){
-			mCourse.getTimeAndAddress().set(index, new TimeAndAddress(aTimeAndAddress));
+			if(!isEmptyTimeAndAddress)
+				mCourse.getTimeAndAddress().set(index, new TimeAndAddress(aTimeAndAddress));
+			else
+				removeTimeAndAddressEditText(true, index);
 		}else if(index == mCourse.getTimeAndAddress().size()){	//新课程
-			mCourse.getTimeAndAddress().add(new TimeAndAddress(aTimeAndAddress));
-			addTimeAndAddressEditText();
+			if(!isEmptyTimeAndAddress){
+				mCourse.getTimeAndAddress().add(new TimeAndAddress(aTimeAndAddress));
+				addTimeAndAddressEditText();
+			}
 		}else
 			throw new IllegalArgumentException("非法索引：" + index);
 	}

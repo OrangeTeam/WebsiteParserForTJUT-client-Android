@@ -5,19 +5,13 @@
     <string name="app_name">学生信息查询系统</string>
     <string name="userName">学号： </string>
     <string name="password">密码： </string>
-    <string name="title">天津理工大学学生信息查询系统</string>
-    <string name="exit">退出</string>
-    <string name="about">关于</string>
-    <string name="main_menu">主菜单</string>
     <string name="settings">设置</string>
     <string name="refresh">刷新</string>
 
-    <string name="course_query">课程表</string>
     <string name="add_course">增加课程</string>
-    <string name="score_query">成绩单</string>
-    <string name="all_post_query">全部通知</string>
-    <string name="day_and_week_courses">日周课表</string>
-    <string name="student_info">学生信息</string>
+	<string name="curriculum_schedule_in_this_week">本周课程表</string>
+	<string name="week_of_semester">第%d周</string>
+	<string name="transcripts">成绩单</string>
 
     <string name="updating">正在更新</string>
     <string name="no_network">无网络连接</string>

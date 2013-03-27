@@ -85,14 +85,14 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			//去掉低版本使用的Title
 			findViewById(R.id.currentTime).setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle(R.string.score_query);
+			mActionBar.setTitle(R.string.transcripts);
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
 		}else{
 			//低版本使用的Title
-			((TextView)findViewById(R.id.currentTime)).setText(R.string.score_query);
+			((TextView)findViewById(R.id.currentTime)).setText(R.string.transcripts);
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
 				View child = tabWidget.getChildAt(i);  

@@ -135,7 +135,6 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-    	l.setCacheColorHint(Color.TRANSPARENT);
         Intent intent = new Intent(getActivity(), PostDetailsActivity.class);
         intent.putExtra(PostDetailsActivity.EXTRA_POST_ID, id);
         startActivity(intent);

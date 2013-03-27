@@ -63,7 +63,6 @@ public class NextAllListCoursesFragment extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View view, int position, long id){
-		l.setCacheColorHint(Color.TRANSPARENT);
 		Intent intent = new Intent(getActivity(), CourseDetailsActivity.class);
 		intent.putExtra(CourseDetailsActivity.KEY_COURSE_ID, (int)id);
 		startActivity(intent);
@@ -102,6 +101,7 @@ public class NextAllListCoursesFragment extends ListFragment {
 		super.onActivityCreated(savedInstanceState);
 
 		setEmptyText(getResources().getText(R.string.no_course));
+		getListView().setCacheColorHint(Color.TRANSPARENT);
 	}
 
 	public static class SimpleCourse implements Parcelable{

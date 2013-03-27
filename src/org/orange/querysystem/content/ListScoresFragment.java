@@ -114,8 +114,6 @@ public class ListScoresFragment extends ListFragment {
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		//TODO 重复？
-		l.setCacheColorHint(Color.TRANSPARENT);
 		if(v.equals(mHeaderView) || v.equals(mFootView))
 			return;
 		Intent intent = new Intent(getActivity(), CourseDetailsActivity.class);

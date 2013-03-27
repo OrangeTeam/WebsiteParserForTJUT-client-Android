@@ -91,6 +91,8 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
 		}else{
+			//低版本使用的Title
+			((TextView)findViewById(R.id.currentTime)).setText(R.string.score_query);
 			TabWidget tabWidget = mTabHost.getTabWidget();
 			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
 				View child = tabWidget.getChildAt(i);  

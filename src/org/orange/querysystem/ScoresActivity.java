@@ -225,6 +225,8 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
 		for(ArrayList<Course> coursesInASemester:courses){
+			if(coursesInASemester.get(0).getYear() == 0)
+				continue;
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
 			for(Course course:coursesInASemester)
 				try {

@@ -3,8 +3,6 @@
 
     <!-- common -->
     <string name="app_name">学生信息查询系统</string>
-    <string name="userName">学号： </string>
-    <string name="password">密码： </string>
     <string name="settings">设置</string>
     <string name="refresh">刷新</string>
 
@@ -20,6 +18,9 @@
     <string name="prompt_of_download_data_title">初次使用提示</string>
     <string name="prompt_of_download_data_message">请先设置账户和开学时间，返回主菜单后请进入本周课程，点击主菜单按钮->刷新</string>
 
+	<!-- used in account_setting_dialog.xml -->
+	<string name="user_name">学号</string>
+	<string name="password">密码</string>
 	<!-- used in time_and_address_entry.xml -->
 	<string name="week_number">周数</string>
 	<string name="day_of_week">星期</string>

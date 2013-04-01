@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp" >
     <TextView
-        android:text="@string/userName"
+        android:id="@+id/student_id_label"
+        android:text="@string/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/student_id"
         style="@style/wordStyle" />
     <EditText
-        android:id="@+id/student_id"
+        android:id="@id/student_id"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/student_id_label"
         android:inputType="number"
         android:nextFocusForward="@+id/password" />
     <TextView
+        android:id="@+id/password_label"
         android:text="@string/password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/student_id_label"
+        android:layout_alignBaseline="@id/password"
         style="@style/wordStyle" />
     <EditText
         android:id="@id/password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/password_label"
+        android:layout_below="@id/student_id"
         android:inputType="textPassword" />
-</LinearLayout>
+</RelativeLayout>

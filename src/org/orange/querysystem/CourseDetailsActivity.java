@@ -58,7 +58,7 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.add_course_info);
+        setContentView(R.layout.course_details);
         course_name_input = (EditText)findViewById(R.id.course_name_input);
         course_code_input = (EditText)findViewById(R.id.course_code_input);
         course_class_number_input = (EditText)findViewById(R.id.course_class_number_input);

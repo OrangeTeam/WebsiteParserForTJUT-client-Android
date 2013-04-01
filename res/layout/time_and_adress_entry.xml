@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <TextView 
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp" >
+    <TextView
         android:id="@+id/week"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -11,7 +12,7 @@
         android:text="@string/week_number"
         android:textSize="18sp"
         style="@style/wordStyle"/>
-    <EditText 
+    <EditText
         android:id="@+id/week_input"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -20,7 +21,7 @@
         android:cursorVisible="false"
         android:longClickable="false"
         android:focusable="false"/>
-    <TextView 
+    <TextView
         android:id="@+id/day_of_week"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,8 +30,8 @@
         android:text="@string/day_of_week"
         android:textSize="18sp"
         style="@style/wordStyle"/>
-	<EditText 
-	    android:id="@+id/day_of_week_input"
+    <EditText
+        android:id="@+id/day_of_week_input"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/day_of_week"
@@ -39,7 +40,7 @@
         android:cursorVisible="false"
         android:longClickable="false"
         android:focusable="false"/>
-	<TextView 
+    <TextView
         android:id="@+id/period"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,14 +49,8 @@
         android:text="@string/period"
         android:textSize="18sp"
         style="@style/wordStyle"/>
-	<!-- <Spinner 
-            android:id="@+id/period_input"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/period"
-        	android:layout_below="@+id/day_of_week_input"/> -->
-	<EditText 
-	    android:id="@+id/period_input"
+    <EditText
+        android:id="@+id/period_input"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/period"
@@ -64,7 +59,7 @@
         android:cursorVisible="false"
         android:longClickable="false"
         android:focusable="false"/>
-	<TextView 
+    <TextView
         android:id="@+id/classroom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -73,12 +68,11 @@
         android:text="@string/address"
         android:textSize="18sp"
         style="@style/wordStyle"/>
-	<EditText 
-	    android:id="@+id/classroom_input"
+    <EditText
+        android:id="@+id/classroom_input"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/classroom"
         android:layout_below="@+id/period_input"
         android:inputType="text"/>
-	
 </RelativeLayout>

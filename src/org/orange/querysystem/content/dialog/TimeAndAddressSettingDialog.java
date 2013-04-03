@@ -179,7 +179,10 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
 				mPeriodInput.setText(null);
 			if(isNotAll) return;
 		case DIALOG_ADDRESS:
-			mAddressInput.setText(mTimeAndAddress.getAddress());
+			if(!mTimeAndAddress.isEmpty(TimeAndAddress.Property.ADDRESS))
+				mAddressInput.setText(mTimeAndAddress.getAddress());
+			else
+				mAddressInput.setText(null);
 			return;
 		default:
 			throw new IllegalArgumentException("非法参数：" + id);

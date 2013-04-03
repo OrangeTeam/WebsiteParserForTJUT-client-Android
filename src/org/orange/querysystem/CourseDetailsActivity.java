@@ -199,7 +199,7 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 			throw new IllegalArgumentException("非法索引：" + index);
 		boolean isEmptyTimeAndAddress = aTimeAndAddress.isEmpty();
 		if(!isEmptyTimeAndAddress)
-			((EditText)course_time_and_address_placeholder.getChildAt(index)).setText(aTimeAndAddress.toString());
+			((EditText)course_time_and_address_placeholder.getChildAt(index)).setText(aTimeAndAddress.toString(false));
 		//如果这是新时间地点，应该有index==mCourse.getTimeAndAddress().size()
 		if(index < mCourse.getTimeAndAddress().size()){
 			if(!isEmptyTimeAndAddress)

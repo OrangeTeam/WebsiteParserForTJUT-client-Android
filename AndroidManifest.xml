@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="0.3">
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -12,7 +12,8 @@
     <application 
         android:label="@string/app_name"
         android:icon="@drawable/lsylogo"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="false">
         <provider android:name="org.orange.studentinformationdatabase.QuerySystemProvider"
             android:authorities="org.orange.querysystem.provider"
             android:exported="false">
@@ -31,7 +32,7 @@
         </receiver>
 		<activity
             android:screenOrientation="portrait"
-            android:label="学生信息查询系统"
+            android:label="@string/app_name"
             android:name=".MainMenuActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
@@ -53,7 +54,12 @@
 		<activity android:name=".AllCoursesInNextSemesterActivity" />
 		<activity android:name=".CourseDetailsActivity" />
 		<activity android:name=".ScoresActivity" />
-        <activity android:name=".SettingsActivity"/>
+        <activity android:name=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -57,11 +57,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
+	private static final String KEY_AUTHENTICATED = "authenticated";
+	private static final String KEY_CURRENT_TAB = "current_tab";
 	private int start_resume = 0;
 
 	TabHost mTabHost;
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
+	private boolean authenticated;
+	private String currentTab;
 	public static final int PASSWORD_PROMPT = 1;
 
 	/* (non-Javadoc)
@@ -106,10 +110,18 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			}
 		}
 
-		showDialog(PASSWORD_PROMPT);
+		if(savedInstanceState == null){
+			authenticated = false;
+			showDialog(PASSWORD_PROMPT);
+		}else{
+			authenticated = savedInstanceState.getBoolean(KEY_AUTHENTICATED, false);
+			if(authenticated){
+				currentTab = savedInstanceState.getString(KEY_CURRENT_TAB);
+				enterActivity();
+			}
+		}
 	}
 
-	@TargetApi(11)
 	public void enterActivity(){
 		readDB();
 	}
@@ -145,6 +157,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
                   	 
             		/* User clicked OK so do some stuff */
             		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(ScoresActivity.this))){
+						authenticated = true;
             			enterActivity();
             		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(ScoresActivity.this))){
             			editText.setText("");
@@ -214,6 +227,8 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     @Override
 	public void onPostReadFromDBForScores(ArrayList<ArrayList<Course>> courses) {
 			showScoresInfo(courses);
+			if(currentTab != null)
+				mTabHost.setCurrentTabByTag(currentTab);
 	}
     
     public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
@@ -248,19 +263,11 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 		}
     }
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
-	 */
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
-		super.onRestoreInstanceState(savedInstanceState);
-	}
-
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString("tab", mTabHost.getCurrentTabTag());
+		outState.putString(KEY_CURRENT_TAB, mTabHost.getCurrentTabTag());
+		outState.putBoolean(KEY_AUTHENTICATED, authenticated);
 	}
 	
 	@Override

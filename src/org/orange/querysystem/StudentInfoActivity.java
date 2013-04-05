@@ -47,10 +47,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class StudentInfoActivity extends ListActivity{
+	private static final String KEY_AUTHENTICATED = "authenticated";
 	private ListView listView;
 	private ListViewAdapter adapter;
 	private View showImage;
 	private ImageView imageView;
+	private boolean authenticated;
 	private static final String FILE_NAME = "student_info.txt";
 	public static final int PASSWORD_PROMPT = 1;
 	
@@ -58,10 +60,23 @@ public class StudentInfoActivity extends ListActivity{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.student_info);
-		
-		showDialog(PASSWORD_PROMPT);
+
+		if(savedInstanceState == null){
+			authenticated = false;
+			showDialog(PASSWORD_PROMPT);
+		}else{
+			authenticated = savedInstanceState.getBoolean(KEY_AUTHENTICATED, false);
+			if(authenticated)
+				enterActivity();
+		}
 	}
-	
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean(KEY_AUTHENTICATED, authenticated);
+	}
+
 	public void enterActivity(){
 		showImage = getLayoutInflater().inflate(R.layout.show_image, null);
 		imageView = (ImageView)showImage.findViewById(R.id.studentImageView);
@@ -112,6 +127,7 @@ public class StudentInfoActivity extends ListActivity{
                   	 
             		/* User clicked OK so do some stuff */
             		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
+						authenticated = true;
             			enterActivity();
             		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
             			editText.setText("");

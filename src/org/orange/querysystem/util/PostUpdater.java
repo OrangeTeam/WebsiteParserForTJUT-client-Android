@@ -40,7 +40,7 @@ public class PostUpdater {
 	private Context mContext;
 	private Date lastUpdatedTime;
 
-	private UpdatePostsListToDatabase mWebUpdaterToDB;
+	private static UpdatePostsListToDatabase mWebUpdaterToDB;
 	private OnPostUpdateListener mOnPostUpdateListener;
 
 	public PostUpdater(Context context) {
@@ -151,7 +151,6 @@ public class PostUpdater {
 	public void stop(){
 		if(mWebUpdaterToDB != null){
 			mWebUpdaterToDB.cancel(false);
-			mWebUpdaterToDB = null;
 		}
 	}
 

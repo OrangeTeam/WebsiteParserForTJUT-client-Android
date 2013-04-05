@@ -52,8 +52,7 @@
 		<activity android:name=".AllCoursesActivity" />
 		<activity android:name=".AllCoursesInNextSemesterActivity" />
 		<activity android:name=".CourseDetailsActivity" />
-		<activity android:name=".ScoresActivity"
-		    android:configChanges="orientation|keyboardHidden|navigation"/>
+		<activity android:name=".ScoresActivity" />
         <activity android:name=".SettingsActivity"/>
     </application>
 

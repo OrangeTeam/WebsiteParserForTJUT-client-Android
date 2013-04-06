@@ -3,17 +3,13 @@ package org.orange.querysystem;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.orange.querysystem.R;
-import org.orange.querysystem.SettingsActivity;
-import org.orange.querysystem.util.Network;
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -60,9 +56,8 @@ public class MainMenuActivity extends Activity{
 			
 		}				
     	//判断是否第一次登陆
-    	if(SettingsActivity.getAccountStudentID(this) == null || SettingsActivity.getAccountPassword(this) == null){
+		if(!SettingsActivity.hasSetAccountStudentIDAndPassword(this)){
     		promptOfDownloadDataDialog();
-        	//startActivity(new Intent(this, SettingsActivity.class));
         }
 		
 		//生成动态数组，并且转入数据

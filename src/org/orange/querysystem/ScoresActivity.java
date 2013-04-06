@@ -159,7 +159,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
             		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(ScoresActivity.this))){
 						authenticated = true;
             			enterActivity();
-            		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(ScoresActivity.this))){
+					}else{
             			editText.setText("");
             			Toast.makeText(ScoresActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
             			finish();

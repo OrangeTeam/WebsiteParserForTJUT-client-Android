@@ -129,7 +129,7 @@ public class StudentInfoActivity extends ListActivity{
             		if(editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
 						authenticated = true;
             			enterActivity();
-            		}else if(!editText.getText().toString().equals(SettingsActivity.getAccountPassword(StudentInfoActivity.this))){
+					}else{
             			editText.setText("");
             			Toast.makeText(StudentInfoActivity.this, "密码输入错误，请重试！！", Toast.LENGTH_LONG).show();
             			finish();

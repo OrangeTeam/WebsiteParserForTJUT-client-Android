@@ -143,6 +143,18 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 			return getCurrentWeekNumber(c.getTimeInMillis());
 	}
 	/**
+	 * 已经设置了教务处帐号（学号）和密码
+	 * @param context 上下文环境
+	 * @return 如果教务处帐号（学号）和密码都已经设置了，返回true；否则返回false
+	 */
+	public static boolean hasSetAccountStudentIDAndPassword(Context context){
+		String username = PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_STUDENT_ID, null);
+		String password = PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_PASSWORD, null);
+		return username != null && password != null;
+	}
+	/**
 	 * 取得账号的学号
 	 * @param context 上下文环境
 	 * @return 如果设置过学号，返回此学号；如果尚没设置学号，返回null

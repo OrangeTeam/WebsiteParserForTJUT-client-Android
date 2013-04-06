@@ -40,9 +40,14 @@ public class InsertDBFragmentActivity extends Activity{
 	public void loadCourses(){
         userName = SettingsActivity.getAccountStudentID(this);
         password = SettingsActivity.getAccountPassword(this);
-		new UpdateCoursesListToDatabase().execute(userName, password);
+		if(userName != null && password != null)
+			new UpdateCoursesListToDatabase().execute(userName, password);
+		else{
+			logIn_error = true;
+			finish();
+		}
 	}
-	
+
 	private class UpdateCoursesListToDatabase extends AsyncTask<String, Void, Void>{
 		public static final String TAG = "org.orange.querysystem";
 		MyParserListener myParserListener;

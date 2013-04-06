@@ -157,16 +157,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 	 * @return 如果设置过密码，返回此密码；如果尚没设置密码，返回null
 	 */
 	public static String getAccountPassword(Context context){
-		try {
-			return AccountSettingPreference.decode(
-					PreferenceManager.getDefaultSharedPreferences(context)
-					.getString(KEY_PREF_ACCOUNT_STUDENT_ID, null),
-					PreferenceManager.getDefaultSharedPreferences(context)
-					.getString(KEY_PREF_ACCOUNT_PASSWORD, null)
-					);
-		} catch (Exception e) {
-		}
-		return null;
+		String username = PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_STUDENT_ID, null);
+		String password = PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(KEY_PREF_ACCOUNT_PASSWORD, null);
+		if(username == null || password == null)
+			return null;
+		else
+			return AccountSettingPreference.decode(username, password);
 	}
 
 	/**

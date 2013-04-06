@@ -36,10 +36,11 @@ public class AccountSettingPreference extends DialogPreference {
 		password = (EditText)view.findViewById(R.id.password);
 
 		SharedPreferences pref = getSharedPreferences();
-		studentID.setText(pref.getString(getKey()+STUDENT_ID_SUFFIX, ""));
-		try {
-			password.setText(decode(studentID.getText().toString(), pref.getString(getKey()+PASSWORD_SUFFIX, "")));
-		} catch (Exception e) {
+		String userid = pref.getString(getKey()+STUDENT_ID_SUFFIX, null);
+		if(userid != null){
+			studentID.setText(userid);
+			if(pref.contains(getKey()+PASSWORD_SUFFIX))
+				password.setText(decode(userid, pref.getString(getKey()+PASSWORD_SUFFIX, null)));
 		}
 		super.onBindDialogView(view);
 	}
@@ -50,10 +51,7 @@ public class AccountSettingPreference extends DialogPreference {
 			deleteStudentInf();
 			SharedPreferences.Editor editor = getEditor();
 			editor.putString(getKey()+STUDENT_ID_SUFFIX, studentID.getText().toString());
-			try {
-				editor.putString(getKey()+PASSWORD_SUFFIX, encode(studentID.getText().toString(), password.getText().toString()));
-			} catch (Exception e) {
-			}
+			editor.putString(getKey()+PASSWORD_SUFFIX, encode(studentID.getText().toString(), password.getText().toString()));
 			editor.commit();
 		}
 	}
@@ -67,14 +65,13 @@ public class AccountSettingPreference extends DialogPreference {
 		File fileObject = new File("data/data/org.orange.querysystem/files/", "student_info.txt");
 		fileObject.delete();
 	}
-	//TODO 加密
-	private static String encode(String seed, String plaintext) throws Exception{
-		String encryptingCode = Crypto.encrypt(seed, plaintext);
+
+	private static String encode(String seed, String plaintext){
+		String encryptingCode = Crypto.encrypt(plaintext, seed);
 		return encryptingCode;
 	}
-	//TODO 解密
-	public static String decode(String seed, String ciphertext) throws Exception{
-		String decryptingCode = Crypto.decrypt(seed, ciphertext);
+	public static String decode(String seed, String ciphertext){
+		String decryptingCode = Crypto.decrypt(ciphertext, seed);
 		return decryptingCode;
 	}
 

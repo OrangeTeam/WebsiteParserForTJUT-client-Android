@@ -7,6 +7,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;   
 import javax.crypto.spec.SecretKeySpec;
 
+import android.os.Build;
+
 public class Crypto {   
 	public static String encrypt(String seed, String cleartext) throws Exception {   
         byte[] rawKey = getRawKey(seed.getBytes());   
@@ -23,7 +25,11 @@ public class Crypto {
   
     private static byte[] getRawKey(byte[] seed) throws Exception {   
         KeyGenerator kgen = KeyGenerator.getInstance("AES");   
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");   
+        SecureRandom sr;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            sr = SecureRandom.getInstance("SHA1PRNG", "Crypto");
+        else
+            sr = SecureRandom.getInstance("SHA1PRNG");
         sr.setSeed(seed);   
         kgen.init(128, sr); // 192 and 256 bits may not be available   
         SecretKey skey = kgen.generateKey();   

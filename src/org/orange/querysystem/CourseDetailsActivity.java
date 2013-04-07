@@ -20,7 +20,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +55,30 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 	private EditText course_name_input;
 	private LinearLayout course_time_and_address_placeholder;
 
+	private class ScoreTextWatcher implements TextWatcher {
+		protected float newScore;
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		@Override
+		public void afterTextChanged(Editable s) {
+			try {
+				while(true){
+					newScore = Float.parseFloat(s.toString());
+					if(newScore < 0)
+						s.replace(0, s.length(), "0");
+					else if(newScore > 100)
+						s.delete(s.length()-1, s.length());
+					else
+						break;
+				}
+			} catch (NumberFormatException e) {
+				s.clear();
+			}
+		}
+	}
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +95,19 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
         course_total_score_input = (EditText)findViewById(R.id.course_total_score_input);
 		course_grade_point_input = (EditText)findViewById(R.id.course_grade_point_input);
 		course_time_and_address_placeholder = (LinearLayout) findViewById(R.id.course_time_and_address_placeholder);
+
+		course_test_score_input.addTextChangedListener(new ScoreTextWatcher());
+		course_total_score_input.addTextChangedListener(new ScoreTextWatcher(){
+			@Override
+			public void afterTextChanged(Editable s) {
+				super.afterTextChanged(s);
+				try {
+					course_grade_point_input.setText(String.valueOf(Course.getGradePoint(newScore)));
+				} catch (CourseException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
 
 		//如果有课程代码额外信息，显示此课程的详情
 		if(savedInstanceState == null){

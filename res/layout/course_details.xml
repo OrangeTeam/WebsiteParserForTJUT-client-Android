@@ -121,7 +121,7 @@
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_kind_input"
 	   	 	android:layout_toRightOf="@+id/course_test_score"
-	   	 	android:inputType="number"/>
+			android:inputType="numberDecimal"/>
 	    <TextView 
 	        android:id="@+id/course_total_score"
 	        android:layout_width="wrap_content"
@@ -137,7 +137,7 @@
 	   	 	android:layout_height="wrap_content"
 	   	 	android:layout_below="@+id/course_test_score_input"
 	   	 	android:layout_toRightOf="@+id/course_total_score"
-	   	 	android:inputType="number"/>
+			android:inputType="numberDecimal"/>
 	    <TextView 
 	        android:id="@+id/course_grade_point"
 	        android:layout_width="wrap_content"

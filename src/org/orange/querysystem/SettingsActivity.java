@@ -176,7 +176,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		if(username == null || password == null)
 			return null;
 		else
-			return AccountSettingPreference.decode(username, password);
+			return AccountSettingPreference.decrypt(username, password);
 	}
 
 	/**

@@ -40,7 +40,7 @@ public class AccountSettingPreference extends DialogPreference {
 		if(userid != null){
 			studentID.setText(userid);
 			if(pref.contains(getKey()+PASSWORD_SUFFIX))
-				password.setText(decode(userid, pref.getString(getKey()+PASSWORD_SUFFIX, null)));
+				password.setText(decrypt(userid, pref.getString(getKey()+PASSWORD_SUFFIX, null)));
 		}
 		super.onBindDialogView(view);
 	}
@@ -51,7 +51,8 @@ public class AccountSettingPreference extends DialogPreference {
 			deleteStudentInf();
 			SharedPreferences.Editor editor = getEditor();
 			editor.putString(getKey()+STUDENT_ID_SUFFIX, studentID.getText().toString());
-			editor.putString(getKey()+PASSWORD_SUFFIX, encode(studentID.getText().toString(), password.getText().toString()));
+			//TODO 加密密码过于简单
+			editor.putString(getKey()+PASSWORD_SUFFIX, encrypt(studentID.getText().toString(), password.getText().toString()));
 			editor.commit();
 		}
 	}
@@ -66,12 +67,21 @@ public class AccountSettingPreference extends DialogPreference {
 		fileObject.delete();
 	}
 
-	private static String encode(String seed, String plaintext){
-		String encryptingCode = Crypto.encrypt(plaintext, seed);
+	/**
+	 * 把plaintext加密为密文
+	 */
+	private static String encrypt(String password, String plaintext){
+		String encryptingCode = Crypto.encrypt(plaintext, password);
 		return encryptingCode;
 	}
-	public static String decode(String seed, String ciphertext){
-		String decryptingCode = Crypto.decrypt(ciphertext, seed);
+	/**
+	 * 把{@code ciphertext}解密为明文
+	 * @param password 解密密钥（暂时为账户ID）
+	 * @param ciphertext 待解密的密文
+	 * @return 解密得到的明文
+	 */
+	public static String decrypt(String password, String ciphertext){
+		String decryptingCode = Crypto.decrypt(ciphertext, password);
 		return decryptingCode;
 	}
 

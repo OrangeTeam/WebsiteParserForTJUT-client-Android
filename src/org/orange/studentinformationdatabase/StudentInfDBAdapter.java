@@ -1,6 +1,7 @@
 package org.orange.studentinformationdatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -818,6 +819,7 @@ public class StudentInfDBAdapter {
 				 sum[i] = cursor3.getInt(0);
 			 }
 		 }
+		 Arrays.sort(sum);//使提取每学年的课程时按照时间的顺序进行
 		 
 		 ArrayList<ArrayList<Course>> all = new ArrayList<ArrayList<Course>>();
 		 for (int m = 0; m < sum.length; m++){ 

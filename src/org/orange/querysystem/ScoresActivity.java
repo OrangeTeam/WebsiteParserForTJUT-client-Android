@@ -16,6 +16,7 @@
 package org.orange.querysystem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
@@ -236,7 +237,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
 		for(ArrayList<Course> coursesInASemester:courses){
-			if(coursesInASemester.get(0).getYear() == 0)
+			if(coursesInASemester.get(0).getYear() == 0)//去除本学年成绩未出就会显示在成绩单中的情况
 				continue;
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
 			for(Course course:coursesInASemester)

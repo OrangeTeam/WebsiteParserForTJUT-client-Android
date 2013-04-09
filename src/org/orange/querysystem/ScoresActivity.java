@@ -16,8 +16,6 @@
 package org.orange.querysystem;
 
 import java.util.ArrayList;
-import java.util.Collections;
-
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.InsertDBFragmentActivity;

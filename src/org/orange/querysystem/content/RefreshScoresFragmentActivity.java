@@ -1,7 +1,6 @@
 package org.orange.querysystem.content;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import org.orange.querysystem.R;
@@ -15,7 +14,6 @@ import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.SchoolWebpageParser.ParserListener;
 import android.app.Activity;
 import android.database.sqlite.SQLiteException;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;

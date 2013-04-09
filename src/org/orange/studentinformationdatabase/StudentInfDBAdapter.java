@@ -570,7 +570,7 @@ public class StudentInfDBAdapter {
 			//这是当没有时间地点的课程的时间地点的插入
 			for(int j=0; j < theCourseInf.getTimeAndAddress().size(); j++){
 					newCourseInfValues4.put(KEY_LINK, rowIndex);
-					newCourseInfValues4.put(KEY_VICEID, (Integer.toString(rowIndex) + (j + 1)));
+					newCourseInfValues4.put(KEY_VICEID, (Integer.toString(rowIndex) + (j)));
 					newCourseInfValues4.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(j).getWeek());
 					newCourseInfValues4.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(j).getDay());
 					newCourseInfValues4.put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(j).getPeriod());

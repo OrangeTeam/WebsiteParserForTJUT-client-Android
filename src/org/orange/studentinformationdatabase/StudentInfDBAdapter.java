@@ -522,7 +522,7 @@ public class StudentInfDBAdapter {
 		{                          //当没这天记录时就进行插入操作，当有时就要进行比较是否一样，不一样就要进行更改。
 			for(int i = 0; i < count; i++){
 				cursor2.moveToPosition(i);
-				if(theCourseInf.getTimeAndAddress().get(i).isEmpty())
+				if(i >= theCourseInf.getTimeAndAddress().size())
 				{
 					newCourseInfValues2.put(KEY_WEEK, 0);
 					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + " = " + (Integer.toString(rowIndex) + (i)), null);
@@ -589,7 +589,7 @@ public class StudentInfDBAdapter {
 		//这里是做检查使用，当检查到week等于0时表明这个时间地点已经是出去的，这里就会把它从数据库中删除
 		cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + rowIndex, null, null, null, null);
 		cursor2.moveToFirst();
-		for(int i=0; i < theCourseInf.getTimeAndAddress().size(); i++){
+		for(int i=0; i < cursor2.getCount(); i++){
 			cursor2.moveToPosition(i);
 			if(cursor2.getInt(2) == 0){
 				db.delete(DATABASE_COURSE_TABLE2, KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);

@@ -34,8 +34,8 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		long triggerAtTime = SystemClock.elapsedRealtime() + 15 * 60 * 1000;
-		int interval = 15 * 60 * 1000;
+		long triggerAtTime = SystemClock.elapsedRealtime() + 10 * 60 * 1000;
+		int interval = 10 * 60 * 1000;
 		alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime, interval, pendingIntent);
 		updateCourse(context, appWidgetManager, appWidgetIds);
 	}

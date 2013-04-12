@@ -522,6 +522,12 @@ public class StudentInfDBAdapter {
 		{                          //当没这天记录时就进行插入操作，当有时就要进行比较是否一样，不一样就要进行更改。
 			for(int i = 0; i < count; i++){
 				cursor2.moveToPosition(i);
+				if(theCourseInf.getTimeAndAddress().get(i).isEmpty())
+				{
+					newCourseInfValues2.put(KEY_WEEK, 0);
+					db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2, KEY_VICEID + " = " + (Integer.toString(rowIndex) + (i)), null);
+					continue;
+				}
 				if(cursor2.getInt(2) != theCourseInf.getTimeAndAddress().get(i).getWeek())
 				{
 					newCourseInfValues2.put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(i).getWeek());

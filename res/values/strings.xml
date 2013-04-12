@@ -54,6 +54,8 @@
     <string name="post">通知</string>
     <!-- used in ListPostsFragment.java -->
     <string name="no_post">尚无通知</string>
+    <string name="search">搜索</string>
+    <string name="search_hint">搜索 通知</string>
     <string name="unknown_source">未知来源</string>
     <string name="teaching_affairs">教务处</string>
     <string name="school_of_computer_and_communication_engineering">计算机与通信工程学院</string>

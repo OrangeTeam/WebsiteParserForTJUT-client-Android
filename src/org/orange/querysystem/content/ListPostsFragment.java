@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -36,13 +37,19 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -52,6 +59,10 @@ import android.widget.TextView;
  */
 public class ListPostsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String SOURCE = Contract.Posts.COLUMN_NAME_SOURCE;
+
+    private static final int SEARCH_EDIT_TEXT = 100;
+    private static final int SEARCH = 200;
+    private LinearLayout mLinearLayout;
 
     public static Bundle buildArgument(byte source) {
         Bundle args = new Bundle();
@@ -74,6 +85,32 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
             Contract.Posts.COLUMN_NAME_TITLE + " LIKE ? OR " +
             Contract.Posts.COLUMN_NAME_CATEGORY +" LIKE ? OR "+
             Contract.Posts.COLUMN_NAME_AUTHOR + " LIKE ?";
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View layout = super.onCreateView(inflater, container, savedInstanceState);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+            View lv = layout.findViewById(android.R.id.list);
+            ViewGroup parent = (ViewGroup) lv.getParent();
+            // Remove ListView and add CustomView  in its place
+            int lvIndex = parent.indexOfChild(lv);
+            parent.removeViewAt(lvIndex);
+
+            mLinearLayout = new LinearLayout(getActivity());
+            mLinearLayout.setOrientation(LinearLayout.VERTICAL);
+            if(mFilter != null)
+                insertSearchEditText().setText(mFilter);
+            mLinearLayout.addView(lv);
+            parent.addView(mLinearLayout, lvIndex, lv.getLayoutParams());
+        }
+        return layout;
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mLinearLayout = null;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -101,7 +138,7 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Place an action bar item for searching.
-        MenuItem item = menu.add("Search");
+        MenuItem item = menu.add(Menu.NONE, SEARCH, Menu.NONE, R.string.search);
         item.setIcon(android.R.drawable.ic_menu_search);
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
                 | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
@@ -111,26 +148,85 @@ public class ListPostsFragment extends ListFragment implements LoaderManager.Loa
                     new OnQueryTextListenerCompat() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    // Called when the action bar search text has changed.  Update
-                    // the search filter, and restart the loader to do a new query
-                    // with this filter.
-                    if(TextUtils.isEmpty(newText))
-                        newText = null;
-                    // Don't do anything if the filter hasn't actually changed.
-                    // Prevents restarting the loader when restoring state.
-                    if (mFilter == null && newText == null) {
-                        return true;
-                    }
-                    if (mFilter != null && mFilter.equals(newText)) {
-                        return true;
-                    }
-                    mFilter = newText;
-                    getLoaderManager().restartLoader(0, null, ListPostsFragment.this);
+                    onSearchTextChanged(newText);
                     return true;
                 }
             });
             MenuItemCompat.setActionView(item, searchView);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+        case SEARCH:
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+                View searchEditText = mLinearLayout.findViewById(SEARCH_EDIT_TEXT);
+                if(searchEditText == null){
+                    searchEditText = insertSearchEditText();
+                }
+                searchEditText.requestFocus();
+                return true;
+            }
+        default:return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * 当用户输入的通知搜索关键字变化时，调用此方法，来更新筛选结果。
+     * @param newText 新的搜索关键字
+     */
+    private void onSearchTextChanged(String newText){
+        // Called when the action bar search text has changed.  Update
+        // the search filter, and restart the loader to do a new query
+        // with this filter.
+        if(newText != null){
+            newText = newText.trim();
+            if(newText.length() == 0)
+                newText = null;
+        }
+        // Don't do anything if the filter hasn't actually changed.
+        // Prevents restarting the loader when restoring state.
+        if (mFilter == null && newText == null)
+            return;
+        if (mFilter != null && mFilter.equals(newText))
+            return;
+        mFilter = newText;
+        getLoaderManager().restartLoader(0, null, ListPostsFragment.this);
+        return;
+    }
+
+    /**
+     * <p><strong>Note</strong>：在{@link Build.VERSION_CODES.HONEYCOMB}以下（不包括
+     * {@link Build.VERSION_CODES.HONEYCOMB HONEYCOMB}）版本使用。</p>
+     * {@link Build.VERSION_CODES.HONEYCOMB HONEYCOMB}以下版本没有{@link android.widget.SearchView}，
+     * 用此方法生成并装入用于代替它的{@link EditText}。
+     * @return 新生成的用于代替{@link android.widget.SearchView SearchView}的{@link EditText}
+     */
+    private EditText insertSearchEditText(){
+        final EditText mSearchEditText = new EditText(getActivity());
+        mSearchEditText.setId(SEARCH_EDIT_TEXT);
+        mSearchEditText.setHint(R.string.search_hint);
+        mSearchEditText.setSingleLine();
+        mSearchEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mSearchEditText.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                onSearchTextChanged(s.toString());
+                if(s.length() == 0){
+                    InputMethodManager imm = (InputMethodManager)
+                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), 0);
+                    mLinearLayout.removeView(mSearchEditText);
+                }
+            }
+        });
+        mLinearLayout.addView(mSearchEditText, 0);
+        return mSearchEditText;
     }
 
     @Override

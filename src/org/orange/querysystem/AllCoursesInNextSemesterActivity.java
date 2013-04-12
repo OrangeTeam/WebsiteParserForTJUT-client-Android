@@ -2,11 +2,9 @@ package org.orange.querysystem;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.orange.querysystem.R;
-import org.orange.querysystem.SettingsActivity;
+import org.orange.querysystem.AllCoursesActivity.CourseToSimpleCourse;
 import org.orange.querysystem.content.InsertDBFragmentActivity;
 import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
@@ -16,9 +14,7 @@ import org.orange.querysystem.util.ReadDB;
 import org.orange.querysystem.util.ReadDB.OnPostExcuteListerner;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
-import util.BitOperate.BitOperateException;
 import util.webpage.Course;
-import util.webpage.Course.TimeAndAddress;
 import util.webpage.Student;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -175,42 +171,22 @@ public class AllCoursesInNextSemesterActivity extends FragmentActivity implement
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-		showCoursesInfo(courses);
+		showCoursesInfo(courses, AllCoursesActivity.mCourseToSimpleCourse);
 	}
     
-    public void showCoursesInfo(ArrayList<Course> courses){
+    public void showCoursesInfo(ArrayList<Course> courses, CourseToSimpleCourse converter){
 		mTabsAdapter.clear();
         currentTime = (TextView)findViewById(R.id.currentTime);
         currentTime.setText("下学期总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
         
 		Bundle[] args = new Bundle[8];
-    	
-    	/*String[星期几][第几大节]*/
-		LinkedList<SimpleCourse>[][] lesson = new LinkedList[8][14];
-		for(int day=0;day<=7;day++)
-    		for(int period=1;period<=13;period++)
-    			lesson[day][period] = new LinkedList<SimpleCourse>();
-		//根据课程时间，把课程排到课表中
-		for(Course course:courses){
-			List<TimeAndAddress> times = course.getTimeAndAddress();
-			if(!times.isEmpty())
-				for(TimeAndAddress time:times)
-					for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)			
-						for(int period = 1; period<=13; period++)
-							try{
-								if(time.hasSetDay(dayOfWeek)&&time.hasSetPeriod(period)){
-									lesson[dayOfWeek][period].addLast(new SimpleCourse(course.getId(),course.getName(),String.valueOf(period), time.getWeekString()+ "          " + time.getAddress()));
-								}
-							} catch(BitOperateException e){
-								e.printStackTrace();
-							}
-			else
-				lesson[7][1].addLast(new SimpleCourse(course.getId(),course.getName(), null, null));
-		}
+
+		List<SimpleCourse>[][] lesson = AllCoursesActivity.getTimeTable(courses, converter);
+
 		//把每天的课程放到传到ListCoursesFragment的参数容器中
 		for(int dayOfWeek = 0; dayOfWeek<=7; dayOfWeek++){
     		ArrayList<SimpleCourse> coursesInADay = new ArrayList<SimpleCourse>();
-    		for(int period = 1; period<=13; period++){
+			for(int period = 1; period < lesson[dayOfWeek].length; period++){
     			for(SimpleCourse course:lesson[dayOfWeek][period])
     				coursesInADay.add(course);
     		}
@@ -251,8 +227,7 @@ public class AllCoursesInNextSemesterActivity extends FragmentActivity implement
 			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 
 		mTabHost.setCurrentTab(mDayOfWeek!=Calendar.SUNDAY ? mDayOfWeek-Calendar.SUNDAY : 7);
-    }
-	
+	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)

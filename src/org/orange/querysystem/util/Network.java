@@ -13,30 +13,25 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 public class Network {
-	private static final String DEBUG_TAG = "NetworkUtility";
-	private static Network instance;
-	private static Context mContext = null;
-	private static ConnectivityManager mConnectivityManager;
-
-
-	private Network(Context context){
-		mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		mContext = context;
-		Log.d(DEBUG_TAG, "新Network工具类");
-	}
 	/**
-	 * 取得{@link Network 本类}的的实例。会尽量返回之前创建过的实例。
-	 * @param context 上下文环境
-	 * @return {@link Network 本类}的的实例
+	 * {@link #openNoConnectionDialog(FragmentActivity)}打开的{@link DialogFragment}的tag
 	 */
-	public static Network getInstance(Context context){
-		if(mContext == null || mContext != context){
-			instance = new Network(context);
-		}
-		return instance;
+	public static final String FRAGMENT_TAG_NO_CONNECTION_DIALOG =
+			Network.class.getName() + "noConnectionDialog";
+	/**
+	 * 禁止实例化（因为本类只有静态方法，实例无用）
+	 */
+	private Network(){}
+
+	/**
+	 * 根据{@link Context}取得{@link ConnectivityManager}
+	 * @param context 应用程序环境
+	 * @return {@code context.getSystemService(Context.CONNECTIVITY_SERVICE)}
+	 */
+	public static ConnectivityManager getConnectivityManager(Context context){
+		return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
 
 	/**
@@ -44,31 +39,31 @@ public class Network {
 	 * @return null for no Internet connection or one of TYPE_MOBILE, TYPE_WIFI, TYPE_WIMAX,
 	 * TYPE_ETHERNET, TYPE_BLUETOOTH, or other types defined by ConnectivityManager
 	 */
-	public Integer getActiveNetworkType(){
-		NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
+	public static Integer getActiveNetworkType(Context context){
+		NetworkInfo networkInfo = getConnectivityManager(context).getActiveNetworkInfo();
 		return networkInfo==null||!networkInfo.isConnected() ? null : networkInfo.getType();
 	}
 	/**
 	 * 是否可以建立Internet连接。
 	 * @return 可以返回true；不可能建立返回false
 	 */
-	public boolean isConnected(){
-		return getActiveNetworkType() != null;
+	public static boolean isConnected(Context context){
+		return getActiveNetworkType(context) != null;
 	}
 	/**
 	 * 是否正在通过{@link ConnectivityManager#TYPE_MOBILE 移动网络}联网。
 	 * @return 是返回true；不是返回false
 	 */
-	public boolean isMobileConnected(){
-		Integer type = getActiveNetworkType();
+	public static boolean isMobileConnected(Context context){
+		Integer type = getActiveNetworkType(context);
 		return type!=null && type==ConnectivityManager.TYPE_MOBILE;
 	}
 	/**
 	 * 是否正在通过{@link ConnectivityManager#TYPE_WIFI WiFi}联网。
 	 * @return 是返回true；不是返回false
 	 */
-	public boolean isWifiConnected(){
-		Integer type = getActiveNetworkType();
+	public static boolean isWifiConnected(Context context){
+		Integer type = getActiveNetworkType(context);
 		return type!=null && type==ConnectivityManager.TYPE_WIFI;
 	}
 
@@ -77,11 +72,11 @@ public class Network {
 	 * @return 成功打开返回true，失败返回false
 	 * @see android.provider.Settings#ACTION_WIRELESS_SETTINGS
 	 */
-	public boolean openWirelessSettings(){
+	public static boolean openWirelessSettings(Context context){
 		Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
 		// 验证此intent可被响应
-		if(mContext.getPackageManager().queryIntentActivities(intent, 0).size() > 0){
-			mContext.startActivity(intent);
+		if(context.getPackageManager().queryIntentActivities(intent, 0).size() > 0){
+			context.startActivity(intent);
 			return true;
 		}else
 			return false;
@@ -93,7 +88,8 @@ public class Network {
 	 */
 	public static void openNoConnectionDialog(FragmentActivity fragmentActivity){
 		NoConnectionDialogFragment newDialog = new NoConnectionDialogFragment();
-		newDialog.show(fragmentActivity.getSupportFragmentManager(), "noConnectionDialog");
+		newDialog.show(fragmentActivity.getSupportFragmentManager(),
+				FRAGMENT_TAG_NO_CONNECTION_DIALOG);
 	}
 
 	/**
@@ -110,7 +106,7 @@ public class Network {
 			.setPositiveButton(android.R.string.yes, new OnClickListener(){
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					Network.getInstance(getActivity()).openWirelessSettings();
+					openWirelessSettings(getActivity());
 				}
 			})
 			.setNegativeButton(android.R.string.cancel, new OnClickListener(){

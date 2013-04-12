@@ -281,7 +281,7 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		if(Network.getInstance(getApplicationContext()).isConnected()){
+			if(Network.isConnected(this)){
     			start_resume = 1;
         		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行

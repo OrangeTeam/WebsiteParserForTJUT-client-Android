@@ -118,7 +118,7 @@ public class PostUpdater {
 				return false;
 			}
 		}
-		if(!Network.getInstance(mContext).isConnected()){
+		if(!Network.isConnected(mContext)){
 			Toast.makeText(mContext, R.string.no_network, Toast.LENGTH_SHORT).show();
 			return false;
 		}
@@ -280,7 +280,7 @@ public class PostUpdater {
 
 			if(posts == null){
 				// 检查是否正使用移动网络，在移动网络下是否可使用备用方案
-				if(SettingsActivity.useAlternativeInMobileConnection(mContext) || !Network.getInstance(mContext).isMobileConnected()){
+				if(SettingsActivity.useAlternativeInMobileConnection(mContext) || !Network.isMobileConnected(mContext)){
 					//使用备用方案
 					MyOnReadPageListener readPageListener = new MyOnReadPageListener();
 					try {

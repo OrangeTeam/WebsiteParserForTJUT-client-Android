@@ -300,7 +300,7 @@ public class StudentInfoActivity extends ListActivity{
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
-    		if(Network.getInstance(this).isConnected()){
+			if(Network.isConnected(this)){
     			new StudentInfoFromWeb().execute();
 //    			start_resume = 1;
 //        		startActivity(new Intent(this, InsertDBFragmentActivity.class));

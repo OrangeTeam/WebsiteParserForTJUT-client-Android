@@ -15,8 +15,6 @@
  */
 package org.orange.querysystem;
 
-import org.orange.querysystem.R;
-import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListPostsFragment;
 import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.PostUpdater;
@@ -32,11 +30,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TabHost;
-import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,18 +96,6 @@ public class PostsActivity extends FragmentActivity{
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
-		}else{
-			TabWidget tabWidget = mTabHost.getTabWidget();
-			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
-				View child = tabWidget.getChildAt(i);  
-
-				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
-				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
-				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
-				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
-
-				//child.getLayoutParams().height = tv.getHeight();
-			}
 		}
 		loadPosts();
 	}
@@ -168,11 +151,6 @@ public class PostsActivity extends FragmentActivity{
 		String sourceString = getResources().getText(getSourceString(source)).toString();
 		mTabsAdapter.addTab(mTabHost.newTabSpec(sourceString).setIndicator(sourceString),
 				ListPostsFragment.class, ListPostsFragment.buildArgument(source));
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			
-		}else{
-			mTabHost.getTabWidget().getChildAt(mTabHost.getTabWidget().getChildCount()-1).setBackgroundResource(R.drawable.tab);
-		}				
 	}
 
 	public void loadPosts(){

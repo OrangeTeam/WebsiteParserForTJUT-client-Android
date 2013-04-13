@@ -45,13 +45,11 @@ import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-import android.widget.TabWidget;
 import android.widget.TextView;
 
 public class AllCoursesActivity extends FragmentActivity implements OnPostExcuteListerner{
@@ -96,20 +94,8 @@ public class AllCoursesActivity extends FragmentActivity implements OnPostExcute
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
-		}else{
-			TabWidget tabWidget = mTabHost.getTabWidget();
-			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
-				View child = tabWidget.getChildAt(i);  
+		}
 
-				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
-				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
-				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
-				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
-
-				//child.getLayoutParams().height = tv.getHeight();
-			}
-		}				
-		
 		Calendar calendar = Calendar.getInstance();
 		mYear = calendar.get(Calendar.YEAR);
 		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
@@ -214,21 +200,6 @@ public class AllCoursesActivity extends FragmentActivity implements OnPostExcute
 		}
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
-			TabWidget tabWidget = mTabHost.getTabWidget();
-			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
-				View child = tabWidget.getChildAt(i);
-
-				child.setBackgroundResource(R.drawable.tab);
-
-				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
-				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
-				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
-				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
-
-				//TODO Do not use hard-coded pixel values in your application code
-				//{@link http://developer.android.com/intl/zh-CN/guide/practices/screens_support.html#screen-independence}
-				child.getLayoutParams().height = 80;
-			}
 		}else
 			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 

@@ -52,9 +52,7 @@ public class MainMenuActivity extends Activity{
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
 			title.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
-		}else{
-			
-		}				
+		}
     	//判断是否第一次登陆
 		if(!SettingsActivity.hasSetAccountStudentIDAndPassword(this)){
     		promptOfDownloadDataDialog();

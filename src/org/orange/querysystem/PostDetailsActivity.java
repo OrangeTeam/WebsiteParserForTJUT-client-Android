@@ -5,7 +5,6 @@ package org.orange.querysystem;
 
 import java.io.IOException;
 
-import org.orange.querysystem.R;
 import org.orange.querysystem.util.Network;
 import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;

@@ -2,8 +2,6 @@ package org.orange.querysystem;
 
 import java.util.ArrayList;
 
-import org.orange.querysystem.R;
-import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.dialog.TimeAndAddressSettingDialog;
 import org.orange.querysystem.content.dialog.TimeAndAddressSettingDialog.TimeAndAddressSettingDialogListener;
 import org.orange.querysystem.util.ParcelableTimeAndAddress;

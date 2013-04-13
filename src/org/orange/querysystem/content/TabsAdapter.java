@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import org.orange.querysystem.R;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -29,8 +30,10 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
+import android.widget.TextView;
 
 /**
  * This is a helper class that implements the management of tabs and all
@@ -101,7 +104,22 @@ public class TabsAdapter extends FragmentPagerAdapter
         TabInfo info = new TabInfo(clss, args);
         mTabs.add(info);
         mTabHost.addTab(tabSpec);
+        setTabForIfLowerThanHONEYCOMB();
         notifyDataSetChanged();
+    }
+    private void setTabForIfLowerThanHONEYCOMB(){
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+            View child = mTabHost.getTabWidget().getChildAt(getCount()-1);
+            child.setBackgroundColor(0xFFB5E61D);
+            TextView tv = (TextView)child.findViewById(android.R.id.title);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
+            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
+            //TODO Do not use hard-coded pixel values in your application code
+            //{@link http://developer.android.com/intl/zh-CN/guide/practices/screens_support.html#screen-independence}
+            //child.getLayoutParams().height = tv.getHeight();
+            child.getLayoutParams().height = 80;
+        }
     }
 	/**
 	 * 清空Tabs

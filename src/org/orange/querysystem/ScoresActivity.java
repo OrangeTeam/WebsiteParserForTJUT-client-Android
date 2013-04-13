@@ -16,8 +16,7 @@
 package org.orange.querysystem;
 
 import java.util.ArrayList;
-import org.orange.querysystem.R;
-import org.orange.querysystem.SettingsActivity;
+
 import org.orange.querysystem.content.InsertDBFragmentActivity;
 import org.orange.querysystem.content.ListScoresFragment;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
@@ -44,14 +43,12 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -96,17 +93,6 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 		}else{
 			//低版本使用的Title
 			((TextView)findViewById(R.id.currentTime)).setText(R.string.transcripts);
-			TabWidget tabWidget = mTabHost.getTabWidget();
-			for (int i = 0; i < tabWidget.getChildCount(); i++) {  
-				View child = tabWidget.getChildAt(i);  
-
-				final TextView tv = (TextView)child.findViewById(android.R.id.title);  
-				RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();  
-				params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
-				params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
-
-				//child.getLayoutParams().height = tv.getHeight();
-			}
 		}
 
 		if(savedInstanceState == null){
@@ -256,9 +242,6 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			TabSpec tabSpec = mTabHost.newTabSpec(counter+"学期");
 			mTabsAdapter.addTab(tabSpec.setIndicator((counter++)+"学期"),
 					ListScoresFragment.class, arg);
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-				mTabHost.getTabWidget().getChildAt(counter-2).setBackgroundResource(R.drawable.tab);
-			}		
 		}
     }
 

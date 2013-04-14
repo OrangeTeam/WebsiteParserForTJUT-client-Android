@@ -107,16 +107,6 @@ public class PostsActivity extends FragmentActivity{
 	}
 
 	/* (non-Javadoc)
-	 * @see android.app.Activity#onWindowFocusChanged(boolean)
-	 */
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-
-		mTabsAdapter.adjustSelectedTabToCenter();
-	}
-
-	/* (non-Javadoc)
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
 	 */
 	@Override

@@ -276,17 +276,6 @@ public class AllCoursesActivity extends FragmentActivity implements OnPostExcute
 	}
 
 	/* (non-Javadoc)
-	 * @see android.app.Activity#onWindowFocusChanged(boolean)
-	 */
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		// TODO Auto-generated method stub
-		super.onWindowFocusChanged(hasFocus);
-
-		mTabsAdapter.adjustSelectedTabToCenter();
-	}
-
-	/* (non-Javadoc)
 	 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
 	 */
 	@Override

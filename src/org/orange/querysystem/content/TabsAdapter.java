@@ -115,11 +115,13 @@ public class TabsAdapter extends FragmentPagerAdapter
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
             params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
-            //TODO Do not use hard-coded pixel values in your application code
-            //{@link http://developer.android.com/intl/zh-CN/guide/practices/screens_support.html#screen-independence}
-            //child.getLayoutParams().height = tv.getHeight();
-            child.getLayoutParams().height = 80;
+            params.setMargins(dp2px(10), dp2px(4), dp2px(10), dp2px(4));
+            child.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;
         }
+    }
+    private int dp2px(int dp){
+        return (int) (mTabHost.getContext().getResources().getDisplayMetrics().density * dp
+                + 0.5f);
     }
 	/**
 	 * 清空Tabs

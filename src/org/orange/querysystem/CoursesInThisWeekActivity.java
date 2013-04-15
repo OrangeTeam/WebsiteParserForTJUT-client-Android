@@ -201,8 +201,7 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 
 		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY-1 : 6);
-		
+		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY : 7);
 	}
 
 	private static final CourseToSimpleCourse mCourseToSimpleCourse = new CourseToSimpleCourse(){

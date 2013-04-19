@@ -158,7 +158,8 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 		mTabsAdapter.clear();
 
 		Bundle[] args = new Bundle[8];
-		List<SimpleCourse>[][] lesson = AllCoursesActivity.getTimeTable(courses, converter);
+		List<SimpleCourse>[][] lesson = AllCoursesActivity.getTimeTable(courses, converter,
+				SettingsActivity.getCurrentWeekNumber(this));
 
 		//把每天的课程放到传到ListCoursesFragment的参数容器中
 		for(int dayOfWeek = 0; dayOfWeek<=7; dayOfWeek++){

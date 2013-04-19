@@ -120,7 +120,17 @@ public class AllCoursesActivity extends CoursesInThisWeekActivity{
 	 */
 	public static List<SimpleCourse>[][] getTimeTable(List<Course> courses,
 			CourseToSimpleCourse converter){
-		boolean hasPosition;
+		return getTimeTable(courses, converter, null);
+	}
+	/**
+	 * 把课程排到课程表里。返回排好的与课程表类似的二维表
+	 * @param courses 待排的课程
+	 * @param weekNumber 仅留下第weekNumber周的课
+	 * @return 类似课程表的二维表，第一个索引为星期（0表示周日，1～6表示表周一至周六，7表示星期未知），
+	 * 第二个索引为节次（0不用都是null，1～13表示1～13节课，14表示节次未知）。表中每一格是一个List，可能有多门课。
+	 */
+	public static List<SimpleCourse>[][] getTimeTable(List<Course> courses,
+			CourseToSimpleCourse converter, Integer weekNumber){
 		@SuppressWarnings("unchecked")
 		LinkedList<SimpleCourse>[][] timeTable = new LinkedList[8][15];
 		for(int day=0 ; day<timeTable.length ; day++)
@@ -128,11 +138,19 @@ public class AllCoursesActivity extends CoursesInThisWeekActivity{
 				timeTable[day][period] = new LinkedList<SimpleCourse>();
 		try{
 			for(Course course:courses){
-				hasPosition = false;
+				boolean hasUnknownDayOfWeek = false;	//已经在“星期未知”里，此课程有未知星期的时间地点
+				if(course.getTimeAndAddress().isEmpty() && weekNumber == null)
+					timeTable[7][1].addLast(converter.toSimpleCourse(course, null, null));
 				for(TimeAndAddress time:course.getTimeAndAddress()){
-					if(time.isEmpty(TimeAndAddress.Property.DAY))
+					if(weekNumber != null && !time.hasSetWeek(weekNumber))
 						continue;
-					hasPosition = true;
+					if(time.isEmpty(TimeAndAddress.Property.DAY)){
+						if(!hasUnknownDayOfWeek){
+							timeTable[7][1].addLast(converter.toSimpleCourse(course, null, null));
+							hasUnknownDayOfWeek = true;
+						}
+						continue;
+					}
 					for(int dayOfWeek = 0; dayOfWeek<=6; dayOfWeek++)
 						if(time.hasSetDay(dayOfWeek)){
 							if(time.isEmpty(TimeAndAddress.Property.PERIOD))
@@ -144,8 +162,6 @@ public class AllCoursesActivity extends CoursesInThisWeekActivity{
 								}
 						}
 				}
-				if(!hasPosition)	//星期未知
-					timeTable[7][1].addLast(converter.toSimpleCourse(course, null, null));
 			}
 		} catch(BitOperateException e){
 			throw new RuntimeException(e);

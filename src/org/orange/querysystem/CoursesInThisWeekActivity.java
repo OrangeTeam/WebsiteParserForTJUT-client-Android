@@ -58,12 +58,7 @@ import android.widget.TextView;
 public class CoursesInThisWeekActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private static final int REQUEST_UPDATE_COURSES_FROM_NETWORK = 1;
 	private TextView currentTime;
-	
-	protected static final int COURSE_NUMBER = 6;
-	public static final String ARRAYLIST_OF_COURSES_KEY
-		= CoursesInThisWeekActivity.class.getName()+"ARRAYLIST_OF_COURSES_KEY";
-	static final int DATE_DIALOG_ID = 1;
-	
+
 	TabHost mTabHost;
     ViewPager  mViewPager;
     TabsAdapter mTabsAdapter;
@@ -151,8 +146,8 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 			else
 				showDialog();
 	}
-    
-    public void showCoursesInfo(ArrayList<Course> courses, CourseToSimpleCourse converter){
+
+	public void showCoursesInfo(List<Course> courses, CourseToSimpleCourse converter){
 		mTabsAdapter.clear();
 		Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
         currentTime = (TextView)findViewById(R.id.currentTime);

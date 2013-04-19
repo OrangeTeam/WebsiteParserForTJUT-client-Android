@@ -16,12 +16,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 public class InsertDBFragmentActivity extends Activity{
+	public static final int RESULT_NO_STUDENT_ID_OR_PASSWORD = RESULT_FIRST_USER + 1;
+	public static final int RESULT_CANNOT_LOGIN = RESULT_FIRST_USER + 2;
+
 	private String userName = null;
 	private String password = null;
-	private TextView refresh;
 	private ProgressBar progressBar;
 	public static final int LOG_IN_ERROR_DIALOG_ID = 2;
 	public static boolean logIn_error = false;
@@ -32,7 +33,6 @@ public class InsertDBFragmentActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.refresh_fragment);
         
-        refresh = (TextView)findViewById(R.id.refresh);
 		progressBar = (ProgressBar)findViewById(R.id.progressBar);
         loadCourses();
     }
@@ -43,6 +43,7 @@ public class InsertDBFragmentActivity extends Activity{
 		if(userName != null && password != null)
 			new UpdateCoursesListToDatabase().execute(userName, password);
 		else{
+			setResult(RESULT_NO_STUDENT_ID_OR_PASSWORD);
 			logIn_error = true;
 			finish();
 		}
@@ -61,10 +62,10 @@ public class InsertDBFragmentActivity extends Activity{
 				studentInfDBAdapter.open();
 				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.本学期修读课程),args[0]);
 				studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.已选下学期课程),args[0]);
+				setResult(RESULT_OK);
 			} catch(SQLiteException e){
 				e.printStackTrace();
 			} catch (ParserException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -76,13 +77,11 @@ public class InsertDBFragmentActivity extends Activity{
 		
 		@Override
 		protected void onPreExecute() {
-			// TODO Auto-generated method stub
 			super.onPreExecute();
 			myParserListener = new MyParserListener();
 			try {
 				parser = new SchoolWebpageParser(myParserListener);
 			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -105,6 +104,7 @@ public class InsertDBFragmentActivity extends Activity{
 				Log.e(TAG, message);
 				switch (code) {
 				case ParserListener.ERROR_CANNOT_LOGIN:
+					setResult(RESULT_CANNOT_LOGIN);
 					logIn_error = true;
 					break;
 				default:

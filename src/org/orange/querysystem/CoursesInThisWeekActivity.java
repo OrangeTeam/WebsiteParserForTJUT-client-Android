@@ -56,8 +56,7 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
 public class CoursesInThisWeekActivity extends FragmentActivity implements OnPostExcuteListerner{
-	private int start_resume = 0;
-	
+	private static final int REQUEST_UPDATE_COURSES_FROM_NETWORK = 1;
 	private TextView currentTime;
 	
 	protected static final int COURSE_NUMBER = 6;
@@ -101,21 +100,7 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 
         readDB();
 	}
-	
-	@Override
-	protected void onResume(){
-		super.onResume();
-		if(InsertDBFragmentActivity.logIn_error == true){
-			showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
-		}
-		if(start_resume == 0){
-			
-		}
-		else if(start_resume == 1){
-			readDB();
-		}
-	}
-	
+
 	@Override
     protected Dialog onCreateDialog(int id) {
 		// TODO Auto-generated method stub
@@ -251,20 +236,36 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
 			if(Network.isConnected(this)){
-    			start_resume = 1;
-        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
-        		//TODO startActivity后不会继续运行
+				startActivityForResult(new Intent(this, InsertDBFragmentActivity.class),
+						REQUEST_UPDATE_COURSES_FROM_NETWORK);
             }
             else{
             	Network.openNoConnectionDialog(this);
             }
     	}
     	else if(item.getItemId() == 2){
-    		start_resume = 1;
     		startActivity(new Intent(this, SettingsActivity.class));
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == REQUEST_UPDATE_COURSES_FROM_NETWORK){
+			switch(resultCode){
+			case InsertDBFragmentActivity.RESULT_OK:
+				readDB();
+				break;
+			case InsertDBFragmentActivity.RESULT_CANNOT_LOGIN:
+				showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
+				break;
+			case InsertDBFragmentActivity.RESULT_NO_STUDENT_ID_OR_PASSWORD:
+				showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
+				break;
+			}
+		}
+	}
 
 	private void showDialog(){
 		new NoCoursesDialogFragment().show(getSupportFragmentManager(), "NoCoursesInDatabaseDialog");
@@ -280,7 +281,9 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 						new OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								startActivity(new Intent(getActivity(), InsertDBFragmentActivity.class));
+								getActivity().startActivityForResult(
+										new Intent(getActivity(), InsertDBFragmentActivity.class),
+										REQUEST_UPDATE_COURSES_FROM_NETWORK);
 							}
 						})
 				.setNegativeButton(R.string.no_courses_in_database_dialog_negative_update_later,

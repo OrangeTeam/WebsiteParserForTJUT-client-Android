@@ -227,14 +227,15 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 	}
 
 	/**
-	 * 把时间地点{@link EditText}列表的第{@code index}个更新，并设置{@link TimeAndAddress}列表的第{@code index}个
+	 * 更新，插入或删除（aTimeAndAddress没有周次）时间地点{@link EditText}列表[{@code index}]
+	 * 和{@link TimeAndAddress}列表[{@code index}]
 	 * @param index 索引
 	 * @param aTimeAndAddress 新（被更新的）时间地点
 	 */
 	private void addTimeAndAddress(int index, TimeAndAddress aTimeAndAddress){
 		if(index < 0)
 			throw new IllegalArgumentException("非法索引：" + index);
-		boolean isEmptyTimeAndAddress = aTimeAndAddress.isEmpty();
+		boolean isEmptyTimeAndAddress = aTimeAndAddress.isEmpty(TimeAndAddress.Property.WEEK);
 		if(!isEmptyTimeAndAddress)
 			((EditText)course_time_and_address_placeholder.getChildAt(index)).setText(aTimeAndAddress.toString(false));
 		//如果这是新时间地点，应该有index==mCourse.getTimeAndAddress().size()

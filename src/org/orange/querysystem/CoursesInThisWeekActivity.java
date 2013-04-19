@@ -57,43 +57,50 @@ import android.widget.TextView;
 
 public class CoursesInThisWeekActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private static final int REQUEST_UPDATE_COURSES_FROM_NETWORK = 1;
-	private TextView currentTime;
 
-	TabHost mTabHost;
-    ViewPager  mViewPager;
-    TabsAdapter mTabsAdapter;
+	protected TabHost mTabHost;
+	private ViewPager mViewPager;
+	protected TabsAdapter mTabsAdapter;
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
-	@TargetApi(11)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.fragment_tabs_pager);
-		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setup();
-
 		mViewPager = (ViewPager)findViewById(R.id.pager);
-
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-		
-		//3.0以上版本，使用ActionBar
+
+		setTitle();
+
+        readDB();
+	}
+	/**
+	 * 设置标题区域
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	protected void setTitle(){
+		TextView currentTime = (TextView)findViewById(R.id.currentTime);
+		String title = getString(R.string.curriculum_schedule_in_this_week);
+		Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
+		if(weekNumber != null)
+			title += "(" + getString(R.string.week_of_semester, weekNumber) + ")";
+		//3.0以及以上版本，使用ActionBar，3.0以下版本使用currentTime
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			//隐藏低版本用的标题
+			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 			ActionBar mActionBar = getActionBar();
-			String title = getResources().getString(R.string.curriculum_schedule_in_this_week);
-			Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
-			if(weekNumber != null)
-				title +="("+getResources().getString(R.string.week_of_semester,weekNumber)+")";
 			mActionBar.setTitle(title);
 			//横屏时，为节省空间隐藏ActionBar
 			if(getResources().getConfiguration().orientation == 
 					android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 				mActionBar.hide();
-		}
-
-        readDB();
+		}else
+			currentTime.setText(title + "\t\t" + DateFormat.getDateInstance().format(new Date()));
 	}
 
 	@Override
@@ -149,12 +156,8 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 
 	public void showCoursesInfo(List<Course> courses, CourseToSimpleCourse converter){
 		mTabsAdapter.clear();
-		Integer weekNumber = SettingsActivity.getCurrentWeekNumber(this);
-        currentTime = (TextView)findViewById(R.id.currentTime);
-        currentTime.setText("本周课程表" + "        " + DateFormat.getDateInstance().format(new Date()) + "    " + "第" + weekNumber + "周");
-        
-		Bundle[] args = new Bundle[8];
 
+		Bundle[] args = new Bundle[8];
 		List<SimpleCourse>[][] lesson = AllCoursesActivity.getTimeTable(courses, converter);
 
 		//把每天的课程放到传到ListCoursesFragment的参数容器中
@@ -180,10 +183,6 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 			mTabsAdapter.addTab(tabSpec.setIndicator(daysOfWeek[day]),
 					ListCoursesFragment.class, args[day]);
 		}
-
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
-		}else
-			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 
 		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY : 7);
@@ -228,7 +227,6 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
 			if(Network.isConnected(this)){
 				startActivityForResult(new Intent(this, InsertDBFragmentActivity.class),

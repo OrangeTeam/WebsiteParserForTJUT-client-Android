@@ -8,6 +8,8 @@
 
     <string name="add_course">增加课程</string>
 	<string name="curriculum_schedule_in_this_week">本周课程表</string>
+	<string name="curriculum_schedule_in_this_semester">总课程表</string>
+	<string name="curriculum_schedule_in_next_semester">下学期课程表</string>
 	<string name="week_of_semester">第%d周</string>
 	<string name="transcripts">成绩单</string>
 

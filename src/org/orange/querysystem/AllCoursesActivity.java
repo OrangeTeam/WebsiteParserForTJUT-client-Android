@@ -15,8 +15,10 @@
  */
 package org.orange.querysystem;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,48 +29,30 @@ import util.BitOperate.BitOperateException;
 import util.webpage.Course;
 import util.webpage.Course.TimeAndAddress;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.LinearLayout;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
 public class AllCoursesActivity extends CoursesInThisWeekActivity{
-	private int mYear = 0;
-	private int mMonth = 0;
-	private int mDay = 0;
-	private int mWeek = 0;
-	private int mDayOfWeek = 0;
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
-	@TargetApi(11)
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
+	@TargetApi(11)
+	protected void setTitle() {
+		super.setTitle();
+		String title = getString(R.string.curriculum_schedule_in_this_semester);
 		//3.0以上版本，使用ActionBar
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			ActionBar mActionBar = getActionBar();
-			mActionBar.setTitle("总课程表");
-		}
-
-		Calendar calendar = Calendar.getInstance();
-		mYear = calendar.get(Calendar.YEAR);
-		mMonth = calendar.get(Calendar.MONTH);//比正常少一个月
-		mDay = calendar.get(Calendar.DAY_OF_MONTH);
-        mWeek = calendar.get(Calendar.WEEK_OF_YEAR);//正常
-        mDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);//比正常的多一天
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			getActionBar().setTitle(title);
+		else
+			((TextView)findViewById(R.id.currentTime))
+				.setText(title + "\t\t" + DateFormat.getDateInstance().format(new Date()));
 	}
 
 	@Override
     public void showCoursesInfo(List<Course> courses, CourseToSimpleCourse converter){
 		mTabsAdapter.clear();
-		TextView currentTime = (TextView)findViewById(R.id.currentTime);
-        currentTime.setText("总课程表" + "        " + mYear + "-" + (mMonth+1) + "-" + mDay);
-        
+
 		Bundle[] args = new Bundle[8];
 
 		List<SimpleCourse>[][] lesson = getTimeTable(courses, converter);
@@ -96,11 +80,8 @@ public class AllCoursesActivity extends CoursesInThisWeekActivity{
 					ListCoursesFragment.class, args[day]);
 		}
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
-		}else
-			currentTime.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
-
-		mTabHost.setCurrentTab(mDayOfWeek!=Calendar.SUNDAY ? mDayOfWeek-Calendar.SUNDAY : 7);
+		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY : 7);
 	}
 
 	public static final CourseToSimpleCourse mCourseToSimpleCourse = new CourseToSimpleCourse(){

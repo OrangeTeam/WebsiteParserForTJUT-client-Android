@@ -41,6 +41,11 @@
 	<string name="grade_point">课程绩点</string>
 	<string name="time_and_address">时间地点</string>
 
+	<!-- used in CoursesActivity -->
+	<string name="no_courses_in_database_dialog_title">尚未添加课程</string>
+	<string name="no_courses_in_database_dialog_message">您尚未添加课程，现在自动从教务处网站读取？\n您也可以通过菜单项以后更新。</string>
+	<string name="no_courses_in_database_dialog_positive_update_now">现在更新</string>
+	<string name="no_courses_in_database_dialog_negative_update_later">以后再说</string>
     <!-- used in ListCoursesFragment.java -->
     <string name="no_course">今日无课</string>
     <!-- used in ShowOnePostActivity.java -->

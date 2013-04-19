@@ -37,10 +37,12 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
@@ -159,7 +161,10 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-			showCoursesInfo(courses, mCourseToSimpleCourse);
+			if(courses != null)
+				showCoursesInfo(courses, mCourseToSimpleCourse);
+			else
+				showDialog();
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses, CourseToSimpleCourse converter){
@@ -260,4 +265,27 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
+
+	private void showDialog(){
+		new NoCoursesDialogFragment().show(getSupportFragmentManager(), "NoCoursesInDatabaseDialog");
+	}
+
+	public static class NoCoursesDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return new AlertDialog.Builder(getActivity())
+				.setTitle(R.string.no_courses_in_database_dialog_title)
+				.setMessage(R.string.no_courses_in_database_dialog_message)
+				.setPositiveButton(R.string.no_courses_in_database_dialog_positive_update_now,
+						new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								startActivity(new Intent(getActivity(), InsertDBFragmentActivity.class));
+							}
+						})
+				.setNegativeButton(R.string.no_courses_in_database_dialog_negative_update_later,
+						null)
+				.create();
+		}
+	}
 }

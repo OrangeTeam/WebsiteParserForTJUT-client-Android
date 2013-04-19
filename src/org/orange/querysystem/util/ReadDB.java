@@ -8,7 +8,6 @@ import util.webpage.Course;
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 	public interface OnPostExcuteListerner{
@@ -61,10 +60,7 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 
 	@Override
 	protected void onPostExecute(ArrayList<Course> courses){
-		if(courses != null)
-			listener.onPostReadFromDB(courses);	
-		else{
-			Toast.makeText(context, "数据库无数据，请刷新！", Toast.LENGTH_LONG).show();			
-		}
+		if(listener != null)
+			listener.onPostReadFromDB(courses);
 	}	
 }

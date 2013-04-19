@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.orange.querysystem.CoursesInThisWeekActivity.NoCoursesDialogFragment;
 import org.orange.querysystem.content.InsertDBFragmentActivity;
 import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
@@ -164,7 +165,10 @@ public class AllCoursesActivity extends FragmentActivity implements OnPostExcute
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-			showCoursesInfo(courses, mCourseToSimpleCourse);
+			if(courses != null)
+				showCoursesInfo(courses, mCourseToSimpleCourse);
+			else
+				showDialog();
 	}
     
     public void showCoursesInfo(List<Course> courses, CourseToSimpleCourse converter){
@@ -314,4 +318,8 @@ public class AllCoursesActivity extends FragmentActivity implements OnPostExcute
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
+
+	private void showDialog(){
+		new NoCoursesDialogFragment().show(getSupportFragmentManager(), "NoCoursesInDatabaseDialog");
+	}
 }

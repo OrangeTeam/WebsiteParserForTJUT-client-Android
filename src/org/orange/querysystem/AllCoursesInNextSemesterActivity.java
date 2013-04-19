@@ -37,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AllCoursesInNextSemesterActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private int mYear = 0;
@@ -151,7 +152,10 @@ public class AllCoursesInNextSemesterActivity extends FragmentActivity implement
     
     @Override
 	public void onPostReadFromDB(ArrayList<Course> courses) {
-		showCoursesInfo(courses, AllCoursesActivity.mCourseToSimpleCourse);
+		if(courses != null)
+			showCoursesInfo(courses, AllCoursesActivity.mCourseToSimpleCourse);
+		else
+			Toast.makeText(this, "无下学期课程", Toast.LENGTH_SHORT).show();
 	}
     
     public void showCoursesInfo(ArrayList<Course> courses, CourseToSimpleCourse converter){

@@ -12,6 +12,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,6 +37,7 @@ public class MainMenuActivity extends Activity{
 	@TargetApi(11)
 	@Override
 	public void onCreate(Bundle savedInstanceState){
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
 

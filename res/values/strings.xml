@@ -44,10 +44,14 @@
 	<string name="time_and_address">时间地点</string>
 
 	<!-- used in CoursesActivity -->
-	<string name="no_courses_in_database_dialog_title">尚未添加课程</string>
+	<string name="no_courses_in_database_dialog_title">自动更新课程？</string>
 	<string name="no_courses_in_database_dialog_message">您尚未添加课程，现在自动从教务处网站读取？\n您也可以通过菜单项以后更新。</string>
-	<string name="no_courses_in_database_dialog_positive_update_now">现在更新</string>
-	<string name="no_courses_in_database_dialog_negative_update_later">以后再说</string>
+	<string name="no_courses_in_database_dialog_positive">现在更新</string>
+	<string name="no_courses_in_database_dialog_negative">以后再说</string>
+	<string name="incorrect_id_or_password_dialog_title">用户名或密码错误</string>
+	<string name="incorrect_id_or_password_dialog_message">您设置的用户名或密码错误，现在就去修改？</string>
+	<string name="incorrect_id_or_password_dialog_positive">现在修改</string>
+	<string name="incorrect_id_or_password_dialog_negative">以后再说</string>
     <!-- used in ListCoursesFragment.java -->
     <string name="no_course">今日无课</string>
     <!-- used in ShowOnePostActivity.java -->

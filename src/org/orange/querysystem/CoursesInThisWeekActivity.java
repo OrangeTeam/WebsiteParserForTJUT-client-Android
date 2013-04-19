@@ -57,6 +57,8 @@ import android.widget.TextView;
 
 public class CoursesInThisWeekActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private static final int REQUEST_UPDATE_COURSES_FROM_NETWORK = 1;
+	private static final int DIALOG_NO_COURSES_IN_DATABASE = 1;
+	private static final int DIALOG_INCORRECT_ID_OR_PASSWORD = 2;
 
 	protected TabHost mTabHost;
 	private ViewPager mViewPager;
@@ -151,7 +153,7 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 			if(courses != null)
 				showCoursesInfo(courses, mCourseToSimpleCourse);
 			else
-				showDialog();
+				showDialogFragment(DIALOG_NO_COURSES_IN_DATABASE);
 	}
 
 	public void showCoursesInfo(List<Course> courses, CourseToSimpleCourse converter){
@@ -252,17 +254,25 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 				readDB();
 				break;
 			case InsertDBFragmentActivity.RESULT_CANNOT_LOGIN:
-				showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
-				break;
 			case InsertDBFragmentActivity.RESULT_NO_STUDENT_ID_OR_PASSWORD:
-				showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
+				showDialogFragment(DIALOG_INCORRECT_ID_OR_PASSWORD);
 				break;
 			}
 		}
 	}
-
-	private void showDialog(){
-		new NoCoursesDialogFragment().show(getSupportFragmentManager(), "NoCoursesInDatabaseDialog");
+	private void showDialogFragment(int dialogCode){
+		switch(dialogCode){
+		case DIALOG_NO_COURSES_IN_DATABASE:
+			new NoCoursesDialogFragment().show(getSupportFragmentManager(),
+					"NoCoursesInDatabaseDialog");
+			break;
+		case DIALOG_INCORRECT_ID_OR_PASSWORD:
+			new IncorrectIdOrPasswordDialogFragment().show(getSupportFragmentManager(),
+					"NoCoursesInDatabaseDialog");
+			break;
+		default:
+			throw new IllegalArgumentException("非法参数：" + dialogCode);
+		}
 	}
 
 	public static class NoCoursesDialogFragment extends DialogFragment {
@@ -271,7 +281,7 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 			return new AlertDialog.Builder(getActivity())
 				.setTitle(R.string.no_courses_in_database_dialog_title)
 				.setMessage(R.string.no_courses_in_database_dialog_message)
-				.setPositiveButton(R.string.no_courses_in_database_dialog_positive_update_now,
+				.setPositiveButton(R.string.no_courses_in_database_dialog_positive,
 						new OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -280,9 +290,25 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
 										REQUEST_UPDATE_COURSES_FROM_NETWORK);
 							}
 						})
-				.setNegativeButton(R.string.no_courses_in_database_dialog_negative_update_later,
-						null)
+				.setNegativeButton(R.string.no_courses_in_database_dialog_negative, null)
 				.create();
+		}
+	}
+	public static class IncorrectIdOrPasswordDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return new AlertDialog.Builder(getActivity())
+			.setTitle(R.string.incorrect_id_or_password_dialog_title)
+			.setMessage(R.string.incorrect_id_or_password_dialog_message)
+			.setPositiveButton(R.string.incorrect_id_or_password_dialog_positive,
+					new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							startActivity(new Intent(getActivity(), SettingsActivity.class));
+						}
+					})
+			.setNegativeButton(R.string.incorrect_id_or_password_dialog_negative, null)
+			.create();
 		}
 	}
 }

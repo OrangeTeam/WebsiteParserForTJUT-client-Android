@@ -18,7 +18,6 @@ package org.orange.querysystem;
 import java.util.ArrayList;
 
 import org.orange.querysystem.CoursesInThisWeekActivity.IncorrectIdOrPasswordDialogFragment;
-import org.orange.querysystem.content.InsertDBFragmentActivity;
 import org.orange.querysystem.content.ListScoresFragment;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
 import org.orange.querysystem.content.RefreshScoresFragmentActivity;
@@ -62,9 +61,9 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 	private static final int DIALOG_NO_COURSES_IN_DATABASE = 1;
 	private static final int DIALOG_INCORRECT_ID_OR_PASSWORD = 2;
 
-	TabHost mTabHost;
-	ViewPager  mViewPager;
-	TabsAdapter mTabsAdapter;
+	private TabHost mTabHost;
+	private ViewPager  mViewPager;
+	private TabsAdapter mTabsAdapter;
 	private boolean authenticated;
 	private String currentTab;
 	public static final int PASSWORD_PROMPT = 1;
@@ -175,37 +174,6 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 				}
             })
             .create();
-		case InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID:
-			final TextView textView2 = new TextView(this);
-			textView2.setText("用户名或密码错误，请重新设置！");
-			textView2.setTextSize(14);
-			RelativeLayout.LayoutParams tvlp2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-			RelativeLayout relativeLayout2 = new RelativeLayout(this);
-			
-			tvlp2.addRule(RelativeLayout.CENTER_IN_PARENT);
-			relativeLayout2.addView(textView2, tvlp2);
-			return new AlertDialog.Builder(this)
-            .setView(relativeLayout2)
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            	public void onClick(DialogInterface dialog, int whichButton) {
-                  	 
-            		/* User clicked OK so do some stuff */
-            		InsertDBFragmentActivity.logIn_error = false;
-            		startActivity(new Intent(ScoresActivity.this, SettingsActivity.class));
-                      
-                }
-            })
-            .setOnKeyListener(new OnKeyListener(){
-
-				@Override
-				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent even) {
-					// TODO Auto-generated method stub
-					finish();
-					return false;
-				}
-				
-            	
-            }).create();
 		}
 		return null;
 	}
@@ -308,7 +276,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			break;
 		case DIALOG_INCORRECT_ID_OR_PASSWORD:
 			new IncorrectIdOrPasswordDialogFragment().show(getSupportFragmentManager(),
-					"incorrectIdOrPasswordDialog");
+					"IncorrectIdOrPasswordDialog");
 			break;
 		default:
 			throw new IllegalArgumentException("非法参数：" + dialogCode);

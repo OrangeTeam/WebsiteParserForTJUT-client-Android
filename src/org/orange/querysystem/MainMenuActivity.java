@@ -6,9 +6,6 @@ import java.util.HashMap;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,10 +52,6 @@ public class MainMenuActivity extends Activity{
 				mActionBar.hide();
 			title.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 		}
-    	//判断是否第一次登陆
-		if(!SettingsActivity.hasSetAccountStudentIDAndPassword(this)){
-    		promptOfDownloadDataDialog();
-        }
 		
 		//生成动态数组，并且转入数据
 		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
@@ -129,18 +122,5 @@ public class MainMenuActivity extends Activity{
 			
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-	
-	private void promptOfDownloadDataDialog(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
-		builder.setTitle(R.string.prompt_of_download_data_title)
-		.setMessage(R.string.prompt_of_download_data_message)
-		.setPositiveButton(android.R.string.yes, new OnClickListener(){
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				startActivity(new Intent(MainMenuActivity.this, SettingsActivity.class));
-			}
-		});
-		builder.create().show();
 	}
 }

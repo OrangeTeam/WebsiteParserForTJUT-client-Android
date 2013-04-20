@@ -15,10 +15,6 @@
 
     <string name="updating">正在更新</string>
     <string name="no_network">无网络连接</string>
-    
-    <!-- used in promptOfDownloadDataDialog of MainMenuActivity.java  -->
-    <string name="prompt_of_download_data_title">初次使用提示</string>
-    <string name="prompt_of_download_data_message">请先设置账户和开学时间，返回主菜单后请进入本周课程，点击主菜单按钮->刷新</string>
 
 	<!-- used in account_setting_dialog.xml -->
 	<string name="user_name">学号</string>

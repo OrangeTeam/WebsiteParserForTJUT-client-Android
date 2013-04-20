@@ -1,6 +1,9 @@
 package org.orange.querysystem.content;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.orange.querysystem.R;
 import org.orange.querysystem.util.Crypto;
@@ -37,11 +40,10 @@ public class AccountSettingPreference extends DialogPreference {
 
 		SharedPreferences pref = getSharedPreferences();
 		String userid = pref.getString(getKey()+STUDENT_ID_SUFFIX, null);
-		if(userid != null){
-			studentID.setText(userid);
-			if(pref.contains(getKey()+PASSWORD_SUFFIX))
-				password.setText(decrypt(userid, pref.getString(getKey()+PASSWORD_SUFFIX, null)));
-		}
+		studentID.setText(userid);
+		if(pref.contains(getKey()+PASSWORD_SUFFIX))
+			password.setText(decrypt(getStoragePassword(userid), pref.getString(getKey()+PASSWORD_SUFFIX, null)));
+
 		super.onBindDialogView(view);
 	}
 	@Override
@@ -50,9 +52,11 @@ public class AccountSettingPreference extends DialogPreference {
 		if (positiveResult) {
 			deleteStudentInf();
 			SharedPreferences.Editor editor = getEditor();
-			editor.putString(getKey()+STUDENT_ID_SUFFIX, studentID.getText().toString());
-			//TODO 加密密码过于简单
-			editor.putString(getKey()+PASSWORD_SUFFIX, encrypt(studentID.getText().toString(), password.getText().toString()));
+			String username = studentID.getText().toString();
+			String password = this.password.getText().toString();
+			editor.putString(getKey()+STUDENT_ID_SUFFIX, username);
+			editor.putString(getKey()+PASSWORD_SUFFIX,
+					encrypt(getStoragePassword(username), password));
 			editor.commit();
 		}
 	}
@@ -71,8 +75,7 @@ public class AccountSettingPreference extends DialogPreference {
 	 * 把plaintext加密为密文
 	 */
 	private static String encrypt(String password, String plaintext){
-		String encryptingCode = Crypto.encrypt(plaintext, password);
-		return encryptingCode;
+		return Crypto.encrypt(plaintext, password);
 	}
 	/**
 	 * 把{@code ciphertext}解密为明文
@@ -81,8 +84,27 @@ public class AccountSettingPreference extends DialogPreference {
 	 * @return 解密得到的明文
 	 */
 	public static String decrypt(String password, String ciphertext){
-		String decryptingCode = Crypto.decrypt(ciphertext, password);
-		return decryptingCode;
+		return Crypto.decrypt(ciphertext, password);
+	}
+	/**
+	 * @param userName 可以是null或空字符串""
+	 */
+	public static String getStoragePassword(String userName){
+		if(userName == null || userName.length() < 3)
+			userName = "HhAkM5BpDFtMByffteLgkkzq9HFUtVueynFRjk5zMJkt9" +
+					"CN82s8jGvjAww5AdsqL2mvAj3E3b8bX8pXbrRLsuSeq23jwgdLEzmMMsaWTJVd4HcXjcHCDged6";
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA-512");
+			md.update(userName.getBytes("UTF-8"));
+			byte[] digest = md.digest();
+			return new String(digest, "UTF-8");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return userName;
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

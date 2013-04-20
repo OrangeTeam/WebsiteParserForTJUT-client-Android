@@ -173,10 +173,11 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 				.getString(KEY_PREF_ACCOUNT_STUDENT_ID, null);
 		String password = PreferenceManager.getDefaultSharedPreferences(context)
 				.getString(KEY_PREF_ACCOUNT_PASSWORD, null);
-		if(username == null || password == null)
+		if(password == null)
 			return null;
 		else
-			return AccountSettingPreference.decrypt(username, password);
+			return AccountSettingPreference.decrypt(
+					AccountSettingPreference.getStoragePassword(username), password);
 	}
 
 	/**

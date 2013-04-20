@@ -62,7 +62,6 @@ public class Crypto {
             //So don't use the SecretKey produced by the factory as is,
             //but use its encoded value to create a new SecretKeySpec object
             byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
-            Log.d(TAG, "key bytes: " + toHex(keyBytes));
 
             SecretKey result = new SecretKeySpec(keyBytes, "AES");
             long elapsed = System.currentTimeMillis() - start;
@@ -135,7 +134,6 @@ public class Crypto {
     public static String encrypt(String plaintext, String password) {
         byte[] salt = generateSalt();
         SecretKey key = deriveKeyPbkdf2(salt, password);
-        Log.d(TAG, "Generated key: " + key.getEncoded());
 
         return encrypt(plaintext, key, salt);
     }

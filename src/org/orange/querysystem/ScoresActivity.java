@@ -17,6 +17,7 @@ package org.orange.querysystem;
 
 import java.util.ArrayList;
 
+import org.orange.querysystem.CoursesInThisWeekActivity.IncorrectIdOrPasswordDialogFragment;
 import org.orange.querysystem.content.InsertDBFragmentActivity;
 import org.orange.querysystem.content.ListScoresFragment;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
@@ -33,10 +34,12 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.method.PasswordTransformationMethod;
@@ -55,7 +58,9 @@ import android.widget.Toast;
 public class ScoresActivity extends FragmentActivity implements OnPostExcuteListerner{
 	private static final String KEY_AUTHENTICATED = "authenticated";
 	private static final String KEY_CURRENT_TAB = "current_tab";
-	private int start_resume = 0;
+	private static final int REQUEST_UPDATE_COURSES_FROM_NETWORK = 1;
+	private static final int DIALOG_NO_COURSES_IN_DATABASE = 1;
+	private static final int DIALOG_INCORRECT_ID_OR_PASSWORD = 2;
 
 	TabHost mTabHost;
 	ViewPager  mViewPager;
@@ -211,9 +216,12 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     
     @Override
 	public void onPostReadFromDBForScores(ArrayList<ArrayList<Course>> courses) {
+		if(courses != null){
 			showScoresInfo(courses);
 			if(currentTab != null)
 				mTabHost.setCurrentTabByTag(currentTab);
+		}else
+			showDialogFragment(DIALOG_NO_COURSES_IN_DATABASE);
 	}
     
     public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
@@ -261,12 +269,10 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     }
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
 			if(Network.isConnected(this)){
-    			start_resume = 1;
-        		startActivity(new Intent(this, RefreshScoresFragmentActivity.class));
-        		//TODO startActivity后不会继续运行
+				startActivityForResult(new Intent(this, RefreshScoresFragmentActivity.class),
+						REQUEST_UPDATE_COURSES_FROM_NETWORK);
             }
             else{
             	Network.openNoConnectionDialog(this);
@@ -277,19 +283,55 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
-    
-    @Override
-	protected void onResume(){
-		super.onResume();
-		if(InsertDBFragmentActivity.logIn_error == true){
-			showDialog(InsertDBFragmentActivity.LOG_IN_ERROR_DIALOG_ID);
-		}
-		if(start_resume == 0){
-			
-		}
-		else if(start_resume == 1){
-			readDB();
-		}
-    }
-}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == REQUEST_UPDATE_COURSES_FROM_NETWORK){
+			switch(resultCode){
+			case RefreshScoresFragmentActivity.RESULT_OK:
+				readDB();
+				break;
+			case RefreshScoresFragmentActivity.RESULT_CANNOT_LOGIN:
+			case RefreshScoresFragmentActivity.RESULT_NO_STUDENT_ID_OR_PASSWORD:
+				showDialogFragment(DIALOG_INCORRECT_ID_OR_PASSWORD);
+				break;
+			}
+		}
+	}
+
+	private void showDialogFragment(int dialogCode){
+		switch(dialogCode){
+		case DIALOG_NO_COURSES_IN_DATABASE:
+			new NoCoursesDialogFragment().show(getSupportFragmentManager(),
+					"NoCoursesInDatabaseDialog");
+			break;
+		case DIALOG_INCORRECT_ID_OR_PASSWORD:
+			new IncorrectIdOrPasswordDialogFragment().show(getSupportFragmentManager(),
+					"incorrectIdOrPasswordDialog");
+			break;
+		default:
+			throw new IllegalArgumentException("非法参数：" + dialogCode);
+		}
+	}
+
+	public static class NoCoursesDialogFragment extends DialogFragment {
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return new AlertDialog.Builder(getActivity())
+				.setTitle(R.string.no_courses_in_database_dialog_title)
+				.setMessage(R.string.no_courses_in_database_dialog_message)
+				.setPositiveButton(R.string.no_courses_in_database_dialog_positive,
+						new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								getActivity().startActivityForResult(
+										new Intent(getActivity(), RefreshScoresFragmentActivity.class),
+										REQUEST_UPDATE_COURSES_FROM_NETWORK);
+							}
+						})
+				.setNegativeButton(R.string.no_courses_in_database_dialog_negative, null)
+				.create();
+		}
+	}
+}

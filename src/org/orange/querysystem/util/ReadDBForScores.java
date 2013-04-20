@@ -9,7 +9,6 @@ import util.webpage.Course.CourseException;
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<Course>>>{
 	public interface OnPostExcuteListerner{
@@ -53,11 +52,7 @@ public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<C
 
 	@Override
 	protected void onPostExecute(ArrayList<ArrayList<Course>> courses){
-		if(courses != null)
-			listener.onPostReadFromDBForScores(courses);	
-		else{
-			Toast.makeText(context, "数据库无数据，请刷新！", Toast.LENGTH_LONG).show();			
-		}
-	}	
+		if(listener != null)
+			listener.onPostReadFromDBForScores(courses);
+	}
 }
-

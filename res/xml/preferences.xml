@@ -45,7 +45,7 @@
         android:key="prefs_others"
         android:title="@string/prefs_others" >
         <Preference
-            android:title="@string/pref_about"
+            android:title="@string/about_me"
             android:summary="@string/pref_about_summary" >
             <intent android:targetPackage="org.orange.querysystem"
                     android:targetClass="org.orange.querysystem.AboutActivity" />

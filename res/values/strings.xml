@@ -2,8 +2,9 @@
 <resources>
 
     <!-- common -->
-    <string name="app_name">学生信息查询系统</string>
+    <string name="app_name">理工校务</string>
     <string name="settings">设置</string>
+	<string name="about_me">关于</string>
     <string name="refresh">刷新</string>
 
     <string name="add_course">增加课程</string>
@@ -90,7 +91,6 @@
     <string name="pref_use_alternative_in_mobile_connection">移动网络下使用后备方案</string>
     <string name="pref_use_alternative_in_mobile_connection_summary">移动网络下，当首选网络更新方案失效时，使用后备方案（费较多流量）。</string>
     <string name="prefs_others">其它</string>
-    <string name="pref_about">关于</string>
     <string name="pref_about_summary">有关此软件的基本信息</string>
 
     <!-- Network.java -->

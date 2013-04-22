@@ -15,6 +15,8 @@ public class AboutActivity extends Activity{
 		content = new WebView(this);
 		setContentView(content);
 		content.loadUrl("file:///android_asset/aboutme.html");
+		content.setBackgroundColor(0);
+		content.setBackgroundResource(R.drawable.lsybackground);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			getActionBar().setTitle(R.string.about_me);
 	}

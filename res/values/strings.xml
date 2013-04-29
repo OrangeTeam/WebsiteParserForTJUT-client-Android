@@ -51,6 +51,21 @@
 	<string name="incorrect_id_or_password_dialog_negative">以后再说</string>
     <!-- used in ListCoursesFragment.java -->
     <string name="no_course">今日无课</string>
+
+	<!-- student info -->
+	<string name="student_number">学号</string>
+	<string name="student_name">姓名</string>
+	<string name="gender">性别</string>
+	<string name="male">男</string>
+	<string name="female">女</string>
+	<string name="birthday">生日</string>
+	<string name="academic_period">学制</string>
+	<string name="admission_time">入学时间</string>
+	<string name="school">学院</string>
+	<string name="major">专业</string>
+	<string name="class_name">班级名称</string>
+	<string name="photo">照片</string>
+
     <!-- used in ShowOnePostActivity.java -->
     <string name="open_with_browser">用浏览器打开</string>
     <!-- used in PostUpdater.java and ListPostsActivity.java -->

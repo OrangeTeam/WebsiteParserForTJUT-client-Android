@@ -27,6 +27,7 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -158,12 +159,18 @@ public class StudentInfoActivity extends ListActivity{
 	}
 	
 	private void initAdapter(){
+		Resources res = getResources();
 		ArrayList<String> items = new ArrayList<String>();
-		items.add("学号");items.add("姓名");
-		items.add("性别");items.add("出生年月日");
-		items.add("学制");items.add("入学时间");
-		items.add("学院");items.add("专业名称");
-		items.add("班级名称");items.add("照片");
+		items.add(res.getString(R.string.student_number));
+		items.add(res.getString(R.string.student_name));
+		items.add(res.getString(R.string.gender));
+		items.add(res.getString(R.string.birthday));
+		items.add(res.getString(R.string.academic_period));
+		items.add(res.getString(R.string.admission_time));
+		items.add(res.getString(R.string.school));
+		items.add(res.getString(R.string.major));
+		items.add(res.getString(R.string.class_name));
+		items.add(res.getString(R.string.photo));
 		adapter = new ListViewAdapter(this, items);
 	}
 	
@@ -273,16 +280,17 @@ public class StudentInfoActivity extends ListActivity{
 			}catch(FileNotFoundException e){
 				System.out.println("Error opening files");
 			}
+			Resources res = getResources();
 			ArrayList<String> items = new ArrayList<String>();
-			items.add(0, "学号:" + inputStream.nextLine());
-			items.add(1, "姓名:" + inputStream.nextLine());
-			items.add(2, "性别:" + inputStream.nextLine());
-			items.add(3, "出生年月日:" + inputStream.nextLine());
-			items.add(4, "学制:" + inputStream.nextLine());
-			items.add(5, "入学时间:" + inputStream.nextLine());
-			items.add(6, "学院:" + inputStream.nextLine());
-			items.add(7, "专业名称:" + inputStream.nextLine());
-			items.add(8, "班级名称:" + inputStream.nextLine());
+			items.add(res.getString(R.string.student_number) + inputStream.nextLine());
+			items.add(res.getString(R.string.student_name) + inputStream.nextLine());
+			items.add(res.getString(R.string.gender) + inputStream.nextLine());
+			items.add(res.getString(R.string.birthday) + inputStream.nextLine());
+			items.add(res.getString(R.string.academic_period) + inputStream.nextLine());
+			items.add(res.getString(R.string.admission_time) + inputStream.nextLine());
+			items.add(res.getString(R.string.school) + inputStream.nextLine());
+			items.add(res.getString(R.string.major) + inputStream.nextLine());
+			items.add(res.getString(R.string.class_name) + inputStream.nextLine());
 			imageView.setImageBitmap(getBitmap());
 			adapter = new ListViewAdapter(StudentInfoActivity.this, items);
 			setListAdapter(adapter);

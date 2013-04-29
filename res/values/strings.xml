@@ -56,6 +56,7 @@
 	<string name="student_number">学号</string>
 	<string name="student_name">姓名</string>
 	<string name="gender">性别</string>
+	<string name="unknown">未知</string>
 	<string name="male">男</string>
 	<string name="female">女</string>
 	<string name="birthday">生日</string>

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,6 +22,7 @@ import util.webpage.Constant;
 import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
 import util.webpage.Student;
+import util.webpage.Student.StudentException;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -56,7 +58,7 @@ public class StudentInfoActivity extends ListActivity{
 	private boolean authenticated;
 	private static final String FILE_NAME = "student_info.txt";
 	public static final int PASSWORD_PROMPT = 1;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -234,7 +236,7 @@ public class StudentInfoActivity extends ListActivity{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			if(student.getName() != null)
 			{
 				PrintWriter outputStream = null;
@@ -246,7 +248,7 @@ public class StudentInfoActivity extends ListActivity{
 		        }
 		        outputStream.println(student.getNumber());
 		        outputStream.println(student.getName());
-		        outputStream.println(student.getGender());
+		        outputStream.println(Gender.getGenderCode(student.isMale()));
 		        outputStream.println(student.getBirthdayString());
 		        outputStream.println(Byte.toString(student.getAcademicPeriod()));
 		        outputStream.println(student.getAdmissionTimeString());
@@ -259,7 +261,7 @@ public class StudentInfoActivity extends ListActivity{
 			}
 			return student;
 		}
-		
+
 		protected void onPostExecute(Student student){
 			if(student.getName() == null)
 			{
@@ -268,29 +270,47 @@ public class StudentInfoActivity extends ListActivity{
 		}
 	}
 	
-	private class StudentInfoFromFile extends AsyncTask<Void,Void,Void>{
-		protected Void doInBackground(Void...agrs){
-			return null;
-		}
-		
-		protected void onPostExecute(Void args){
+	private class StudentInfoFromFile extends AsyncTask<Void,Void,Student>{
+		protected Student doInBackground(Void...agrs){
 			Scanner inputStream = null;
 			try{
 				inputStream = new Scanner(openFileInput(FILE_NAME));
 			}catch(FileNotFoundException e){
 				System.out.println("Error opening files");
 			}
+			if(inputStream != null){
+				Student student = new Student();
+				student.setNumber(inputStream.nextLine());
+				student.setName(inputStream.nextLine());
+				student.setIsMale(Gender.isMale(Integer.parseInt(inputStream.nextLine())));
+				try {student.setBirthday(inputStream.nextLine());} catch (ParseException e) {}
+				try {student.setAcademicPeriod(Byte.parseByte(inputStream.nextLine()));}
+				catch (StudentException e) {}
+				try {student.setAdmissionTime(inputStream.nextLine());} catch (ParseException e) {}
+				student.setSchoolName(inputStream.nextLine());
+				student.setMajorName(inputStream.nextLine());
+				student.setClassName(inputStream.nextLine());
+				inputStream.close();
+				return student;
+			}else
+				return null;
+		}
+
+		protected void onPostExecute(Student student){
+			if(student == null)
+				return;
 			Resources res = getResources();
 			ArrayList<String> items = new ArrayList<String>();
-			items.add(res.getString(R.string.student_number) + inputStream.nextLine());
-			items.add(res.getString(R.string.student_name) + inputStream.nextLine());
-			items.add(res.getString(R.string.gender) + inputStream.nextLine());
-			items.add(res.getString(R.string.birthday) + inputStream.nextLine());
-			items.add(res.getString(R.string.academic_period) + inputStream.nextLine());
-			items.add(res.getString(R.string.admission_time) + inputStream.nextLine());
-			items.add(res.getString(R.string.school) + inputStream.nextLine());
-			items.add(res.getString(R.string.major) + inputStream.nextLine());
-			items.add(res.getString(R.string.class_name) + inputStream.nextLine());
+			items.add(res.getString(R.string.student_number) + "：" + student.getNumber());
+			items.add(res.getString(R.string.student_name) + "：" + student.getName());
+			items.add(res.getString(R.string.gender) + "："
+					+ res.getString(Gender.getStringId(student.isMale())));
+			items.add(res.getString(R.string.birthday) + "：" + student.getBirthdayString());
+			items.add(res.getString(R.string.academic_period) + "：" + student.getAcademicPeriod());
+			items.add(res.getString(R.string.admission_time) + "：" + student.getAdmissionTimeString());
+			items.add(res.getString(R.string.school) + "：" + student.getSchoolName());
+			items.add(res.getString(R.string.major) + "：" + student.getMajorName());
+			items.add(res.getString(R.string.class_name) + "：" + student.getClassName());
 			imageView.setImageBitmap(getBitmap());
 			adapter = new ListViewAdapter(StudentInfoActivity.this, items);
 			setListAdapter(adapter);
@@ -324,4 +344,56 @@ public class StudentInfoActivity extends ListActivity{
     	}
     	return super.onMenuItemSelected(featureId, item);
     }
+
+
+	/**
+	 * 与性别相关的工具类
+	 */
+	private static class Gender{
+		private static final int unknown	= 0;
+		private static final int male		= 1;
+		private static final int female		= 2;
+		private Gender(){}
+		/**
+		 * 取得与指定性别相对应的String资源id
+		 * @param isMale 性别 。true表示男，false表示女，null表示未知
+		 * @return 相应的strings.xml中字符串资源id
+		 */
+		public static int getStringId(Boolean isMale){
+			if(isMale == null)
+				return R.string.unknown;
+			else if(isMale)
+				return R.string.male;
+			else
+				return R.string.female;
+		}
+		/**
+		 * 把性别转化为{@link Gender}中的性别代码
+		 * @param isMale 性别 。true表示男，false表示女，null表示未知
+		 * @return {@link Gender}中的性别代码
+		 * @see #isMale(int)
+		 */
+		public static int getGenderCode(Boolean isMale){
+			if(isMale == null)
+				return unknown;
+			else if(isMale)
+				return male;
+			else
+				return female;
+		}
+		/**
+		 * 把{@link Gender}中的性别代码恢复为性别
+		 * @param gender 从{@link #getGenderCode(Boolean)}得到的性别代码
+		 * @return 性别 。true表示男，false表示女，null表示未知
+		 * @see #getGenderCode(Boolean)
+		 */
+		public static Boolean isMale(int gender){
+			switch(gender){
+			case male:return true;
+			case female:return false;
+			case unknown:return null;
+			default:throw new IllegalArgumentException("非法参数：" + gender);
+			}
+		}
+	}
 }

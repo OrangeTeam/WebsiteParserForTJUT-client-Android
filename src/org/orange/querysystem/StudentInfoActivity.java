@@ -246,17 +246,19 @@ public class StudentInfoActivity extends ListActivity{
 		        	System.out.println("Error opening the file");
 		        	e.printStackTrace();
 		        }
-		        outputStream.println(student.getNumber());
-		        outputStream.println(student.getName());
-		        outputStream.println(Gender.getGenderCode(student.isMale()));
-		        outputStream.println(student.getBirthdayString());
-		        outputStream.println(Byte.toString(student.getAcademicPeriod()));
-		        outputStream.println(student.getAdmissionTimeString());
-		        outputStream.println(student.getSchoolName());
-		        outputStream.println(student.getMajorName());
-		        outputStream.println(student.getClassName());
+				if(outputStream != null){
+					outputStream.println(student.getNumber());
+					outputStream.println(student.getName());
+					outputStream.println(Gender.getGenderCode(student.isMale()));
+					outputStream.println(student.getBirthdayString());
+					outputStream.println(Byte.toString(student.getAcademicPeriod()));
+					outputStream.println(student.getAdmissionTimeString());
+					outputStream.println(student.getSchoolName());
+					outputStream.println(student.getMajorName());
+					outputStream.println(student.getClassName());
+					outputStream.close();
+				}
 		        storeImage(getHttpBitmap(student.getUrlOfFacedPhoto()));
-		        outputStream.close();
 		        new StudentInfoFromFile().execute();
 			}
 			return student;

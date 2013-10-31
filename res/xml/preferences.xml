@@ -13,7 +13,7 @@
             android:key = "pref_startingDate"
             android:title = "@string/pref_starting_date"
             android:summary = "@string/pref_starting_date_summary"
-            android:defaultValue="1362240000000L"
+            android:defaultValue="1377964800000L"
             orange:minDateComparedWithRunTime="-15811200000"
             orange:maxDateComparedWithRunTime="15811200000" />
             <!-- 1362240000000 为2013年3月3日的时间戳; 15811200000ms 约为半年 -->

@@ -243,6 +243,7 @@ public class StudentInfDBAdapter {
 					newCourseInfTAValues.clear();
 				}
 			}
+			cursor.close();
 		}
 	}
 	
@@ -269,7 +270,9 @@ public class StudentInfDBAdapter {
 				insertArrayCoursesToCourseInf1(theCourseInf, theUserName);
 				insertArrayCoursesToCourseInf2(theCourseInf);
 			}
+			cursor2.close();
 		}
+		cursor1.close();
 	}
 	
 	/**
@@ -681,6 +684,7 @@ public class StudentInfDBAdapter {
 				newCourseInfValues1.put(KEY_NOTE, aScore.getNote());
 				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
+			cursor1.close();
 		}
 	}
 	
@@ -840,6 +844,7 @@ public class StudentInfDBAdapter {
 				Course course = new Course();
 				Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + sum[m] + " AND " + KEY_ISFIRSTSEMESTER + "= '" + temp + "'", null, null, null, null);
 				if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
+					cursor1.close();
 					continue;
 				}
 				else{
@@ -886,6 +891,7 @@ public class StudentInfDBAdapter {
 								//这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
 						    }
 						}
+						cursor2.close();
 						course.setId(newId);
 						course.setCode(newCode);
 						course.setName(newName);
@@ -910,6 +916,7 @@ public class StudentInfDBAdapter {
 							 //这里使用了Course的拷贝构造方法进行了深拷贝。
 						}
 				   }
+				cursor1.close();
 			 all.add(courses);
 			 }
 		 }

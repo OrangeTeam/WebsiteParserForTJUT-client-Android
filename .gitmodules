@@ -1,0 +1,3 @@
+[submodule "libs/parser"]
+	path = libs/parser
+	url = https://github.com/OrangeTeam/connect2school.git

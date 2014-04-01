@@ -35,9 +35,6 @@ public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<C
 		} catch(SQLException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (CourseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}finally{
 			studentInfDBAdapter.close();
 		}

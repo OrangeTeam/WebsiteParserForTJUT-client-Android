@@ -59,7 +59,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		
 		
 		//导入静态数据库
-		importInitialDB();
+//		importInitialDB();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -120,6 +120,34 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 			return null;
 		else
 			return getMondayOfWeek(schoolStarting);
+	}
+	/**
+	 * 根据{@link #getMondayOfZeroWeek(Context)}，<strong>推断</strong>当前学年。
+	 * <p><strong>注意</strong>：当前的推断是基于上下学期（只有第一、二学期）的，可能不准确</p>
+	 * @param context 上下文环境
+	 * @return 推断结果，如2013表示当前是2013~2014学年
+	 * @see #getCurrentSemester(Context)
+	 */
+	public static int getCurrentAcademicYear(Context context) {
+		Calendar calendar = SettingsActivity.getMondayOfZeroWeek(context);
+		int year = calendar.get(Calendar.YEAR);
+		if(getCurrentSemester(context) != 1)
+			year--;
+		return year;
+	}
+	/**
+	 * 根据{@link #getMondayOfZeroWeek(Context)}，<strong>推断</strong>当前学期。
+	 * <p><strong>注意</strong>：当前的推断是基于上下学期（只有第一、二学期）的，可能不准确</p>
+	 * @param context 上下文环境
+	 * @return 推断结果，如1表示第一学期
+	 * @see #getCurrentAcademicYear(Context)
+	 */
+	public static byte getCurrentSemester(Context context) {
+		Calendar calendar = getMondayOfZeroWeek(context);
+		int month = calendar.get(Calendar.MONTH) - Calendar.JANUARY + 1;
+		month++; // 第0周有可能在假期所在月，为提高判断的准确性，以后一个月判断
+		int semester = (month >=3 && month <=8) ? 2 : 1; //TODO 第三小学期怎么判断？
+		return (byte) semester;
 	}
 
 	/**

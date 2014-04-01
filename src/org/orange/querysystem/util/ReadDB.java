@@ -2,6 +2,7 @@ package org.orange.querysystem.util;
 
 import java.util.ArrayList;
 
+import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Course;
@@ -27,11 +28,15 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 	@Override
 	protected ArrayList<Course> doInBackground(String... args) {
 		ArrayList<Course> result = null;
+		int year = SettingsActivity.getCurrentAcademicYear(context);
+		byte semester = SettingsActivity.getCurrentSemester(context);
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		if(args[1].equals("this")){
 			try {
 				studentInfDBAdapter.open();
-				result = studentInfDBAdapter.getThisTermCoursesFromDB(null, args[0]);
+				result = studentInfDBAdapter.getCoursesFromDB(
+						StudentInfDBAdapter.KEY_YEAR + "=" + year +
+						" AND " + StudentInfDBAdapter.KEY_SEMESTER + "=" + semester, null, args[0]);
 			} catch(SQLException e){
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -40,8 +45,18 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 			}
 		}else{
 			try {
+				// 推断下学期的学年和学期号
+				if(semester == 1)
+					semester++;
+				else if(semester == 2) {
+					year++;
+					semester = 1;
+				} //TODO 其他情况怎么办？
+				// 查询
 				studentInfDBAdapter.open();
-				result = studentInfDBAdapter.getNextTermCoursesFromDB(null, args[0]);
+				result = studentInfDBAdapter.getCoursesFromDB(
+						StudentInfDBAdapter.KEY_YEAR + "=" + year +
+						" AND " + StudentInfDBAdapter.KEY_SEMESTER + "=" + semester, null,  args[0]);
 			} catch(SQLException e){
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -70,8 +70,12 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 		ArrayList<Course> courses = null;
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try{
+			int year = SettingsActivity.getCurrentAcademicYear(context);
+			byte semester = SettingsActivity.getCurrentSemester(context);
 			studentInfDBAdapter.open();
-			courses = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_YEAR + "=" + 0 + " AND " + StudentInfDBAdapter.KEY_CURRENT_SEMESTER + " = " + 1, null, SettingsActivity.getAccountStudentID(context));
+			courses = studentInfDBAdapter.getCoursesFromDB(
+					StudentInfDBAdapter.KEY_YEAR + "=" + year +
+					" AND " + StudentInfDBAdapter.KEY_SEMESTER + "=" + semester, null, SettingsActivity.getAccountStudentID(context));
 		}catch(SQLException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();

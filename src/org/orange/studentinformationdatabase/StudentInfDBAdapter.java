@@ -53,7 +53,7 @@ public class StudentInfDBAdapter {
 	public static final String KEY_CLASS_NUMBER = "class_number";
 	public static final String KEY_TEACHING_MATERIAL = "teachingmaterial";
 	public static final String KEY_YEAR = "year";
-	public static final String KEY_ISFIRSTSEMESTER = "is_first_semester";
+	public static final String KEY_SEMESTER = "semester";
 	public static final String KEY_TEST_SCORE = "test_score";
 	public static final String KEY_TOTAL_SCORE = "total_score";
 	public static final String KEY_KIND = "kind";
@@ -92,7 +92,7 @@ public class StudentInfDBAdapter {
 	
 	    private static final String COURSE_TABLE1_CREATE = "create table " + DATABASE_COURSE_TABLE1 + "(" + KEY_ID + " integer primary key,"
 	    + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(25)," + KEY_TEACHERS + " varchar(25)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
-	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_ISFIRSTSEMESTER + " varchar(1)," + KEY_TEST_SCORE + " float,"
+	    + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_SEMESTER + " INTEGER," + KEY_TEST_SCORE + " float,"
 	    + KEY_TOTAL_SCORE + " float," + KEY_KIND + " varchar(5)," + KEY_NOTE + " varchar(30)," + KEY_USER_NAME + " varchar(8));";
 	    
 	    private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2 + "(" + KEY_LINK + " integer," + KEY_VICEID + " varchar(5) unique,"
@@ -142,30 +142,7 @@ public class StudentInfDBAdapter {
 		if(isOpen())
 			db.close();
 	}
-	
-	/*在数据库中isFirstSemester存储形式为字符串，而Course类中的isFirstSemester存储形式为Boolean对象。
-	 * 所以isFirstSemester存储到数据库中要进行转换，convert方法是把布尔对象转换为字符串。
-	 * 当isFirstSemester为false时转换为字符“f”，true时为字符“t”。
-	 */
-	private String convert(Boolean temp){
-		if((temp == null)||temp)
-		{
-			return "t";
-		}else{
-			return "f";
-		}
-	}
-	
-	//当然isFirstSemester从数据库中提取也要进行转换，reconvert方法是把字符串转换为布尔对象。
-	private Boolean reconvert(String temp){
-		if(temp == "t")
-		{
-			return true;
-		}else{
-			return false;
-		}
-	}
-	
+
 	/**
 	 * 一次性插入多门课程及每门课程成绩的初始化（成绩与课程在同一张表中），之所以成绩要初始化是因为读取课程时并没有读取成绩，
 	 * @param theCourseInf 类型为 List<Course>
@@ -184,7 +161,8 @@ public class StudentInfDBAdapter {
 			newCourseInfValues.put(KEY_CLASS_NUMBER, aCourse.getClassNumber());
 			newCourseInfValues.put(KEY_TEACHING_MATERIAL, aCourse.getTeachingMaterial());
 			newCourseInfValues.put(KEY_YEAR, aCourse.getYear());
-			newCourseInfValues.put(KEY_ISFIRSTSEMESTER, convert(aCourse.isFirstSemester()));
+			if(aCourse.getSemester() != null)
+				newCourseInfValues.put(KEY_SEMESTER, aCourse.getSemester());
 			newCourseInfValues.put(KEY_TEST_SCORE, aCourse.getTestScore());
 			newCourseInfValues.put(KEY_TOTAL_SCORE, aCourse.getTotalScore());
 			newCourseInfValues.put(KEY_KIND, aCourse.getKind());
@@ -283,7 +261,8 @@ public class StudentInfDBAdapter {
 		newCourseInfValues.put(KEY_CLASS_NUMBER, theCourseInf.getClassNumber());
 		newCourseInfValues.put(KEY_TEACHING_MATERIAL, theCourseInf.getTeachingMaterial());
 		newCourseInfValues.put(KEY_YEAR, theCourseInf.getYear());
-		newCourseInfValues.put(KEY_ISFIRSTSEMESTER, convert(theCourseInf.isFirstSemester()));
+		if(theCourseInf.getSemester() != null)
+			newCourseInfValues.put(KEY_SEMESTER, theCourseInf.getSemester());
 		newCourseInfValues.put(KEY_TEST_SCORE, theCourseInf.getTestScore());
 		newCourseInfValues.put(KEY_TOTAL_SCORE, theCourseInf.getTotalScore());
 		newCourseInfValues.put(KEY_KIND, theCourseInf.getKind());
@@ -596,36 +575,26 @@ public class StudentInfDBAdapter {
 				if(aScore.getYear() <= 1900)
 				{
 					newCourseInfValues1.put(KEY_YEAR, 0);
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_YEAR, aScore.getYear());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
-			
-			if(cursor1.getString(8) != convert(aScore.isFirstSemester()))
-			{
-				newCourseInfValues1.put(KEY_ISFIRSTSEMESTER, convert(aScore.isFirstSemester()));
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
-			}
-			
+			if(aScore.getSemester() != null && aScore.getSemester().byteValue() != cursor1.getInt(8))
+				newCourseInfValues1.put(KEY_SEMESTER, aScore.getSemester());
+
 			if(cursor1.getFloat(9) != aScore.getTestScore())
 				if(aScore.getTestScore() < 0)
 				{
 					newCourseInfValues1.put(KEY_TEST_SCORE, Float.NaN);
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_TEST_SCORE, aScore.getTestScore());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			
 			if(cursor1.getFloat(10) != aScore.getTotalScore())
 				if(aScore.getTotalScore() < 0)
 				{
 					newCourseInfValues1.put(KEY_TOTAL_SCORE, Float.NaN);
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}else{
 					newCourseInfValues1.put(KEY_TOTAL_SCORE, aScore.getTotalScore());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			
 			if(cursor1.getString(11) != null)//成绩这一块已经在课程的表courseInf1建立时就已经初始化了，初始化时字符串是空的，所以这里要判断是否为空
@@ -633,11 +602,9 @@ public class StudentInfDBAdapter {
 				if(!(cursor1.getString(11).equals(aScore.getKind())))
 				{
 					newCourseInfValues1.put(KEY_KIND, aScore.getKind());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			}else{
 				newCourseInfValues1.put(KEY_KIND, aScore.getKind());
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
 			
 			if(cursor1.getString(12) != null)
@@ -645,12 +612,12 @@ public class StudentInfDBAdapter {
 				if(!(cursor1.getString(12).equals(aScore.getNote())))
 				{
 					newCourseInfValues1.put(KEY_NOTE, aScore.getNote());
-					db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 				}
 			}else{
 				newCourseInfValues1.put(KEY_NOTE, aScore.getNote());
-				db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
 			}
+			db.update(DATABASE_COURSE_TABLE1, newCourseInfValues1, KEY_CODE + " = '" + aScore.getCode() + "'", null);
+			newCourseInfValues1.clear();
 			cursor1.close();
 		}
 	}
@@ -685,7 +652,9 @@ public class StudentInfDBAdapter {
 				 String newClassNumber = cursor1.getString(5);
 				 String newTeachingMaterial = cursor1.getString(6);
 				 int newYear = cursor1.getInt(7);
-				 String newIsFirstSemester = cursor1.getString(8);
+				 Byte newSemester = null;
+				 if(!cursor1.isNull(8))
+					 newSemester= (byte) cursor1.getInt(8);
 				 float newTestScore = cursor1.getFloat(9);
 				 float newTotalScore = cursor1.getFloat(10);
 				 String newKind = cursor1.getString(11);
@@ -723,7 +692,11 @@ public class StudentInfDBAdapter {
 				 course.setName(newName);
 				 course.setClassNumber(newClassNumber);
 				 course.setTeachingMaterial(newTeachingMaterial);
-				 course.setIsFirstSemester(reconvert(newIsFirstSemester));
+				try {
+					course.setSemester(newSemester);
+				} catch (CourseException e) { //TODO 统一处理这些异常
+					e.printStackTrace();
+				}
 				 course.setKind(newKind);
 				 course.setNote(newNote);
 				 course.setTimeAndAddresse(timeAndAddresses);
@@ -751,7 +724,7 @@ public class StudentInfDBAdapter {
 	 * @return Array<ArrayList<Course>>
 	 * @throws SQLException
 	 */
-	public ArrayList<ArrayList<Course>> getAllCoursesFromDB(String theUserName) throws SQLException, CourseException{
+	public ArrayList<ArrayList<Course>> getAllCoursesFromDB(String theUserName) throws SQLException {
 		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
 		 if(cursor.getCount() == 0)
 		 {
@@ -783,7 +756,7 @@ public class StudentInfDBAdapter {
 				 
 				ArrayList<Course> courses = new ArrayList<Course>();
 				Course course = new Course();
-				Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + sum[m] + " AND " + KEY_ISFIRSTSEMESTER + "= '" + temp + "'", null, null, null, null);
+				Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + sum[m] + " AND " + KEY_SEMESTER + "= '" + temp + "'", null, null, null, null);
 				if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
 					cursor1.close();
 					continue;
@@ -799,7 +772,9 @@ public class StudentInfDBAdapter {
 						String newClassNumber = cursor1.getString(5);
 						String newTeachingMaterial = cursor1.getString(6);
 						int newYear = cursor1.getInt(7);
-						String newIsFirstSemester = cursor1.getString(8);
+						Byte newSemester = null;
+						if(!cursor1.isNull(8))
+							newSemester = (byte) cursor1.getInt(8);
 						float newTestScore = cursor1.getFloat(9);
 						float newTotalScore = cursor1.getFloat(10);
 						String newKind = cursor1.getString(11);
@@ -838,7 +813,11 @@ public class StudentInfDBAdapter {
 						course.setName(newName);
 						course.setClassNumber(newClassNumber);
 						course.setTeachingMaterial(newTeachingMaterial);
-						course.setIsFirstSemester(reconvert(newIsFirstSemester));
+						try {
+							course.setSemester(newSemester);
+						} catch (CourseException e) { //TODO 统一处理这些异常
+							e.printStackTrace();
+						}
 						course.setKind(newKind);
 						course.setNote(newNote);
 						try{
@@ -891,7 +870,9 @@ public class StudentInfDBAdapter {
 			 String newClassNumber = cursor1.getString(5);
 			 String newTeachingMaterial = cursor1.getString(6);
 			 int newYear = cursor1.getInt(7);
-			 String newIsFirstSemester = cursor1.getString(8);
+			 Byte newSemester = null;
+			 if(!cursor1.isNull(8))
+				 newSemester = (byte) cursor1.getInt(8);
 			 float newTestScore = cursor1.getFloat(9);
 			 float newTotalScore = cursor1.getFloat(10);
 			 String newKind = cursor1.getString(11);
@@ -928,7 +909,11 @@ public class StudentInfDBAdapter {
 			 course.setName(newName);
 			 course.setClassNumber(newClassNumber);
 			 course.setTeachingMaterial(newTeachingMaterial);
-			 course.setIsFirstSemester(reconvert(newIsFirstSemester));
+			 try {
+				course.setSemester(newSemester);
+			} catch (CourseException e) { //TODO 统一处理异常
+				e.printStackTrace();
+			}
 			 course.setKind(newKind);
 			 course.setNote(newNote);
 			 course.setTimeAndAddresse(timeAndAddresses);

@@ -398,24 +398,7 @@ public class StudentInfDBAdapter {
 		String theTitle = thePostInf.getTitle();
 		return db.delete(DATABASE_POST_TABLE, KEY_TITLE + "= '" + theTitle + "'", null) > 0;
 	}
-	
-	/**
-	 * 当增加课程时就会调用这个方法，把新曾的课程的KEY_CURRENT_SEMESTER字段的值变为1.
-	 * @param theCourse， Course类型
-	 * @return boolean值false时表示用户插入的课程不成功，true时表示已经插入了。
-	 */
-	public boolean updateCurrentSemesterOfAddCourseInf(Course theCourse){
-		ContentValues newCurrentSemester = new ContentValues();
-		newCurrentSemester.put(KEY_CURRENT_SEMESTER, 1);
-		Cursor theCursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_CODE + " = '" + theCourse.getCode() + "'", null, null, null, null);
-		if(theCursor.getCount() != 0){
-			db.update(DATABASE_COURSE_TABLE1, newCurrentSemester, KEY_CODE + " = " + theCourse.getCode(), null);
-			return true;
-		} 
-		else
-			return false;
-	}
-	
+
 	/**
 	 * 对课程的更新操作，从参数传递进来一门课程，再从数据库中找到这门课的记录，然后进行比较，比较结果不一样就对数据库中的这条记录相应的字段进行更改。
 	 * @param theCourseInf 类型为Course类型

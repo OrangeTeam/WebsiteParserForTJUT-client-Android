@@ -10,12 +10,9 @@ import org.orange.querysystem.AllCoursesActivity.CourseToSimpleCourse;
 import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.querysystem.util.ReadDB;
-import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Course;
-import util.webpage.Student;
 import android.annotation.TargetApi;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.TabHost.TabSpec;
@@ -24,14 +21,6 @@ import android.widget.Toast;
 
 public class AllCoursesInNextSemesterActivity extends CoursesInThisWeekActivity {
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		new RefreshCurrentSemester().execute();
-	}
 	@Override
 	@TargetApi(11)
 	protected void setTitle() {
@@ -92,18 +81,4 @@ public class AllCoursesInNextSemesterActivity extends CoursesInThisWeekActivity 
 		int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 		mTabHost.setCurrentTab(dayOfWeek!=Calendar.SUNDAY ? dayOfWeek-Calendar.SUNDAY : 7);
 	}
-
-    private class RefreshCurrentSemester extends AsyncTask<Object,Void,Student>{
-    	protected Student doInBackground(Object... args){
-    		int currentWeek = 0;
-    		StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(AllCoursesInNextSemesterActivity.this);
-    		studentInfDBAdapter.open();
-    		currentWeek = SettingsActivity.getCurrentWeekNumber(AllCoursesInNextSemesterActivity.this);
-    		if(currentWeek < 5){
-	        	studentInfDBAdapter.updateCurrentSemester();
-	        }
-    		studentInfDBAdapter.close();
-    		return null;
-    	}
-    }
 }

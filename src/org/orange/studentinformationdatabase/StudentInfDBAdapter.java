@@ -3,7 +3,9 @@ package org.orange.studentinformationdatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import util.BitOperate.BitOperateException;
 import util.webpage.Course;
@@ -18,6 +20,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 /**
@@ -29,6 +33,8 @@ public class StudentInfDBAdapter {
 	private static final String DATABASE_NAME = "studentInf.db";
 	private static final String DATABASE_COURSE_TABLE1 = "courseInf1";
 	private static final String DATABASE_COURSE_TABLE2 = "courseInf2";
+	/** Entity-attribute-value model table */
+	public static final String DATABASE_EAV_TABLE = "entity_attribute_value";
 	static final String DATABASE_POST_TABLE = "post";
 	private static final int DATABASE_VERSION = 1;
 	
@@ -77,8 +83,28 @@ public class StudentInfDBAdapter {
 	public static final String KEY_AUTHOR = "author";
 	public static final String KEY_DATE = "date";
 	public static final String KEY_MAINBODY = "mainbody";
-	
-	
+
+	// Columns for DATABASE_EAV_TABLE
+	/** {@link #DATABASE_EAV_TABLE}的实体字段名 */
+	public static final String KEY_ENTITY = "entity";
+	/** {@link #DATABASE_EAV_TABLE}的属性字段名 */
+	public static final String KEY_ATTRIBUTE = "attribute";
+	/** {@link #DATABASE_EAV_TABLE}的值字段名 */
+	public static final String KEY_VALUE = "value";
+	/** 个人信息的实体（{@link #KEY_ENTITY}）名 */
+	public static final String ENTITY_PERSONAL_INFORMATION = "PersonalInformation";
+
+	/** 参数1、2、3分别为{@link StudentInfDBAdapter#KEY_ENTITY ENTITY}、
+	 * {@link StudentInfDBAdapter#KEY_ATTRIBUTE ATTRIBUTE}、{@link StudentInfDBAdapter#KEY_VALUE VALUE} */
+	private static final String SAVE_TO_EAV_SQL = "INSERT OR REPLACE INTO " + StudentInfDBAdapter.DATABASE_EAV_TABLE +
+			"(" + StudentInfDBAdapter.KEY_ENTITY + ", " + StudentInfDBAdapter.KEY_ATTRIBUTE + ", "
+			+ StudentInfDBAdapter.KEY_VALUE + ") VALUES(?, ?, ?)";
+	// Select entity, attribute, value From entity_attribute_value Where entity IN (Select attribute From entity_attribute_value Where entity = ?);
+	private static final String QUERY_SQL = String.format
+			("SELECT %2$s, %3$s, %4$s FROM %1$s WHERE %2$s IN (SELECT %3$s FROM %1$s WHERE %2$s = ?);",
+					StudentInfDBAdapter.DATABASE_EAV_TABLE, //%1$s
+					StudentInfDBAdapter.KEY_ENTITY, StudentInfDBAdapter.KEY_ATTRIBUTE, StudentInfDBAdapter.KEY_VALUE);
+
 	/*
 	 *  内部类，构建数据库用的，生成courseInf1、courseInf2和post表。
 	 */
@@ -101,12 +127,17 @@ public class StudentInfDBAdapter {
 	    private static final String POST_TABLE_CREATE = "create table " + DATABASE_POST_TABLE + "(" + KEY_POST_ID + " integer primary key," 
 	    + KEY_SOURCE + " integer," + KEY_CATEGORY + " varchar(35)," + KEY_TITLE + " varchar(35)," + KEY_URL + " varchar(60)," + KEY_AUTHOR + " varchar(15),"
 	    + KEY_DATE + " integer," + KEY_MAINBODY + " text);"; 
-	
+
+		private static final String EAV_TABLE_CREATE = "CREATE TABLE " + DATABASE_EAV_TABLE + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY ASC, " + KEY_ENTITY + " VARCHAR NOT NULL, "
+				+ KEY_ATTRIBUTE + " VARCHAR NOT NULL, " + KEY_VALUE + " VARCHAR, CONSTRAINT unique_eva UNIQUE(" + KEY_ENTITY + ", " + KEY_ATTRIBUTE + "));";
+
+
 	    public void onCreate(SQLiteDatabase theDB){
 		    theDB.execSQL(COURSE_TABLE1_CREATE);
 		    theDB.execSQL(COURSE_TABLE2_CREATE);
 		    theDB.execSQL(POST_TABLE_CREATE);
 		    theDB.execSQL("CREATE INDEX post_index ON " + DATABASE_POST_TABLE + "(" + KEY_DATE + ");");
+			theDB.execSQL(EAV_TABLE_CREATE);
 	    }
 	    
 	    public void onUpgrade(SQLiteDatabase theDB, int theOldVersion, int theNewVersion){
@@ -115,6 +146,7 @@ public class StudentInfDBAdapter {
 	    	theDB.execSQL("DROP TABLE IF EXISTS " + DATABASE_COURSE_TABLE1);
 	    	theDB.execSQL("DROP TABLE IF EXISTS " + DATABASE_COURSE_TABLE2);
 	    	theDB.execSQL("DROP TABLE IF EXISTS " + DATABASE_POST_TABLE);
+			theDB.execSQL("DROP TABLE IF EXISTS " + DATABASE_EAV_TABLE);
 	    	
 	    	onCreate(theDB);
 	    }
@@ -141,6 +173,67 @@ public class StudentInfDBAdapter {
 	public void close(){
 		if(isOpen())
 			db.close();
+	}
+
+	public SQLiteOpenHelper getSQLiteOpenHelper() {
+		return dbHelper;
+	}
+
+	/**
+	 * 持久化二维映射到数据库中
+	 * @param map 要持久化的二位映射
+	 * @param mapId 次映射对象的ID，提取时使用
+	 * @return 保存过程中影响数据库的行数（映射的条目（{@link Map.Entry}）数，包括外层映射条目）
+	 * @see #retrieveTwodimensionalMap(String)
+	 */
+	public long saveTwodimensionalMap(Map<String, Map<String, String>> map, String mapId) {
+		if(map == null || mapId == null || mapId.length() == 0)
+			throw new IllegalArgumentException("object == null || objectId == null || objectId.length() == 0");
+		long counter = 0;
+		SQLiteDatabase database = dbHelper.getWritableDatabase();
+		SQLiteStatement statement = database.compileStatement(SAVE_TO_EAV_SQL); // TODO SQLException
+		database.beginTransaction();
+		try {
+			for(Map.Entry<String, Map<String, String>> group : map.entrySet()) {
+				statement.clearBindings();
+				String groupName = group.getKey();
+				statement.bindString(1, mapId);
+				statement.bindString(2, groupName);
+				if(statement.executeInsert() != -1) //TODO SQLException
+					counter++;
+				for(Map.Entry<String, String> keyValue : group.getValue().entrySet()) {
+					statement.bindString(1, groupName);
+					statement.bindString(2, keyValue.getKey());
+					statement.bindString(3, keyValue.getValue());
+					if(statement.executeInsert() != -1) //TODO SQLException
+						counter++;
+				}
+			}
+			database.setTransactionSuccessful();
+		} finally {
+			database.endTransaction();
+			if(database != db)
+				database.close();
+		}
+		return counter;
+	}
+	/**
+	 * 反持久化二维映射（提取持久化的二维映射）
+	 * @param mapId 要提取的映射对象的ID
+	 * @return 反持久化后的映射对象
+	 * @see #saveTwodimensionalMap(Map, String)
+	 */
+	public Map<String, Map<String, String>> retrieveTwodimensionalMap(String mapId) {
+		Map<String, Map<String, String>> result = new HashMap<>();
+		Cursor cursor = db.rawQuery(QUERY_SQL, new String[]{mapId});
+		while(cursor.moveToNext()) {
+			String groupName = cursor.getString(0);
+			if(!result.containsKey(groupName))
+				result.put(groupName, new HashMap<String, String>());
+			result.get(groupName).put(cursor.getString(1), cursor.getString(2));
+		}
+		cursor.close();
+		return result;
 	}
 
 	/**

@@ -6,29 +6,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Map;
 
-import org.orange.querysystem.R;
-import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.content.ListViewAdapter;
 import org.orange.querysystem.util.Network;
+import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
-import util.webpage.Constant;
 import util.webpage.SchoolWebpageParser;
 import util.webpage.SchoolWebpageParser.ParserException;
-import util.webpage.Student;
-import util.webpage.Student.StudentException;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -56,7 +50,6 @@ public class StudentInfoActivity extends ListActivity{
 	private View showImage;
 	private ImageView imageView;
 	private boolean authenticated;
-	private static final String FILE_NAME = "student_info.txt";
 	public static final int PASSWORD_PROMPT = 1;
 
 	@Override
@@ -89,14 +82,8 @@ public class StudentInfoActivity extends ListActivity{
 		listView.addFooterView(showImage);
 		initAdapter();
 		setListAdapter(adapter);
-		
-		File fileObject = new File("data/data/org.orange.querysystem/files/" + FILE_NAME);
-		if(fileObject.exists())
-		{
-			new StudentInfoFromFile().execute();
-		}else{
-			new StudentInfoFromWeb().execute();
-		}
+
+		new StudentInfoFromDatabase().execute();
 	}
 	
 	@Override
@@ -223,97 +210,63 @@ public class StudentInfoActivity extends ListActivity{
 		return theBitmap;
 	}
 
-	private class StudentInfoFromWeb extends AsyncTask<Object,Void,Student> {
-		protected Student doInBackground(Object... args) {
-			Student student = new Student();
+	private class StudentInfoFromWeb extends AsyncTask<Object,Void,Long> {
+		protected Long doInBackground(Object... args) {
+			Map<String, Map<String, String>> student = null;
 			SchoolWebpageParser studentInfo;
 			try {
 				studentInfo = new SchoolWebpageParser();
                 studentInfo.setUser(SettingsActivity.getAccountStudentID(StudentInfoActivity.this), SettingsActivity.getAccountPassword(StudentInfoActivity.this));
-				studentInfo.parseScores(Constant.url.个人全部成绩, student);
+				student = studentInfo.parsePersonalInformation();
 			} catch (ParserException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-			if(student.getName() != null)
-			{
-				PrintWriter outputStream = null;
-		        try{
-		        	outputStream = new PrintWriter(openFileOutput(FILE_NAME, MODE_PRIVATE));
-		        }catch(FileNotFoundException e){
-		        	System.out.println("Error opening the file");
-		        	e.printStackTrace();
-		        }
-				if(outputStream != null){
-					outputStream.println(student.getNumber());
-					outputStream.println(student.getName());
-					outputStream.println(Gender.getGenderCode(student.isMale()));
-					outputStream.println(student.getBirthdayString());
-					outputStream.println(Byte.toString(student.getAcademicPeriod()));
-					outputStream.println(student.getAdmissionTimeString());
-					outputStream.println(student.getSchoolName());
-					outputStream.println(student.getMajorName());
-					outputStream.println(student.getClassName());
-					outputStream.close();
-				}
-		        storeImage(getHttpBitmap(student.getUrlOfFacedPhoto()));
-		        new StudentInfoFromFile().execute();
-			}
-			return student;
+			if(student.isEmpty())
+				return 0L;
+			StudentInfDBAdapter dbAdapter = new StudentInfDBAdapter(StudentInfoActivity.this);
+			dbAdapter.open();
+			long counter = dbAdapter.saveTwodimensionalMap(student, StudentInfDBAdapter.ENTITY_PERSONAL_INFORMATION);
+			dbAdapter.close();
+//			storeImage(getHttpBitmap("url"));
+			return counter;
 		}
 
-		protected void onPostExecute(Student student){
-			if(student.getName() == null)
-			{
+		protected void onPostExecute(Long counter){
+			//TODO 改善
+			if(counter == 0) {
 				Toast.makeText(StudentInfoActivity.this, "学生信息更新失败，请点击刷新来更新信息", Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(StudentInfoActivity.this, "成功更新了 " + counter + " 条个人信息", Toast.LENGTH_LONG).show();
+				new StudentInfoFromDatabase().execute();
 			}
 		}
 	}
 	
-	private class StudentInfoFromFile extends AsyncTask<Void,Void,Student>{
-		protected Student doInBackground(Void...agrs){
-			Scanner inputStream = null;
-			try{
-				inputStream = new Scanner(openFileInput(FILE_NAME));
-			}catch(FileNotFoundException e){
-				System.out.println("Error opening files");
-			}
-			if(inputStream != null){
-				Student student = new Student();
-				student.setNumber(inputStream.nextLine());
-				student.setName(inputStream.nextLine());
-				student.setIsMale(Gender.isMale(Integer.parseInt(inputStream.nextLine())));
-				try {student.setBirthday(inputStream.nextLine());} catch (ParseException e) {}
-				try {student.setAcademicPeriod(Byte.parseByte(inputStream.nextLine()));}
-				catch (StudentException e) {}
-				try {student.setAdmissionTime(inputStream.nextLine());} catch (ParseException e) {}
-				student.setSchoolName(inputStream.nextLine());
-				student.setMajorName(inputStream.nextLine());
-				student.setClassName(inputStream.nextLine());
-				inputStream.close();
-				return student;
-			}else
-				return null;
+	private class StudentInfoFromDatabase extends AsyncTask<Void,Void,Map<String, Map<String, String>>>{
+		protected Map<String, Map<String, String>> doInBackground(Void...agrs){
+			StudentInfDBAdapter dbAdapter = new StudentInfDBAdapter(StudentInfoActivity.this);
+			dbAdapter.open();
+			Map<String, Map<String, String>> result = dbAdapter.retrieveTwodimensionalMap(StudentInfDBAdapter.ENTITY_PERSONAL_INFORMATION);
+			dbAdapter.close();
+			return result;
 		}
 
-		protected void onPostExecute(Student student){
+		protected void onPostExecute(Map<String, Map<String, String>> student){
 			if(student == null)
 				return;
-			Resources res = getResources();
 			ArrayList<String> items = new ArrayList<String>();
-			items.add(res.getString(R.string.student_number) + "：" + student.getNumber());
-			items.add(res.getString(R.string.student_name) + "：" + student.getName());
-			items.add(res.getString(R.string.gender) + "："
-					+ res.getString(Gender.getStringId(student.isMale())));
-			items.add(res.getString(R.string.birthday) + "：" + student.getBirthdayString());
-			items.add(res.getString(R.string.academic_period) + "：" + student.getAcademicPeriod());
-			items.add(res.getString(R.string.admission_time) + "：" + student.getAdmissionTimeString());
-			items.add(res.getString(R.string.school) + "：" + student.getSchoolName());
-			items.add(res.getString(R.string.major) + "：" + student.getMajorName());
-			items.add(res.getString(R.string.class_name) + "：" + student.getClassName());
-			imageView.setImageBitmap(getBitmap());
+			for(Map.Entry<String, Map<String, String>> group : student.entrySet()) {
+				String groupName = group.getKey();
+				items.add(String.format("---------- %s ----------", groupName)); //TODO 这不支持多国语言
+				for(Map.Entry<String, String> keyValue : group.getValue().entrySet()) {
+					items.add(keyValue.getKey() + "：" + keyValue.getValue()); //TODO 这不支持多国语言
+				}
+			}
+
+//			imageView.setImageBitmap(getBitmap());
 			adapter = new ListViewAdapter(StudentInfoActivity.this, items);
 			setListAdapter(adapter);
 		}

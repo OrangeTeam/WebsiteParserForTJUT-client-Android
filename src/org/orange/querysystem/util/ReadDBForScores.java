@@ -1,18 +1,18 @@
 package org.orange.querysystem.util;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.Course;
-import util.webpage.Course.CourseException;
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
 
-public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<Course>>>{
+public class ReadDBForScores extends AsyncTask<String, Void, Map<Integer, Map<Integer, List<Course>>>> {
 	public interface OnPostExcuteListerner{
-		public void onPostReadFromDBForScores(ArrayList<ArrayList<Course>> courses);
+		public void onPostReadFromDBForScores(Map<Integer, Map<Integer, List<Course>>> courses);
 	}
 	private Context context;
 	private OnPostExcuteListerner listener;
@@ -26,8 +26,8 @@ public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<C
 	}
 
 	@Override
-	protected ArrayList<ArrayList<Course>> doInBackground(String... args) {
-		ArrayList<ArrayList<Course>> result = null;
+	protected Map<Integer, Map<Integer, List<Course>>> doInBackground(String... args) {
+		Map<Integer, Map<Integer, List<Course>>> result = null;
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try {
 			studentInfDBAdapter.open();
@@ -48,7 +48,7 @@ public class ReadDBForScores extends AsyncTask<String,Void,ArrayList<ArrayList<C
 	}
 
 	@Override
-	protected void onPostExecute(ArrayList<ArrayList<Course>> courses){
+	protected void onPostExecute(Map<Integer, Map<Integer, List<Course>>> courses) {
 		if(listener != null)
 			listener.onPostReadFromDBForScores(courses);
 	}

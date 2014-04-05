@@ -13,13 +13,14 @@ import java.util.Map;
 
 import org.orange.querysystem.content.ListViewAdapter;
 import org.orange.querysystem.util.Network;
+import org.orange.querysystem.util.PersonalInformationUpdater;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
@@ -210,30 +211,19 @@ public class StudentInfoActivity extends ListActivity{
 		return theBitmap;
 	}
 
-	private class StudentInfoFromWeb extends AsyncTask<Object,Void,Long> {
-		protected Long doInBackground(Object... args) {
-			Map<String, Map<String, String>> student = null;
-			SchoolWebpageParser studentInfo;
-			try {
-				studentInfo = new SchoolWebpageParser();
-                studentInfo.setUser(SettingsActivity.getAccountStudentID(StudentInfoActivity.this), SettingsActivity.getAccountPassword(StudentInfoActivity.this));
-				student = studentInfo.parsePersonalInformation();
-			} catch (ParserException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	private class StudentInfoFromWeb extends AsyncTask<Void, Void, Long> {
+		private PersonalInformationUpdater mUpdater;
 
-			if(student.isEmpty())
-				return 0L;
-			StudentInfDBAdapter dbAdapter = new StudentInfDBAdapter(StudentInfoActivity.this);
-			dbAdapter.open();
-			long counter = dbAdapter.saveTwodimensionalMap(student, StudentInfDBAdapter.ENTITY_PERSONAL_INFORMATION);
-			dbAdapter.close();
-//			storeImage(getHttpBitmap("url"));
-			return counter;
+		public StudentInfoFromWeb(Context context, SchoolWebpageParser parser) {
+			mUpdater = new PersonalInformationUpdater(context, parser);
 		}
 
+		@Override
+		protected Long doInBackground(Void... params) {
+			return mUpdater.update();
+		}
+
+		@Override
 		protected void onPostExecute(Long counter){
 			//TODO 改善
 			if(counter == 0) {
@@ -284,7 +274,11 @@ public class StudentInfoActivity extends ListActivity{
     	// TODO Auto-generated method stub\
     	if(item.getItemId() == 1){
 			if(Network.isConnected(this)){
-    			new StudentInfoFromWeb().execute();
+				String username = SettingsActivity.getAccountStudentID(this);
+				String password = SettingsActivity.getAccountPassword(this);
+				SchoolWebpageParser parser = new SchoolWebpageParser();
+				parser.setUser(username, password);
+				new StudentInfoFromWeb(this, parser).execute();
 //    			start_resume = 1;
 //        		startActivity(new Intent(this, InsertDBFragmentActivity.class));
         		//TODO startActivity后不会继续运行

@@ -1,6 +1,6 @@
 package org.orange.querysystem.util;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -9,10 +9,11 @@ import util.webpage.Course;
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
+import android.util.Log;
 
-public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
+public class ReadDB extends AsyncTask<String, Void, List<Course>>{
 	public interface OnPostExcuteListerner{
-		public void onPostReadFromDB(ArrayList<Course> courses);
+		public void onPostReadFromDB(List<Course> courses);
 	}
 	private Context context;
 	private OnPostExcuteListerner listener;
@@ -26,45 +27,32 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 	}
 
 	@Override
-	protected ArrayList<Course> doInBackground(String... args) {
-		ArrayList<Course> result = null;
+	protected List<Course> doInBackground(String... args) {
 		int year = SettingsActivity.getCurrentAcademicYear(context);
 		byte semester = SettingsActivity.getCurrentSemester(context);
-		studentInfDBAdapter = new StudentInfDBAdapter(context);
-		if(args[1].equals("this")){
-			try {
-				studentInfDBAdapter.open();
-				result = studentInfDBAdapter.getCoursesFromDB(
-						StudentInfDBAdapter.KEY_YEAR + "=" + year +
-						" AND " + StudentInfDBAdapter.KEY_SEMESTER + "=" + semester, null, args[0]);
-			} catch(SQLException e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally{
-				studentInfDBAdapter.close();
-			}
-		}else{
-			try {
-				// 推断下学期的学年和学期号
-				if(semester == 1)
-					semester++;
-				else if(semester == 2) {
-					year++;
-					semester = 1;
-				} //TODO 其他情况怎么办？
-				// 查询
-				studentInfDBAdapter.open();
-				result = studentInfDBAdapter.getCoursesFromDB(
-						StudentInfDBAdapter.KEY_YEAR + "=" + year +
-						" AND " + StudentInfDBAdapter.KEY_SEMESTER + "=" + semester, null,  args[0]);
-			} catch(SQLException e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally{
-				studentInfDBAdapter.close();
-			}
+		if(!args[1].equals("this")) {
+			// 推断下学期的学年和学期号
+			if(semester == 1)
+				semester++;
+			else if(semester == 2) {
+				year++;
+				semester = 1;
+			} //TODO 其他情况怎么办？
 		}
-		
+		List<Course> result = null;
+		studentInfDBAdapter = new StudentInfDBAdapter(context);
+		try {
+			// 查询
+			studentInfDBAdapter.open();
+			result = studentInfDBAdapter.getCoursesFromDB(
+					StudentInfDBAdapter.KEY_YEAR + "= ?  AND " + StudentInfDBAdapter.KEY_SEMESTER + " = ?",
+					new String[]{String.valueOf(year), String.valueOf(semester)}, null, args[0]);
+		} catch(SQLException e){
+			Log.e("TAG", "Cannot read courses from database", e);
+		} finally{
+			studentInfDBAdapter.close();
+		}
+
 		return result;
 	}
 
@@ -74,7 +62,7 @@ public class ReadDB extends AsyncTask<String,Void,ArrayList<Course>>{
 	}
 
 	@Override
-	protected void onPostExecute(ArrayList<Course> courses){
+	protected void onPostExecute(List<Course> courses){
 		if(listener != null)
 			listener.onPostReadFromDB(courses);
 	}	

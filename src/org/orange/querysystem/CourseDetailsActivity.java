@@ -1,6 +1,7 @@
 package org.orange.querysystem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.orange.querysystem.content.dialog.TimeAndAddressSettingDialog;
 import org.orange.querysystem.content.dialog.TimeAndAddressSettingDialog.TimeAndAddressSettingDialogListener;
@@ -358,18 +359,21 @@ public class CourseDetailsActivity extends FragmentActivity implements TimeAndAd
 	private class QueryCourseInformationFromDatabase extends AsyncTask<String, Void, Course>{
 		@Override
 		protected Course doInBackground(String... params) {
-			Course result = null;
+			List<Course> result = null;
 			StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(CourseDetailsActivity.this);
 			try{
 				studentInfDBAdapter.open();
-				result = studentInfDBAdapter.getCourseFromDB(StudentInfDBAdapter.KEY_ID + "=" + params[0], params[1]);
+				result = studentInfDBAdapter.getCoursesFromDB(StudentInfDBAdapter.KEY_ID + " = ?", new String[]{params[0]}, null, params[1]);
 			} catch (SQLiteException e){
 				//TODO 异常处理
 				e.printStackTrace();
 			} finally {
 				studentInfDBAdapter.close();
 			}
-			return result;
+			if(result.isEmpty())
+				return null;
+			else
+				return result.get(0);
 		}
 		@Override
 		protected void onPostExecute(Course result) {

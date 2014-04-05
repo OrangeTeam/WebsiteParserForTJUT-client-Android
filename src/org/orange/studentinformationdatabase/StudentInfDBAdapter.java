@@ -1,9 +1,9 @@
 package org.orange.studentinformationdatabase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -177,6 +178,9 @@ public class StudentInfDBAdapter {
 
 	public SQLiteOpenHelper getSQLiteOpenHelper() {
 		return dbHelper;
+	}
+	public SQLiteDatabase getDatabase() {
+		return db;
 	}
 
 	/**
@@ -715,317 +719,212 @@ public class StudentInfDBAdapter {
 		}
 	}
 
-    /**
-     * 从数据库中一次获得courseInf1和courseInf2中的在where条件下的所有记录，也就是所有课程信息包括每门课程的成绩。  
-     * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_YEAR + "=" + 2011, StudentInfDBAdapter.KEY_CODE + " DESC"。
-     * @param theUsername
-     * @return ArrayList<Course>
-     * @throws CourseException
-     */
-	public ArrayList<Course> getCoursesFromDB(String where,String order, String theUserName) throws SQLException{
-		 Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
-		 if(cursor.getCount() == 0)
-		 {
-			 throw new SQLException("no this user data");
-		 }
-		 ArrayList<Course> courses = new ArrayList<Course>();
-		 Course course = new Course();
-		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, where, null, null, null, order);
-		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
-			 throw new SQLException("No course found from database");
-		 }
-		 else{
-			 for(int i = 0; i <cursor1.getCount(); i++){
-				 cursor1.moveToPosition(i);
-				 int newId = cursor1.getInt(0);
-				 String newCode = cursor1.getString(1);
-				 String newName = cursor1.getString(2);
-				 String newTeachers = cursor1.getString(3);
-				 int newCredit = cursor1.getInt(4);
-				 String newClassNumber = cursor1.getString(5);
-				 String newTeachingMaterial = cursor1.getString(6);
-				 int newYear = cursor1.getInt(7);
-				 Byte newSemester = null;
-				 if(!cursor1.isNull(8))
-					 newSemester= (byte) cursor1.getInt(8);
-				 float newTestScore = cursor1.getFloat(9);
-				 float newTotalScore = cursor1.getFloat(10);
-				 String newKind = cursor1.getString(11);
-				 String newNote = cursor1.getString(12);
-				 
-				 ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
-				 TimeAndAddress timeAndAddress = new TimeAndAddress();
-				 Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + newId, null, null, null, null);
-				 if((cursor2.getCount() == 0) || !cursor2.moveToFirst()){
-					 
-				 }
-				 else{
-					 for(int j = 0; j < cursor2.getCount(); j++){
-						 cursor2.moveToPosition(j);
-						 int newWeek = cursor2.getInt(2);
-						 int newDay = cursor2.getInt(3);
-						 int newPeriod = cursor2.getInt(4);
-						 String newAddress = cursor2.getString(5);
-						 try{
-							 timeAndAddress.setWeek(newWeek);
-							 timeAndAddress.setDay(newDay);
-							 timeAndAddress.setPeriod(newPeriod);
-							 timeAndAddress.setAddress(newAddress);
-						 }catch(BitOperateException e){
-							 e.printStackTrace();
-						 }catch(NullPointerException e){
-							 e.printStackTrace();
-						 }
-						 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
-						 //这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
-					 }
-				 }
-				 course.setId(newId);
-				 course.setCode(newCode);
-				 course.setName(newName);
-				 course.setClassNumber(newClassNumber);
-				 course.setTeachingMaterial(newTeachingMaterial);
-				try {
-					course.setSemester(newSemester);
-				} catch (CourseException e) { //TODO 统一处理这些异常
-					e.printStackTrace();
-				}
-				 course.setKind(newKind);
-				 course.setNote(newNote);
-				 course.setTimeAndAddresse(timeAndAddresses);
-				 course.setTeachers(newTeachers);
-				 try{
-					 course.setCredit(newCredit);
-					 if(newYear != 0)course.setYear(newYear);
-					 if(newTestScore != Float.NaN)course.setTestScore(newTestScore);
-					 if(newTotalScore != Float.NaN)course.setTotalScore(newTotalScore);
-				 }catch(NullPointerException e){
-					 e.printStackTrace();
-				 }catch(CourseException e){
-					 e.printStackTrace();
-				 }
-				 courses.add(new Course(course));
-				 //这里使用了Course的拷贝构造方法进行了深拷贝。
-			 }
-		 }
-		 return courses;
-	 }
-	
 	/**
-	 * 从数据库中的courseInf1和courseInf2返回所有课程也包括成绩。
-	 * @param theUserName
-	 * @return Array<ArrayList<Course>>
-	 * @throws SQLException
+	 * 取得指定用户的所有课程信息（包括成绩、时间等）
+	 * @param theUserName 用户名
+	 * @return see {@link #getAllCoursesFromDB(String, String[])}
+	 * @see #getAllCoursesFromDB(String, String[])
 	 */
-	public ArrayList<ArrayList<Course>> getAllCoursesFromDB(String theUserName) throws SQLException {
-		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
-		 if(cursor.getCount() == 0)
-		 {
-			 throw new SQLException("no this user data");
-		 }
-		 
-		 String year[] = {"year"};
-		 Cursor cursor3 = db.query(true, DATABASE_COURSE_TABLE1, year, null, null, null, null, null, null);
-		 int sum[] = new int[cursor3.getCount()];
-		 if((cursor3.getCount() == 0) || !cursor3.moveToFirst()){
-			 throw new SQLException("No course found from database");
-		 }
-		 else{
-			 for(int i = 0; i < cursor3.getCount(); i++){
-				 cursor3.moveToPosition(i);
-				 sum[i] = cursor3.getInt(0);
-			 }
-		 }
-		 Arrays.sort(sum);//使提取每学年的课程时按照时间的顺序进行
-		 
-		 ArrayList<ArrayList<Course>> all = new ArrayList<ArrayList<Course>>();
-		 for (int m = 0; m < sum.length; m++){ 
-			 for(int n = 0; n < 2; n++){
-				 String temp;
-				 if(n == 0)
-					 temp = "t";
-				 else
-					 temp = "f";
-				 
-				ArrayList<Course> courses = new ArrayList<Course>();
-				Course course = new Course();
-				Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, KEY_YEAR + "=" + sum[m] + " AND " + KEY_SEMESTER + "= '" + temp + "'", null, null, null, null);
-				if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
-					cursor1.close();
-					continue;
-				}
-				else{
-					for(int i = 0; i <cursor1.getCount(); i++){
-						cursor1.moveToPosition(i);
-						int newId = cursor1.getInt(0);
-						String newCode = cursor1.getString(1);
-						String newName = cursor1.getString(2);
-						String newTeachers = cursor1.getString(3);
-						int newCredit = cursor1.getInt(4);
-						String newClassNumber = cursor1.getString(5);
-						String newTeachingMaterial = cursor1.getString(6);
-						int newYear = cursor1.getInt(7);
-						Byte newSemester = null;
-						if(!cursor1.isNull(8))
-							newSemester = (byte) cursor1.getInt(8);
-						float newTestScore = cursor1.getFloat(9);
-						float newTotalScore = cursor1.getFloat(10);
-						String newKind = cursor1.getString(11);
-						String newNote = cursor1.getString(12);
-							 
-						ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
-						TimeAndAddress timeAndAddress = new TimeAndAddress();
-						Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + newId, null, null, null, null);
-						if((cursor2.getCount() == 0) || !cursor2.moveToFirst()){
-								 
-						}
-						else{
-							for(int j = 0; j < cursor2.getCount(); j++){
-								cursor2.moveToPosition(j);
-								int newWeek = cursor2.getInt(2);
-								int newDay = cursor2.getInt(3);
-								int newPeriod = cursor2.getInt(4);
-								String newAddress = cursor2.getString(5);
-								try{
-									timeAndAddress.setWeek(newWeek);
-									timeAndAddress.setDay(newDay);
-									timeAndAddress.setPeriod(newPeriod);
-									timeAndAddress.setAddress(newAddress); 
-								}catch(BitOperateException e){
-									e.printStackTrace();
-								}catch(NullPointerException e){
-									e.printStackTrace();
-								}
-								timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
-								//这里使用了TimeAndAddress的拷贝构造方法进行深拷贝。
-						    }
-						}
-						cursor2.close();
-						course.setId(newId);
-						course.setCode(newCode);
-						course.setName(newName);
-						course.setClassNumber(newClassNumber);
-						course.setTeachingMaterial(newTeachingMaterial);
-						try {
-							course.setSemester(newSemester);
-						} catch (CourseException e) { //TODO 统一处理这些异常
-							e.printStackTrace();
-						}
-						course.setKind(newKind);
-						course.setNote(newNote);
-						try{
-							course.setTimeAndAddresse(timeAndAddresses);
-							course.setTeachers(newTeachers);
-							course.setCredit(newCredit);
-							if(newYear != 0)course.setYear(newYear);
-							if(newTestScore != Float.NaN)course.setTestScore(newTestScore);
-							if(newTotalScore != Float.NaN)course.setTotalScore(newTotalScore);
-						}catch(NullPointerException e){
-							e.printStackTrace();
-						}catch(CourseException e){
-							e.printStackTrace();
-						}
-						courses.add(new Course(course));
-							 //这里使用了Course的拷贝构造方法进行了深拷贝。
-						}
-				   }
-				cursor1.close();
-			 all.add(courses);
-			 }
-		 }
-		 return all;
-	 }
-	
+	public Map<Integer, Map<Integer, List<Course>>> getAllCoursesFromDB(String theUserName) {
+		return getAllCoursesFromDB(KEY_USER_NAME + " = ?", new String[]{theUserName});
+	}
 	/**
-	 * 从数据库中的courseInf1和courseInf2返回一门课程和成绩。
-	 * @param where相当于mysql的where。 调用时参数的用法如：StudentInfDBAdapter.KEY_NAME + "=" + 营销学.
-	 * @param theUserName
-	 * @return Course.
-	 * @throws CourseException
+	 * 取得满足制定条件的所有课程信息（包括成绩、时间等）
+	 * @return 分别以学年、学期为{@code Key}的课程列表二维映射，学年学期不明时{@code Key}为null
+	 * <p>示例：{@code result.get(2013).get(1)}</p>
+	 * @see #getCoursesFromDB(String, String[], String)
 	 */
-	public Course getCourseFromDB(String where, String theUserName) throws SQLException{
-		Cursor cursor = db.query(DATABASE_COURSE_TABLE1, null, KEY_USER_NAME + "= '" + theUserName + "'", null, null, null, null);
-		 if(cursor.getCount() == 0)
-		 {
-			 throw new SQLException("no this user data");
-		 }
-		 Course course = new Course();
-		 Cursor cursor1 = db.query(DATABASE_COURSE_TABLE1, null, where, null, null, null, null);
-		 if((cursor1.getCount() == 0) || !cursor1.moveToFirst()){
-			 throw new SQLException("No course found from database");
-		 }
-		 else{
-			 int newId = cursor1.getInt(0);
-			 String newCode = cursor1.getString(1);
-			 String newName = cursor1.getString(2);
-			 String newTeachers = cursor1.getString(3);
-			 int newCredit = cursor1.getInt(4);
-			 String newClassNumber = cursor1.getString(5);
-			 String newTeachingMaterial = cursor1.getString(6);
-			 int newYear = cursor1.getInt(7);
-			 Byte newSemester = null;
-			 if(!cursor1.isNull(8))
-				 newSemester = (byte) cursor1.getInt(8);
-			 float newTestScore = cursor1.getFloat(9);
-			 float newTotalScore = cursor1.getFloat(10);
-			 String newKind = cursor1.getString(11);
-			 String newNote = cursor1.getString(12);
-			 
-			 ArrayList<TimeAndAddress> timeAndAddresses = new ArrayList<TimeAndAddress>();
-			 TimeAndAddress timeAndAddress = new TimeAndAddress();
-			 Cursor cursor2 = db.query(DATABASE_COURSE_TABLE2, null, KEY_LINK + "=" + newId, null, null, null, null);
-			 if((cursor2.getCount() == 0) || !cursor2.moveToFirst()){
-				 
-			 }
-			 else{
-				 for(int j = 0; j < cursor2.getCount(); j++){
-					 cursor2.moveToPosition(j);
-					 int newWeek = cursor2.getInt(2);
-					 int newDay = cursor2.getInt(3);
-					 int newPeriod = cursor2.getInt(4);
-					 String newAddress = cursor2.getString(5);
-					 try{
-						 timeAndAddress.setWeek(newWeek);
-						 timeAndAddress.setDay(newDay);
-						 timeAndAddress.setPeriod(newPeriod);
-						 timeAndAddress.setAddress(newAddress);
-					 }catch(BitOperateException e){
-						 e.printStackTrace();
-					 }catch(NullPointerException e){
-						 e.printStackTrace();
-					 }
-					 timeAndAddresses.add(new TimeAndAddress(timeAndAddress));
-				 }
-			 }
-			 course.setId(newId);
-			 course.setCode(newCode);
-			 course.setName(newName);
-			 course.setClassNumber(newClassNumber);
-			 course.setTeachingMaterial(newTeachingMaterial);
-			 try {
-				course.setSemester(newSemester);
-			} catch (CourseException e) { //TODO 统一处理异常
+	public Map<Integer, Map<Integer, List<Course>>> getAllCoursesFromDB(String selection, String[] selectionArgs) {
+		Map<Integer, Map<Integer, List<Course>>> result = new HashMap<>();
+		for(Course course : getCoursesFromDB(selection, selectionArgs, null)) {
+			Integer year = (int) course.getYear();
+			Integer semester = course.getSemester() != null ? (int) course.getSemester() : null;
+			if(!result.containsKey(year))
+				result.put(year, new HashMap<Integer, List<Course>>());
+			if(!result.get(year).containsKey(semester))
+				result.get(year).put(semester, new LinkedList<Course>());
+			result.get(year).get(semester).add(course);
+		}
+		return result;
+	}
+
+	/**
+	 * 取得指定用户的所有课程信息（包括成绩、时间等）
+	 * @param userName 用户名
+	 * @see #getCoursesFromDB(String, String[], String)
+	 */
+	public List<Course> getCoursesFromDB(String selection, String[] selectionArgs, String orderBy, String userName) {
+		if(userName == null)
+			throw new SQLException("ueserName shouldn't be null"); //TODO 改善NullPointerException
+		selection = String.format("(%s) AND %s = ?", selection, KEY_USER_NAME);
+		String[] newSelectionArgs = null;
+		if(selectionArgs == null) {
+			newSelectionArgs =new String[]{userName};
+		} else {
+			newSelectionArgs = new String[selectionArgs.length + 1];
+			System.arraycopy(selectionArgs, 0, newSelectionArgs, 0, selectionArgs.length);
+			newSelectionArgs[newSelectionArgs.length - 1] = userName;
+		}
+		return getCoursesFromDB(selection, newSelectionArgs, orderBy);
+	 }
+	/**
+	 * 取得满足制定条件的所有课程信息（包括成绩、时间等）
+	 * @param selection A filter declaring which rows to return, formatted as an
+	 *            SQL WHERE clause (excluding the WHERE itself). Passing null
+	 *            will return all rows for the given table.
+	 * @param selectionArgs You may include ?s in selection, which will be
+	 *         replaced by the values from selectionArgs, in order that they
+	 *         appear in the selection. The values will be bound as Strings.
+	 * @param orderBy How to order the rows, formatted as an SQL ORDER BY clause
+	 *            (excluding the ORDER BY itself). Passing null will use the
+	 *            default sort order, which may be unordered.
+	 * @return 指定顺序的课程列表
+	 * @see SQLiteDatabase#query(String, String[], String, String[], String, String, String)
+	 */
+	public List<Course> getCoursesFromDB(String selection, String[] selectionArgs, String orderBy) {
+		/** 用于查找TimeAndAddresses */
+		String taaSQL = SQLiteQueryBuilder.buildQueryString(true, DATABASE_COURSE_TABLE1, new String[]{KEY_ID}, selection, null, null, null, null);
+		taaSQL = SQLiteQueryBuilder.buildQueryString(true, DATABASE_COURSE_TABLE2, null, KEY_LINK + " IN (" + taaSQL + ")", null, null, null, null);
+		Map<Long, Map<String, TimeAndAddress>> taas = null;
+		List<Course> result = new LinkedList<>();
+		Cursor cursor = null;
+		try {
+			db.beginTransaction();
+			try {
+				cursor = db.query(DATABASE_COURSE_TABLE1, null, selection, selectionArgs, null, null, orderBy);
+				taas = getTimeAndAddress(taaSQL, selectionArgs);
+				db.setTransactionSuccessful();
+			} finally {
+				db.endTransaction();
+			}
+			while(cursor.moveToNext()) {
+				Course course = covertToCourse(cursor);
+				Map<String, TimeAndAddress> courseTaas = taas.get((long) course.getId());
+				if(courseTaas != null)
+					for(TimeAndAddress taa : courseTaas.values())
+						course.addTimeAndAddress(taa);
+				result.add(course);
+			}
+		} finally {
+			if(cursor != null)
+				cursor.close();
+		}
+		return result;
+	}
+
+	private Map<Long, Map<String, TimeAndAddress>> getTimeAndAddress(String sql, String[] selectionArgs) {
+		Map<Long, Map<String, TimeAndAddress>> result = new HashMap<>();
+		Cursor cursor = null;
+		try {
+			cursor = db.rawQuery(sql, selectionArgs);
+			while(cursor.moveToNext()) {
+				long courseId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_LINK));
+				String viceid = cursor.getString(cursor.getColumnIndexOrThrow(KEY_VICEID));
+				if(!result.containsKey(courseId))
+					result.put(courseId, new HashMap<String, TimeAndAddress>());
+				result.get(courseId).put(viceid, convertToTimeAndAddress(cursor));
+			}
+		} finally {
+			if(cursor != null)
+				cursor.close();
+		}
+		return result;
+	}
+	private static Course covertToCourse(Cursor cursor) {
+		Course result = new Course();
+		boolean haveValue = false;
+		for(int i = 0 ; i < cursor.getColumnCount() ; i++) {
+			try {
+				switch(cursor.getColumnName(i)) {
+				case KEY_USER_NAME:
+					continue;	// skip these
+				case KEY_ID:
+					result.setId(cursor.getInt(i));
+					break;
+				case KEY_CODE:
+					result.setCode(cursor.getString(i));
+					break;
+				case KEY_NAME:
+					result.setName(cursor.getString(i));
+					break;
+				case KEY_TEACHERS:
+					result.setTeachers(cursor.getString(i));
+					break;
+				case KEY_CREDIT:
+					result.setCredit(cursor.getInt(i));
+					break;
+				case KEY_CLASS_NUMBER:
+					result.setClassNumber(cursor.getString(i));
+					break;
+				case KEY_TEACHING_MATERIAL:
+					result.setTeachingMaterial(cursor.getString(i));
+					break;
+				case KEY_YEAR:
+					result.setYear(cursor.getInt(i));
+					break;
+				case KEY_SEMESTER:
+					if(!cursor.isNull(i))
+						result.setSemester((byte) cursor.getInt(i));
+					break;
+				case KEY_TEST_SCORE:
+					result.setTestScore(cursor.getFloat(i));
+					break;
+				case KEY_TOTAL_SCORE:
+					result.setTotalScore(cursor.getFloat(i));
+					break;
+				case KEY_KIND:
+					result.setKind(cursor.getString(i));
+					break;
+				case KEY_NOTE:
+					result.setNote(cursor.getString(i));
+					break;
+				default:
+					throw new AssertionError("Unknown Column: " + cursor.getColumnName(i));
+				}
+				if(!haveValue)
+					haveValue = true;
+			} catch (CourseException e) {
 				e.printStackTrace();
 			}
-			 course.setKind(newKind);
-			 course.setNote(newNote);
-			 course.setTimeAndAddresse(timeAndAddresses);
-			 course.setTeachers(newTeachers);
-			 try{
-				 course.setCredit(newCredit);
-				 if(newYear != 0)course.setYear(newYear);
-				 if(newTestScore != Float.NaN)course.setTestScore(newTestScore);
-				 if(newTotalScore != Float.NaN)course.setTotalScore(newTotalScore);
-				 course.setTimeAndAddresse(timeAndAddresses);
-			 }catch(NullPointerException e){
-				 e.printStackTrace();
-			 }catch(CourseException e){
-				 e.printStackTrace();
-			 }
-		 }
-		 return new Course(course);
+		}
+		if(!haveValue)
+			throw new AssertionError("Illegal Columns: None column who have meaningful value");
+		return result;
 	}
-	
+	private static TimeAndAddress convertToTimeAndAddress(Cursor cursor) {
+		TimeAndAddress result = new TimeAndAddress();
+		boolean haveValue = false;
+		for(int i = 0 ; i < cursor.getColumnCount() ; i++) {
+			try {
+				switch(cursor.getColumnName(i)) {
+				case KEY_LINK: case KEY_VICEID:
+					continue;	// skip these
+				case KEY_WEEK:
+					result.setWeek(cursor.getInt(i));
+					break;
+				case KEY_DAY:
+					result.setDay(cursor.getInt(i));
+					break;
+				case KEY_PERIOD:
+					result.setPeriod(cursor.getInt(i));
+					break;
+				case KEY_ADDRESS:
+					result.setAddress(cursor.getString(i));
+					break;
+				default:
+					throw new AssertionError("Unknown Column: " + cursor.getColumnName(i));
+				}
+				if(!haveValue)
+					haveValue = true;
+			} catch (BitOperateException e) {
+				e.printStackTrace();
+			}
+		}
+		if(!haveValue)
+			throw new AssertionError("Illegal Columns: None column who have meaningful value");
+		return result;
+	}
+
 	/**
 	 * 在where条件下，从post表中读取所有的通知信息。
 	 * @param where。order.limit这三个参数和mysql的用法一样，调用时的参数用法如：StudentInfDBAdapter.KEY_TITLE + "=" + xxxx, StudentInfDBAdapter.KEY_DATE + " DESC", "2".

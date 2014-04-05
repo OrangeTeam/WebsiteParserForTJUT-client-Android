@@ -3,6 +3,7 @@ package org.orange.querysystem;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -67,15 +68,15 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
 			showResult(context, appWidgetManager, appWidgetIds, str);
 			return;
 		}
-		ArrayList<Course> courses = null;
+		List<Course> courses = null;
 		studentInfDBAdapter = new StudentInfDBAdapter(context);
 		try{
 			int year = SettingsActivity.getCurrentAcademicYear(context);
 			byte semester = SettingsActivity.getCurrentSemester(context);
 			studentInfDBAdapter.open();
 			courses = studentInfDBAdapter.getCoursesFromDB(
-					StudentInfDBAdapter.KEY_YEAR + "=" + year +
-					" AND " + StudentInfDBAdapter.KEY_SEMESTER + "=" + semester, null, SettingsActivity.getAccountStudentID(context));
+					StudentInfDBAdapter.KEY_YEAR + "= ?  AND " + StudentInfDBAdapter.KEY_SEMESTER + " = ?",
+					new String[]{String.valueOf(year), String.valueOf(semester)}, null, SettingsActivity.getAccountStudentID(context));
 		}catch(SQLException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();

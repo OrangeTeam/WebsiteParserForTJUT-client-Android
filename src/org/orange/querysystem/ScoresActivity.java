@@ -16,6 +16,8 @@
 package org.orange.querysystem;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.orange.querysystem.CoursesInThisWeekActivity.IncorrectIdOrPasswordDialogFragment;
 import org.orange.querysystem.content.ListScoresFragment;
@@ -183,7 +185,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
     }
     
     @Override
-	public void onPostReadFromDBForScores(ArrayList<ArrayList<Course>> courses) {
+	public void onPostReadFromDBForScores(Map<Integer,Map<Integer,List<Course>>> courses) {
 		if(courses != null){
 			showScoresInfo(courses);
 			if(currentTab != null)
@@ -192,11 +194,13 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			showDialogFragment(DIALOG_NO_COURSES_IN_DATABASE);
 	}
     
-    public void showScoresInfo(ArrayList<ArrayList<Course>> courses){
+	public void showScoresInfo(Map<Integer,Map<Integer,List<Course>>> courses) {
     	mTabsAdapter.clear();
 
     	ArrayList<Bundle> args = new ArrayList<Bundle>(7);
-		for(ArrayList<Course> coursesInASemester:courses){
+		//TODO 下边Map遍历的顺序无保证
+		for(Map<Integer, List<Course>> coursesInAYear : courses.values()) {
+		for(List<Course> coursesInASemester : coursesInAYear.values()){
 			if(coursesInASemester.get(0).getYear() == 0)//去除本学年成绩未出就会显示在成绩单中的情况
 				continue;
 			ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
@@ -212,6 +216,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
 			Bundle arg = new Bundle();
 			arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);
 			args.add(arg);
+		}
 		}
 		int counter = 1;
 		for(Bundle arg:args){

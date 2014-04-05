@@ -40,8 +40,8 @@ public class AllCoursesInNextSemesterActivity extends CoursesInThisWeekActivity 
     }
     
     @Override
-	public void onPostReadFromDB(ArrayList<Course> courses) {
-		if(courses != null)
+	public void onPostReadFromDB(List<Course> courses) {
+		if(courses != null && !courses.isEmpty())
 			showCoursesInfo(courses, AllCoursesActivity.mCourseToSimpleCourse);
 		else
 			Toast.makeText(this, "无下学期课程", Toast.LENGTH_SHORT).show();

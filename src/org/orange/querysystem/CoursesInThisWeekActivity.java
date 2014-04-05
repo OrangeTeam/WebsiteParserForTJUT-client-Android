@@ -106,8 +106,8 @@ public class CoursesInThisWeekActivity extends FragmentActivity implements OnPos
     }
     
     @Override
-	public void onPostReadFromDB(ArrayList<Course> courses) {
-		if(courses != null)
+	public void onPostReadFromDB(List<Course> courses) {
+		if(courses != null && !courses.isEmpty())
 			showCoursesInfo(courses, mCourseToSimpleCourse);
 		else
 			showDialogFragment(DIALOG_NO_COURSES_IN_DATABASE);

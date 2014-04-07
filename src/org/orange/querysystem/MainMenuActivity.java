@@ -3,6 +3,8 @@ package org.orange.querysystem;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.orange.studentinformationdatabase.DBManager;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -71,6 +73,9 @@ public class MainMenuActivity extends Activity{
 		gridView.setAdapter(saImageItems);
 		//添加消息处理 
 		gridView.setOnItemClickListener(new ItemClickListener());
+
+		//导入静态数据库
+				DBManager.importInitialDB(this);
 	}
 	
 	//当AdapterView被单机（触摸屏或者键盘),则返回的Item单击事件

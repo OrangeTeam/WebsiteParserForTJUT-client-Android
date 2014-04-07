@@ -1,6 +1,7 @@
 package org.orange.studentinformationdatabase;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -84,6 +85,12 @@ public class StudentInfDBAdapter {
 	public static final String KEY_AUTHOR = "author";
 	public static final String KEY_DATE = "date";
 	public static final String KEY_MAINBODY = "mainbody";
+
+	/** 用于保存通知的参数化SQL语句 */
+	private static final String SAVE_TO_POST_SQL = "INSERT OR REPLACE INTO " + DATABASE_POST_TABLE +
+			"(" + KEY_POST_ID + ", " + KEY_SOURCE + ", " + KEY_CATEGORY + ", " + KEY_TITLE + ", "
+			+ KEY_URL + ", " + KEY_AUTHOR + ", " + KEY_DATE + ", " + KEY_MAINBODY +
+			") VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
 
 	// Columns for DATABASE_EAV_TABLE
 	/** {@link #DATABASE_EAV_TABLE}的实体字段名 */
@@ -192,7 +199,7 @@ public class StudentInfDBAdapter {
 	 */
 	public long saveTwodimensionalMap(Map<String, Map<String, String>> map, String mapId) {
 		if(map == null || mapId == null || mapId.length() == 0)
-			throw new IllegalArgumentException("object == null || objectId == null || objectId.length() == 0");
+			throw new IllegalArgumentException("map == null || mapId == null || mapId.length() == 0");
 		long counter = 0;
 		SQLiteDatabase database = dbHelper.getWritableDatabase();
 		SQLiteStatement statement = database.compileStatement(SAVE_TO_EAV_SQL); // TODO SQLException
@@ -408,48 +415,47 @@ public class StudentInfDBAdapter {
 			insertCourseToCourseInf2(theCourseInf);
 		}
 	}
-	
+
 	/**
-	 * 解析出的通知通过此插入操作方法存入到数据库的post表中。
-	 * @param thePostInf 类型为List<Post>类型
+	 * 持久化通知。使用{@code INSERT OR REPLACE INTO}语句保存。
+	 * @param posts 要持久化的通知
+	 * @return 保存过程中影响数据库的行数（通知的条数）
 	 */
-	private int insertArrayPostsInf(List<Post> thePostInf){
-		int count = 0;
-		long insertResult;
-		ContentValues newPostInfValues = new ContentValues();
-		
-		for(Post aPost:thePostInf){
-			if(aPost.getId() != null)
-				newPostInfValues.put(KEY_POST_ID, aPost.getId());
-			newPostInfValues.put(KEY_SOURCE, aPost.getSource());
-			newPostInfValues.put(KEY_CATEGORY, aPost.getCategory());
-			newPostInfValues.put(KEY_TITLE, aPost.getTitle());
-			newPostInfValues.put(KEY_URL, aPost.getUrl());
-			newPostInfValues.put(KEY_AUTHOR, aPost.getAuthor());
-			newPostInfValues.put(KEY_DATE, aPost.getDate().getTime());
-			newPostInfValues.put(KEY_MAINBODY, aPost.getMainBody());
-			//aPost.getDate().getTime()获取date字段并进行转换为长整型数据。
-			
-			insertResult = db.insert(DATABASE_POST_TABLE,null, newPostInfValues);
-			if(insertResult > -1){
-				count++;
+	public long savePosts(Collection<Post> posts) {
+		if(posts == null || posts.isEmpty())
+			return 0;
+		long counter = 0;
+		SQLiteDatabase database = dbHelper.getWritableDatabase();
+		SQLiteStatement statement = database.compileStatement(SAVE_TO_POST_SQL); // TODO SQLException
+		database.beginTransaction();
+		try {
+			for(Post post : posts) {
+				statement.clearBindings();
+				if(post.getId() != null)
+					statement.bindLong(1, post.getId());
+				statement.bindLong(2, post.getSource());
+				bindStringIfNotNull(statement, 3, post.getCategory());
+				bindStringIfNotNull(statement, 4, post.getTitle());
+				bindStringIfNotNull(statement, 5, post.getUrl());
+				bindStringIfNotNull(statement, 6, post.getAuthor());
+				statement.bindLong(7, post.getDate().getTime());
+				bindStringIfNotNull(statement, 8, post.getMainBody());
+				if(statement.executeInsert() != -1) //TODO SQLException
+					counter++;
 			}
+			database.setTransactionSuccessful();
+		} finally {
+			database.endTransaction();
+			if(database != db)
+				database.close();
 		}
-		return count;
+		return counter;
 	}
-	
-	/**
-	 * 判断数据库通知表中是否已经有要插入的通知，如果有就不进行插入操作，如果没有就调用insertArrayPostsInf
-	 * insertArrayPostsInf:解析出的通知通过此插入操作方法存入到数据库的post表中。
-	 * @param thePostInf
-	 */
-	public int autoInsertArrayPostsInf(List<Post> thePostInf){
-		int count = 0;
-		if(thePostInf == null || thePostInf.isEmpty()) return 0;
-		count = insertArrayPostsInf(thePostInf);
-		return count;
+	private static void bindStringIfNotNull(SQLiteStatement statement, int index, String value) {
+		if(value != null)
+			statement.bindString(index, value);
 	}
-	
+
 	/**
 	 * 删除一门课程的所有信息，也就是一条记录。这调记录为courseInf1和courseInf2的相关的一门课程的信息，
 	 * 如courseInf1的_id为1的行进行删除时courseInf2的link为1的行也要进行删除。

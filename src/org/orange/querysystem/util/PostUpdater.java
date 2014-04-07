@@ -160,10 +160,10 @@ public class PostUpdater {
 		 * @param numberOfInsertedPosts 如果更新了，返回更新的通知条数；如果没有更新，返回-1
 		 * @param mandatorily true表示这是手动强制更新(不管上次更新时间)触发的更新；false表示这是自动更新触发的更新
 		 */
-		public void onPostUpdate(int numberOfInsertedPosts, boolean mandatorily);
+		public void onPostUpdate(long numberOfInsertedPosts, boolean mandatorily);
 	}
 
-	private class UpdatePostsListToDatabase extends AsyncTask<Void, Void, Integer>{
+	private class UpdatePostsListToDatabase extends AsyncTask<Void, Void, Long>{
 		private static final String hessianUrl = "http://schoolwebpageparser.appspot.com/getter";
 		private static final int maxAttempts = 10;
 
@@ -180,14 +180,14 @@ public class PostUpdater {
 		}
 
 		@Override
-		protected Integer doInBackground(Void... params) {
-			int result = updatePosts(mandatorily);
+		protected Long doInBackground(Void... params) {
+			long result = updatePosts(mandatorily);
 			end();
 			return result;
 		}
 
 		@Override
-		protected void onPostExecute(Integer numberOfInsertedPosts) {
+		protected void onPostExecute(Long numberOfInsertedPosts) {
 			if(mOnPostUpdateListener == null){
 				if(numberOfInsertedPosts > 0)
 					Toast.makeText(mContext, mContext.getResources().getString(R.string.has_updated_posts, numberOfInsertedPosts), Toast.LENGTH_SHORT).show();
@@ -196,7 +196,7 @@ public class PostUpdater {
 		}
 
 		@Override
-		protected void onCancelled(Integer numberOfInsertedPosts) {
+		protected void onCancelled(Long numberOfInsertedPosts) {
 			end();
 		}
 
@@ -244,9 +244,9 @@ public class PostUpdater {
 		 * @param quickUpdateOrAllUpdate true for 快速（常用）更新；false for 完整更新
 		 * @return 成功更新，返回更新的通知条数；更新失败，返回-1
 		 */
-		private int doUpdatePosts(boolean quickUpdateOrAllUpdate){
+		private long doUpdatePosts(boolean quickUpdateOrAllUpdate){
 			List<Post> posts = null;
-			int numberOfInsertedPosts = -1;
+			long numberOfInsertedPosts = -1;
 
 			//准备用Hessian连接GAE代理
 			//TODO 去掉timeout常量
@@ -303,10 +303,12 @@ public class PostUpdater {
 
 			//把新通知写入数据库
 			if(posts != null){
+				if(posts.isEmpty())
+					return 0;
 				try{
 					if(!database.isOpen())
 						database.open();
-					numberOfInsertedPosts = database.autoInsertArrayPostsInf(posts);
+					numberOfInsertedPosts = database.savePosts(posts);
 					//更新 lastUpdatedTime
 					lastUpdatedTime = new Date();
 					saveLastUpdateTimeToSharedPreferences();
@@ -328,8 +330,8 @@ public class PostUpdater {
 		 * @param mandatorily true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新
 		 * @return 如果更新了，返回更新的通知条数；如果没有更新，返回-1
 		 */
-		private int updatePosts(boolean mandatorily){
-			int numberOfInsertedPosts = -1;
+		private long updatePosts(boolean mandatorily){
+			long numberOfInsertedPosts = -1;
 
 			//更新时间
 			long now = System.currentTimeMillis();

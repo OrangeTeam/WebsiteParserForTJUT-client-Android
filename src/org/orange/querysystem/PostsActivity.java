@@ -62,7 +62,7 @@ public class PostsActivity extends FragmentActivity{
 		mWebUpdaterToDB = new PostUpdater(this);
 		mWebUpdaterToDB.setOnPostExecuteListener(new OnPostUpdateListener() {
 			@Override
-			public void onPostUpdate(int numberOfInsertedPosts, boolean mandatorily) {
+			public void onPostUpdate(long numberOfInsertedPosts, boolean mandatorily) {
 				if(mandatorily || numberOfInsertedPosts>0){
 					if(numberOfInsertedPosts > 0){
 						loadPosts();

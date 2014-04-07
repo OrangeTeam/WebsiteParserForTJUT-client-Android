@@ -59,7 +59,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		
 		
 		//导入静态数据库
-//		importInitialDB();
+		importInitialDB();
 	}
 
 	@SuppressWarnings("deprecation")

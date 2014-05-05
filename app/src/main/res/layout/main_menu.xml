@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/lsybackground">
-    <TextView 
-        android:id="@+id/title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginBottom="3dp"
-        style="@style/wordStyle"/>
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@drawable/lsybackground">
+    <TextView
+            android:id="@+id/title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="3dp"
+            style="@style/wordStyle"/>
     <GridView
-        android:id="@+id/gridView" 
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:numColumns="auto_fit"
-        android:columnWidth="90dp"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center_vertical"/>
+            android:id="@+id/gridView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:numColumns="auto_fit"
+            android:columnWidth="90dp"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"
+            android:stretchMode="columnWidth"
+            android:gravity="center_vertical"/>
 </LinearLayout>
 
-<!-- 
-android:numColumns="auto_fit" ，GridView的列数设置为自动
-android:columnWidth="90dp"，每列的宽度，也就是Item的宽度
-android:stretchMode="columnWidth"，缩放与列宽大小同步
-android:verticalSpacing="10dp"，两行之间的边距，如：行一(NO.0~NO.2)与行二(NO.3~NO.5)间距为10dp
-android:horizontalSpacing="10dp"，两列之间的边距。 
--->
+        <!--
+        android:numColumns="auto_fit" ，GridView的列数设置为自动
+        android:columnWidth="90dp"，每列的宽度，也就是Item的宽度
+        android:stretchMode="columnWidth"，缩放与列宽大小同步
+        android:verticalSpacing="10dp"，两行之间的边距，如：行一(NO.0~NO.2)与行二(NO.3~NO.5)间距为10dp
+        android:horizontalSpacing="10dp"，两列之间的边距。
+        -->

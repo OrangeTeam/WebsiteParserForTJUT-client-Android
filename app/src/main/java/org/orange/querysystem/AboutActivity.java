@@ -6,18 +6,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-public class AboutActivity extends Activity{
-	private WebView content;
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	@Override
-	public void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
-		content = new WebView(this);
-		setContentView(content);
-		content.loadUrl("file:///android_asset/aboutme.html");
-		content.setBackgroundColor(0);
-		content.setBackgroundResource(R.drawable.lsybackground);
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			getActionBar().setTitle(R.string.about_me);
-	}
+public class AboutActivity extends Activity {
+
+    private WebView content;
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        content = new WebView(this);
+        setContentView(content);
+        content.loadUrl("file:///android_asset/aboutme.html");
+        content.setBackgroundColor(0);
+        content.setBackgroundResource(R.drawable.lsybackground);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setTitle(R.string.about_me);
+        }
+    }
 }

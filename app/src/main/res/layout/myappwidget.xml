@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/theWidget"
-    android:layout_width="220dp"
-    android:layout_height="74dp"
-    android:background="@drawable/lsydesk"
-    android:alpha="100" 
-    android:layout_marginLeft="3dp">  
-    <TextView 
-        android:text=""
-        android:id="@+id/appWidgetTextView"
-        android:layout_width="146dp"
-        android:layout_height="fill_parent"
-        android:textSize="15dp"
-        style="@style/wordStyle"
-        android:gravity="center"/>
-   
-    <TextView 
-        android:id="@+id/widgetPeriod"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_toRightOf="@+id/appWidgetTextView"
-        android:gravity="center"
-        android:textSize="15dp"
-        style="@style/wordStyle"/>
+                android:id="@+id/theWidget"
+                android:layout_width="220dp"
+                android:layout_height="74dp"
+                android:background="@drawable/lsydesk"
+                android:alpha="100"
+                android:layout_marginLeft="3dp">
+    <TextView
+            android:text=""
+            android:id="@+id/appWidgetTextView"
+            android:layout_width="146dp"
+            android:layout_height="fill_parent"
+            android:textSize="15dp"
+            style="@style/wordStyle"
+            android:gravity="center"/>
+
+    <TextView
+            android:id="@+id/widgetPeriod"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_toRightOf="@+id/appWidgetTextView"
+            android:gravity="center"
+            android:textSize="15dp"
+            style="@style/wordStyle"/>
 </RelativeLayout>

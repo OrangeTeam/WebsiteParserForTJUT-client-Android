@@ -15,8 +15,6 @@
  */
 package org.orange.querysystem.content;
 
-import java.util.ArrayList;
-
 import org.orange.querysystem.R;
 
 import android.content.Context;
@@ -35,6 +33,8 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * This is a helper class that implements the management of tabs and all
  * details of connecting a ViewPager with associated TabHost.  It relies on a
@@ -48,14 +48,20 @@ import android.widget.TextView;
  */
 public class TabsAdapter extends FragmentPagerAdapter
         implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+
     private final Context mContext;
+
     private final TabHost mTabHost;
+
     private final ViewPager mViewPager;
+
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
-//        private final String tag;
+
+        //        private final String tag;
         private final Class<?> clss;
+
         private final Bundle args;
 
         TabInfo(Class<?> _class, Bundle _args) {
@@ -66,6 +72,7 @@ public class TabsAdapter extends FragmentPagerAdapter
     }
 
     static class DummyTabFactory implements TabHost.TabContentFactory {
+
         private final Context mContext;
 
         public DummyTabFactory(Context context) {
@@ -85,7 +92,7 @@ public class TabsAdapter extends FragmentPagerAdapter
         super(activity.getSupportFragmentManager());
         mContext = activity;
         mTabHost = tabHost;
-        mTabHost.setOnFocusChangeListener(new OnFocusChangeListener(){
+        mTabHost.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 adjustSelectedTabToCenter();
@@ -107,11 +114,12 @@ public class TabsAdapter extends FragmentPagerAdapter
         setTabForIfLowerThanHONEYCOMB();
         notifyDataSetChanged();
     }
-    private void setTabForIfLowerThanHONEYCOMB(){
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
-            View child = mTabHost.getTabWidget().getChildAt(getCount()-1);
+
+    private void setTabForIfLowerThanHONEYCOMB() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            View child = mTabHost.getTabWidget().getChildAt(getCount() - 1);
             child.setBackgroundColor(0xFFB5E61D);
-            TextView tv = (TextView)child.findViewById(android.R.id.title);
+            TextView tv = (TextView) child.findViewById(android.R.id.title);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tv.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); //取消文字底边对齐  
             params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); //设置文字居中对齐  
@@ -119,19 +127,21 @@ public class TabsAdapter extends FragmentPagerAdapter
             child.getLayoutParams().height = RelativeLayout.LayoutParams.WRAP_CONTENT;
         }
     }
-    private int dp2px(int dp){
+
+    private int dp2px(int dp) {
         return (int) (mTabHost.getContext().getResources().getDisplayMetrics().density * dp
                 + 0.5f);
     }
-	/**
-	 * 清空Tabs
-	 */
-	public void clear(){
-		mTabs.clear();
-		mTabHost.setCurrentTab(0);
-		mTabHost.clearAllTabs();
-		notifyDataSetChanged();
-	}
+
+    /**
+     * 清空Tabs
+     */
+    public void clear() {
+        mTabs.clear();
+        mTabHost.setCurrentTab(0);
+        mTabHost.clearAllTabs();
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getCount() {
@@ -150,12 +160,14 @@ public class TabsAdapter extends FragmentPagerAdapter
         adjustSelectedTabToCenter();
         mViewPager.setCurrentItem(position);
     }
-    public void adjustSelectedTabToCenter(){
-    	View currentTab = mTabHost.getCurrentTabView();
-    	if(currentTab == null)
-    		return;
-        HorizontalScrollView hsv = (HorizontalScrollView)mTabHost.findViewById(R.id.tabs_scroll);
-        hsv.smoothScrollTo(currentTab.getLeft()+(currentTab.getWidth()-hsv.getWidth())/2, 0);
+
+    public void adjustSelectedTabToCenter() {
+        View currentTab = mTabHost.getCurrentTabView();
+        if (currentTab == null) {
+            return;
+        }
+        HorizontalScrollView hsv = (HorizontalScrollView) mTabHost.findViewById(R.id.tabs_scroll);
+        hsv.smoothScrollTo(currentTab.getLeft() + (currentTab.getWidth() - hsv.getWidth()) / 2, 0);
     }
 
     @Override

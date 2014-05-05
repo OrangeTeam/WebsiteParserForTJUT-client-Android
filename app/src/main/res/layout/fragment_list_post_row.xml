@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="10sp"
-    android:paddingRight="10sp" >
-    <TextView 
-        android:id="@+id/post_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp" 
-        style="@style/wordStyle"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp">
     <TextView
-        android:id="@+id/post_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_title"
-        android:layout_alignParentLeft="true" 
-        style="@style/wordStyle"/>
+            android:id="@+id/post_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            style="@style/wordStyle"/>
     <TextView
-        android:id="@+id/post_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_title"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="5dp" 
-        style="@style/wordStyle"/>
+            android:id="@+id/post_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/post_title"
+            android:layout_alignParentLeft="true"
+            style="@style/wordStyle"/>
     <TextView
-        android:id="@+id/post_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_title"
-        android:layout_toLeftOf="@id/post_date" 
-        style="@style/wordStyle"/>
+            android:id="@+id/post_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/post_title"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            style="@style/wordStyle"/>
+    <TextView
+            android:id="@+id/post_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/post_title"
+            android:layout_toLeftOf="@id/post_date"
+            style="@style/wordStyle"/>
 
 </RelativeLayout>

@@ -20,14 +20,18 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class Contract {
+
     public static final String AUTHORITY = "org.orange.querysystem.provider";
 
     // This class cannot be instantiated
-    private Contract() {}
+    private Contract() {
+    }
 
     public static final class Posts implements BaseColumns {
+
         // This class cannot be instantiated
-        private Posts() {}
+        private Posts() {
+        }
 
         /**
          * The table name offered by this provider
@@ -65,21 +69,21 @@ public class Contract {
         /**
          * The content:// style URL for this table
          */
-        public static final Uri CONTENT_URI =  Uri.parse(SCHEME + AUTHORITY + PATH_POSTS);
+        public static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + PATH_POSTS);
 
         /**
          * The content URI base for a single post. Callers must
          * append a numeric post id to this Uri to retrieve a post
          */
         public static final Uri CONTENT_ID_URI_BASE
-            = Uri.parse(SCHEME + AUTHORITY + PATH_POST_ID);
+                = Uri.parse(SCHEME + AUTHORITY + PATH_POST_ID);
 
         /**
          * The content URI match pattern for a single post, specified by its ID. Use this to match
          * incoming URIs or to construct an Intent.
          */
         public static final Uri CONTENT_ID_URI_PATTERN
-            = Uri.parse(SCHEME + AUTHORITY + PATH_POST_ID + "/#");
+                = Uri.parse(SCHEME + AUTHORITY + PATH_POST_ID + "/#");
 
         /*
          * MIME type definitions
@@ -103,42 +107,48 @@ public class Contract {
          * Column name for the title of the post
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_TITLE	= StudentInfDBAdapter.KEY_TITLE;
+        public static final String COLUMN_NAME_TITLE = StudentInfDBAdapter.KEY_TITLE;
+
         /**
          * Column name of the post content
          * <P>Type: TEXT</P>
          */
-        public static final String COLUMN_NAME_MAINBODY	= StudentInfDBAdapter.KEY_MAINBODY;
+        public static final String COLUMN_NAME_MAINBODY = StudentInfDBAdapter.KEY_MAINBODY;
+
         /**
          * Column name of the post source from
          * <P>Type: INTEGER</P>
          */
-        public static final String COLUMN_NAME_SOURCE	= StudentInfDBAdapter.KEY_SOURCE;
+        public static final String COLUMN_NAME_SOURCE = StudentInfDBAdapter.KEY_SOURCE;
+
         /**
          * Column name of the post category
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_CATEGORY	= StudentInfDBAdapter.KEY_CATEGORY;
+        public static final String COLUMN_NAME_CATEGORY = StudentInfDBAdapter.KEY_CATEGORY;
+
         /**
          * Column name of the post URL
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_URL		= StudentInfDBAdapter.KEY_URL;
+        public static final String COLUMN_NAME_URL = StudentInfDBAdapter.KEY_URL;
+
         /**
          * Column name of the post author
          * <P>Type: ?</P>
          */
-        public static final String COLUMN_NAME_AUTHOR	= StudentInfDBAdapter.KEY_AUTHOR;
+        public static final String COLUMN_NAME_AUTHOR = StudentInfDBAdapter.KEY_AUTHOR;
+
         /**
          * Column name for the date timestamp
          * <P>Type: INTEGER</P>
          */
-        public static final String COLUMN_NAME_DATE		= StudentInfDBAdapter.KEY_DATE;
+        public static final String COLUMN_NAME_DATE = StudentInfDBAdapter.KEY_DATE;
 
 
         /**
          * The default sort order for this table
          */
-        public static final String DEFAULT_SORT_ORDER = COLUMN_NAME_DATE+" DESC";
+        public static final String DEFAULT_SORT_ORDER = COLUMN_NAME_DATE + " DESC";
     }
 }

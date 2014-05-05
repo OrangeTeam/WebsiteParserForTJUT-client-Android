@@ -19,47 +19,47 @@
 -->
 
 <TabHost
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/tabhost"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/lsybackground">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@android:id/tabhost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/lsybackground">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView 
-            android:id="@+id/currentTime"
-            android:layout_width="fill_parent"
-            android:layout_height="20dp"
-            android:textIsSelectable="false"
-            style="@style/wordStyle"/>
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+                android:id="@+id/currentTime"
+                android:layout_width="fill_parent"
+                android:layout_height="20dp"
+                android:textIsSelectable="false"
+                style="@style/wordStyle"/>
 
         <HorizontalScrollView
-            android:id="@+id/tabs_scroll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:fillViewport="true"
-            android:scrollbars="none">
+                android:id="@+id/tabs_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:fillViewport="true"
+                android:scrollbars="none">
             <TabWidget
-                android:id="@android:id/tabs"
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    android:id="@android:id/tabs"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
         </HorizontalScrollView>
         <FrameLayout
-            android:id="@android:id/tabcontent"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="0"/>
+                android:id="@android:id/tabcontent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="0"/>
 
         <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
     </LinearLayout>
 </TabHost>

@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.orange.querysystem"
-    android:versionCode="2"
-    android:versionName="0.4 alpha">
+          package="org.orange.querysystem"
+          android:versionCode="2"
+          android:versionName="0.4 alpha">
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application 
-        android:label="@string/app_name"
-        android:icon="@drawable/lsylogo"
-        android:theme="@style/AppTheme"
-        android:allowBackup="false">
+    <application
+            android:label="@string/app_name"
+            android:icon="@drawable/lsylogo"
+            android:theme="@style/AppTheme"
+            android:allowBackup="false">
         <provider android:name="org.orange.studentinformationdatabase.QuerySystemProvider"
-            android:authorities="org.orange.querysystem.provider"
-            android:exported="false">
-            <grant-uri-permission android:pathPattern=".*" />
+                  android:authorities="org.orange.querysystem.provider"
+                  android:exported="false">
+            <grant-uri-permission android:pathPattern=".*"/>
         </provider>
 
         <receiver
-            android:name=".MyAppWidgetProvider"
-            android:exported="false">
+                android:name=".MyAppWidgetProvider"
+                android:exported="false">
             <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/myappwidgetprovider"/>
+                    android:name="android.appwidget.provider"
+                    android:resource="@xml/myappwidgetprovider"/>
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
         </receiver>
-		<activity
-            android:label="@string/app_name"
-            android:name=".MainMenuActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+        <activity
+                android:label="@string/app_name"
+                android:name=".MainMenuActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".AboutActivity" />
+        <activity android:name=".AboutActivity"/>
         <activity
-            android:name=".content.InsertDBFragmentActivity"
-            android:theme="@android:style/Theme.Dialog"/>
-        <activity 
-            android:name=".content.RefreshScoresFragmentActivity"
-            android:theme="@android:style/Theme.Dialog" />
-		<activity android:name=".PostsActivity" />
-		<activity android:name=".PostDetailsActivity" />
-		<activity android:name=".StudentInfoActivity" />
-		<activity android:name=".CoursesInThisWeekActivity" />
-		<activity android:name=".AllCoursesActivity" />
-		<activity android:name=".AllCoursesInNextSemesterActivity" />
-		<activity android:name=".CourseDetailsActivity" />
-		<activity android:name=".ScoresActivity" />
+                android:name=".content.InsertDBFragmentActivity"
+                android:theme="@android:style/Theme.Dialog"/>
+        <activity
+                android:name=".content.RefreshScoresFragmentActivity"
+                android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".PostsActivity"/>
+        <activity android:name=".PostDetailsActivity"/>
+        <activity android:name=".StudentInfoActivity"/>
+        <activity android:name=".CoursesInThisWeekActivity"/>
+        <activity android:name=".AllCoursesActivity"/>
+        <activity android:name=".AllCoursesInNextSemesterActivity"/>
+        <activity android:name=".CourseDetailsActivity"/>
+        <activity android:name=".ScoresActivity"/>
         <activity android:name=".SettingsActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
     </application>

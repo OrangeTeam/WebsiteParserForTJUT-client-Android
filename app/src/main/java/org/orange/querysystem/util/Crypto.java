@@ -16,6 +16,9 @@
 package org.orange.querysystem.util;
 
 
+import android.util.Base64;
+import android.util.Log;
+
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -28,20 +31,21 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import android.util.Base64;
-import android.util.Log;
-
 public class Crypto {
+
     private static final String TAG = Crypto.class.getSimpleName();
 
     private static final String PBKDF2_DERIVATION_ALGORITHM = "PBKDF2WithHmacSHA1";
+
     private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
 
     private static String DELIMITER = "]";
 
     private static int KEY_LENGTH = 256;
+
     // minimum values recommended by PKCS#5, increase as necessary
     private static int ITERATION_COUNT = 1000;
+
     private static final int PKCS5_SALT_LENGTH = 64;
 
     private static SecureRandom random = new SecureRandom();

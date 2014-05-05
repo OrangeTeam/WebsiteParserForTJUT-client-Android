@@ -1,5 +1,11 @@
 package org.orange.querysystem.content;
 
+import org.orange.parser.connection.SSFWWebsiteConnectionAgent;
+import org.orange.parser.entity.Course;
+import org.orange.parser.parser.ParseAdapter;
+import org.orange.parser.parser.ParseListener;
+import org.orange.parser.parser.PersonalInformationParser;
+import org.orange.parser.parser.ScoreParser;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.querysystem.util.PersonalInformationUpdater;
@@ -15,14 +21,7 @@ import android.util.Log;
 import android.widget.ProgressBar;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import util.webpage.Course;
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
-import util.webpage.SchoolWebpageParser.ParserListener;
 
 public class RefreshScoresFragmentActivity extends Activity {
 
@@ -64,53 +63,43 @@ public class RefreshScoresFragmentActivity extends Activity {
 
         @Override
         protected Boolean doInBackground(String... args) {
-            String userName = args[0], password = args[1];
-            SchoolWebpageParser parser = null;
+            final String username = args[0], password = args[1];
+            final SSFWWebsiteConnectionAgent connectionAgent = new SSFWWebsiteConnectionAgent();
+            connectionAgent.setAccount(username, password);
+            final ScoreParser parser = new ScoreParser();
+            parser.setConnectionAgent(connectionAgent);
+            parser.setParseListener(new MyParserListener());
             StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(
                     RefreshScoresFragmentActivity.this);
             try {
-                parser = new SchoolWebpageParser(new MyParserListener(), userName, password);
-                List<Course> result = new LinkedList<Course>();
                 studentInfDBAdapter.open();
-                String yearString = getStartAcademicYear(studentInfDBAdapter.getDatabase(), parser);
+                String yearString = getStartAcademicYear(studentInfDBAdapter.getDatabase(),
+                        connectionAgent);
                 if (yearString == null) {
                     return false;
                 }
                 int startYear = Integer.parseInt(yearString);
-                int currentYear = SettingsActivity
-                        .getCurrentAcademicYear(RefreshScoresFragmentActivity.this);
+                int currentYear = SettingsActivity.getCurrentAcademicYear(
+                        RefreshScoresFragmentActivity.this);
                 byte currentSemester = SettingsActivity
                         .getCurrentSemester(RefreshScoresFragmentActivity.this);
-                int[][] semesters = new int[1 + currentYear - startYear][];
-                for (int i = 0; i < semesters.length - 1; i++) {
-                    semesters[i] = new int[3];
-                    semesters[i][0] = startYear + i;
-                    semesters[i][1] = 1;
-                    semesters[i][2] = 2;
+                for (int year = startYear; year < currentYear; year++) {
+                    parser.addAcademicYearAndSemester(year, 1);
+                    parser.addAcademicYearAndSemester(year, 2);
                 }
                 // current year
-                semesters[semesters.length - 1] = new int[currentSemester + 1];
-                semesters[semesters.length - 1][0] = currentYear;
-                for (int i = 1; i <= currentSemester; i++) {
-                    semesters[semesters.length - 1][i] = i;
+                for (int semester = 1; semester <= currentSemester; semester++) {
+                    parser.addAcademicYearAndSemester(currentYear, semester);
                 }
-                for (Map<Integer, List<Course>> year : parser.parseScores(semesters).values()) {
-                    for (List<Course> semester : year.values()) {
-                        result.addAll(semester);
-                    }
-                }
+                List<Course> result = parser.parse();
                 // save
-                studentInfDBAdapter.autoInsertArrayCoursesInf(result, userName);
+                studentInfDBAdapter.autoInsertArrayCoursesInf(result, username);
                 studentInfDBAdapter.updateScoreInf(result);
                 return true;
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
             } catch (SQLiteException e) {
                 e.printStackTrace();
             } catch (NumberFormatException e) {
                 Log.e(TAG, "Cannot get start academic year from personal information", e);
-            } catch (ParserException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -119,16 +108,19 @@ public class RefreshScoresFragmentActivity extends Activity {
             return false;
         }
 
-        private String getStartAcademicYear(SQLiteDatabase database, SchoolWebpageParser parser)
+        private String getStartAcademicYear
+                (SQLiteDatabase database, SSFWWebsiteConnectionAgent connectionAgent)
                 throws NumberFormatException {
             String result = getStartAcademicYear(database);
             if (result != null) {
                 return result;
             }
             // 尝试刷新个人信息
+            PersonalInformationParser parser = new PersonalInformationParser();
+            parser.setConnectionAgent(connectionAgent);
             PersonalInformationUpdater updater = new PersonalInformationUpdater(
                     RefreshScoresFragmentActivity.this, parser);
-            int attemptsCounter = NUMBER_OF_ATTEMPTS;
+            int attemptsCounter = NUMBER_OF_ATTEMPTS; //TODO delete this
             while (result == null) {
                 if (attemptsCounter-- == 0) {
                     break;
@@ -158,7 +150,7 @@ public class RefreshScoresFragmentActivity extends Activity {
             finish();
         }
 
-        class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter {
+        class MyParserListener extends ParseAdapter {
 
             /* (non-Javadoc)
              * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
@@ -167,7 +159,7 @@ public class RefreshScoresFragmentActivity extends Activity {
             public void onError(int code, String message) {
                 Log.e(TAG, message);
                 switch (code) {
-                    case ParserListener.ERROR_CANNOT_LOGIN:
+                    case ParseListener.ERROR_CANNOT_LOGIN:
                         setResult(RESULT_CANNOT_LOGIN);
                         break;
                     default:

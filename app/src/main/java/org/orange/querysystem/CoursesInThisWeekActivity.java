@@ -15,6 +15,8 @@
  */
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Course;
+import org.orange.parser.entity.Course.TimeAndAddress;
 import org.orange.querysystem.AllCoursesActivity.CourseToSimpleCourse;
 import org.orange.querysystem.content.InsertDBFragmentActivity;
 import org.orange.querysystem.content.ListCoursesFragment;
@@ -48,9 +50,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import util.webpage.Course;
-import util.webpage.Course.TimeAndAddress;
 
 public class CoursesInThisWeekActivity extends FragmentActivity implements OnPostExcuteListerner {
 

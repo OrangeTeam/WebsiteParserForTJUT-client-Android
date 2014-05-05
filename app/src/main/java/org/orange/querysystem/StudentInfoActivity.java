@@ -1,5 +1,7 @@
 package org.orange.querysystem;
 
+import org.orange.parser.connection.SSFWWebsiteConnectionAgent;
+import org.orange.parser.parser.PersonalInformationParser;
 import org.orange.querysystem.content.ListViewAdapter;
 import org.orange.querysystem.util.Network;
 import org.orange.querysystem.util.PersonalInformationUpdater;
@@ -42,8 +44,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
-
-import util.webpage.SchoolWebpageParser;
 
 public class StudentInfoActivity extends ListActivity {
 
@@ -233,7 +233,7 @@ public class StudentInfoActivity extends ListActivity {
 
         private PersonalInformationUpdater mUpdater;
 
-        public StudentInfoFromWeb(Context context, SchoolWebpageParser parser) {
+        public StudentInfoFromWeb(Context context, PersonalInformationParser parser) {
             mUpdater = new PersonalInformationUpdater(context, parser);
         }
 
@@ -302,8 +302,9 @@ public class StudentInfoActivity extends ListActivity {
             if (Network.isConnected(this)) {
                 String username = SettingsActivity.getAccountStudentID(this);
                 String password = SettingsActivity.getAccountPassword(this);
-                SchoolWebpageParser parser = new SchoolWebpageParser();
-                parser.setUser(username, password);
+                PersonalInformationParser parser = new PersonalInformationParser();
+                parser.setConnectionAgent(
+                        new SSFWWebsiteConnectionAgent().setAccount(username, password));
                 new StudentInfoFromWeb(this, parser).execute();
 //                start_resume = 1;
 //                startActivity(new Intent(this, InsertDBFragmentActivity.class));

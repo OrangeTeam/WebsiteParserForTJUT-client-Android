@@ -1,5 +1,6 @@
 package org.orange.querysystem.util;
 
+import org.orange.parser.parser.PersonalInformationParser;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
 import android.content.Context;
@@ -7,8 +8,6 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.Map;
 
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
 
 /**
  * 个人信息更新器。
@@ -17,9 +16,9 @@ public class PersonalInformationUpdater {
 
     protected final Context mContext;
 
-    private final SchoolWebpageParser mParser;
+    private final PersonalInformationParser mParser;
 
-    public PersonalInformationUpdater(Context context, SchoolWebpageParser parser) {
+    public PersonalInformationUpdater(Context context, PersonalInformationParser parser) {
         mContext = context;
         mParser = parser;
     }
@@ -30,9 +29,7 @@ public class PersonalInformationUpdater {
     public long update() {
         Map<String, Map<String, String>> student = null;
         try {
-            student = mParser.parsePersonalInformation();
-        } catch (ParserException e) {
-            e.printStackTrace();
+            student = mParser.parse();
         } catch (IOException e) {
             e.printStackTrace();
         }

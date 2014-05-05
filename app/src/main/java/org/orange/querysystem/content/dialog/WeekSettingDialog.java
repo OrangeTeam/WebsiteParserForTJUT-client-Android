@@ -1,5 +1,7 @@
 package org.orange.querysystem.content.dialog;
 
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.util.BitOperate.BitOperateException;
 import org.orange.querysystem.R;
 
 import android.app.Activity;
@@ -11,15 +13,16 @@ import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import util.BitOperate.BitOperateException;
-import util.webpage.Course.TimeAndAddress;
-
 public class WeekSettingDialog extends DialogFragment {
 
-    /** {@link WeekSettingDialog#setArguments(Bundle)}参数的Key */
+    /**
+     * {@link WeekSettingDialog#setArguments(Bundle)}参数的Key
+     */
     public static final String WEEK_KEY = WeekSettingDialog.class.getName() + "week_key";
 
-    /** 课程多选框的选项 */
+    /**
+     * 课程多选框的选项
+     */
     private static final String[] MULTI_CHOICE_ITEMS = new String[21];
 
     static {

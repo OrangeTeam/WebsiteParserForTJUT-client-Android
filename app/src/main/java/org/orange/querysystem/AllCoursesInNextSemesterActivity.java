@@ -1,5 +1,6 @@
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Course;
 import org.orange.querysystem.AllCoursesActivity.CourseToSimpleCourse;
 import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
@@ -18,7 +19,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import util.webpage.Course;
 
 public class AllCoursesInNextSemesterActivity extends CoursesInThisWeekActivity {
 

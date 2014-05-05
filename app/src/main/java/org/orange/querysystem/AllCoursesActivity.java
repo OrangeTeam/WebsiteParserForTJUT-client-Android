@@ -15,6 +15,9 @@
  */
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Course;
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.util.BitOperate;
 import org.orange.querysystem.content.ListCoursesFragment;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 
@@ -31,9 +34,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import util.BitOperate.BitOperateException;
-import util.webpage.Course;
-import util.webpage.Course.TimeAndAddress;
 
 public class AllCoursesActivity extends CoursesInThisWeekActivity {
 
@@ -184,7 +184,7 @@ public class AllCoursesActivity extends CoursesInThisWeekActivity {
                     }
                 }
             }
-        } catch (BitOperateException e) {
+        } catch (BitOperate.BitOperateException e) {
             throw new RuntimeException(e);
         }
         return timeTable;

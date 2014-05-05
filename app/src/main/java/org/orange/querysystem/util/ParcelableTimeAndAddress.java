@@ -1,21 +1,15 @@
 package org.orange.querysystem.util;
 
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.util.BitOperate.BitOperateException;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import util.BitOperate.BitOperateException;
-import util.webpage.Course.TimeAndAddress;
-
 public class ParcelableTimeAndAddress extends TimeAndAddress implements Parcelable {
 
-    /**
-     * 拷贝构造方法
-     *
-     * @param aTimeAndAddress 被复制的时间地点
-     * @see TimeAndAddress#TimeAndAddress(TimeAndAddress)
-     */
-    public ParcelableTimeAndAddress(TimeAndAddress aTimeAndAddress) {
-        super(aTimeAndAddress);
+    public ParcelableTimeAndAddress() {
+        super();
     }
 
     private ParcelableTimeAndAddress(Parcel in) throws BitOperateException {
@@ -33,6 +27,23 @@ public class ParcelableTimeAndAddress extends TimeAndAddress implements Parcelab
         dest.writeByte(getDay());
         dest.writeInt(getPeriod());
         dest.writeString(getAddress());
+    }
+
+    public static ParcelableTimeAndAddress wrap(TimeAndAddress timeAndAddress) {
+        if (timeAndAddress instanceof ParcelableTimeAndAddress) {
+            return (ParcelableTimeAndAddress) timeAndAddress;
+        } else {
+            try {
+                ParcelableTimeAndAddress wrapper = new ParcelableTimeAndAddress();
+                wrapper.setWeek(timeAndAddress.getWeek());
+                wrapper.setDay(timeAndAddress.getDay());
+                wrapper.setPeriod(timeAndAddress.getPeriod());
+                wrapper.setAddress(timeAndAddress.getAddress());
+                return wrapper;
+            } catch (BitOperateException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public static final Parcelable.Creator<ParcelableTimeAndAddress> CREATOR =

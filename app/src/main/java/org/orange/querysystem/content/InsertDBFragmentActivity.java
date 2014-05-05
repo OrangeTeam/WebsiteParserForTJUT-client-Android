@@ -1,5 +1,9 @@
 package org.orange.querysystem.content;
 
+import org.orange.parser.connection.SSFWWebsiteConnectionAgent;
+import org.orange.parser.parser.ParseAdapter;
+import org.orange.parser.parser.ParseListener;
+import org.orange.parser.parser.SelectedCourseParser;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -12,11 +16,6 @@ import android.util.Log;
 import android.widget.ProgressBar;
 
 import java.io.IOException;
-
-import util.webpage.Constant;
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
-import util.webpage.SchoolWebpageParser.ParserListener;
 
 public class InsertDBFragmentActivity extends Activity {
 
@@ -49,27 +48,20 @@ public class InsertDBFragmentActivity extends Activity {
 
         public static final String TAG = "org.orange.querysystem";
 
-        MyParserListener myParserListener;
-
-        SchoolWebpageParser parser = null;
-
         @Override
         protected Void doInBackground(String... args) {
+            final String username = args[0], password = args[1];
+            SelectedCourseParser parser = new SelectedCourseParser();
+            parser.setParseListener(new MyParserListener());
+            parser.setConnectionAgent(
+                    new SSFWWebsiteConnectionAgent().setAccount(username, password));
             StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(
                     InsertDBFragmentActivity.this);
             try {
-                parser.setUser(args[0], args[1]);
                 studentInfDBAdapter.open();
-                studentInfDBAdapter
-                        .autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.本学期修读课程),
-                                args[0]);
-                studentInfDBAdapter
-                        .autoInsertArrayCoursesInf(parser.parseCourse(Constant.url.已选下学期课程),
-                                args[0]);
+                studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parse(), args[0]);
                 setResult(RESULT_OK);
             } catch (SQLiteException e) {
-                e.printStackTrace();
-            } catch (ParserException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -80,23 +72,12 @@ public class InsertDBFragmentActivity extends Activity {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            myParserListener = new MyParserListener();
-            try {
-                parser = new SchoolWebpageParser(myParserListener);
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
         protected void onPostExecute(Void course) {
             progressBar.setVisibility(ProgressBar.GONE);
             finish();
         }
 
-        class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter {
+        class MyParserListener extends ParseAdapter {
 
             /* (non-Javadoc)
              * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)
@@ -105,7 +86,7 @@ public class InsertDBFragmentActivity extends Activity {
             public void onError(int code, String message) {
                 Log.e(TAG, message);
                 switch (code) {
-                    case ParserListener.ERROR_CANNOT_LOGIN:
+                    case ParseListener.ERROR_CANNOT_LOGIN:
                         setResult(RESULT_CANNOT_LOGIN);
                         break;
                     default:

@@ -15,6 +15,7 @@
  */
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Post;
 import org.orange.querysystem.content.ListPostsFragment;
 import org.orange.querysystem.content.TabsAdapter;
 import org.orange.querysystem.util.PostUpdater;
@@ -33,8 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import util.webpage.Post;
 
 
 /**

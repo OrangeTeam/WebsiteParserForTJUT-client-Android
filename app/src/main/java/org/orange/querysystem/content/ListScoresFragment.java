@@ -33,9 +33,9 @@ public class ListScoresFragment extends ListFragment {
 
     private ScoresAdapter mScoresAdapter;
 
-    private float GPA;
+    private double GPA;
 
-    private float allGradePoint;
+    private double allGradePoint;
 
     private int allCredit;
 
@@ -99,12 +99,12 @@ public class ListScoresFragment extends ListFragment {
         //生成Header
         mHeaderView = inflater.inflate(R.layout.fragment_list_score_row, null);
         ((TextView) mHeaderView.findViewById(R.id.course_name)).setText(R.string.course_name);
-        ((TextView) mHeaderView.findViewById(R.id.course_test_score))
-                .setText(R.string.course_test_score);
-        ((TextView) mHeaderView.findViewById(R.id.course_total_score))
-                .setText(R.string.course_total_score);
-        ((TextView) mHeaderView.findViewById(R.id.course_grade_point))
-                .setText(R.string.course_grade_point);
+        ((TextView) mHeaderView.findViewById(R.id.course_test_score)).setText(
+                R.string.course_test_score);
+        ((TextView) mHeaderView.findViewById(R.id.course_total_score)).setText(
+                R.string.course_total_score);
+        ((TextView) mHeaderView.findViewById(R.id.course_grade_point)).setText(
+                R.string.course_grade_point);
         ((TextView) mHeaderView.findViewById(R.id.course_credit)).setText(R.string.course_credit);
         ((TextView) mHeaderView.findViewById(R.id.course_kind)).setText(R.string.course_kind);
         mFootView = new TextView(getActivity());
@@ -138,24 +138,36 @@ public class ListScoresFragment extends ListFragment {
 
     public static class SimpleScore implements Parcelable {
 
-        private int id;
+        private long id;
 
-        /** 课程名称 */
+        /**
+         * 课程名称
+         */
         private String name;
 
-        /** 结课考核成绩 */
-        private float testScore;
+        /**
+         * 结课考核成绩
+         */
+        private double testScore;
 
-        /** 期末总评成绩 */
-        private float totalScore;
+        /**
+         * 期末总评成绩
+         */
+        private double totalScore;
 
-        /** 绩点 */
-        private float gradePoint;
+        /**
+         * 绩点
+         */
+        private double gradePoint;
 
-        /** 学分 */
-        private byte credit;
+        /**
+         * 学分
+         */
+        private int credit;
 
-        /** 课程性质 */
+        /**
+         * 课程性质
+         */
         private String kind;
 
         /**
@@ -167,8 +179,8 @@ public class ListScoresFragment extends ListFragment {
          * @param credit     学分
          * @param kind       课程性质
          */
-        public SimpleScore(int id, String name, float testScore,
-                float totalScore, float gradePoint, byte credit, String kind) {
+        public SimpleScore(long id, String name, double testScore,
+                double totalScore, double gradePoint, int credit, String kind) {
             super();
             this.id = id;
             this.name = name;
@@ -180,11 +192,11 @@ public class ListScoresFragment extends ListFragment {
         }
 
         private SimpleScore(Parcel in) {
-            this(in.readInt(), in.readString(), in.readFloat(), in.readFloat(),
-                    in.readFloat(), in.readByte(), in.readString());
+            this(in.readLong(), in.readString(), in.readDouble(), in.readDouble(),
+                    in.readDouble(), in.readInt(), in.readString());
         }
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 
@@ -194,7 +206,8 @@ public class ListScoresFragment extends ListFragment {
 
         public String getTestScore() {
             //TODO 常量
-            if (Float.isNaN(testScore)) {
+            //TODO 现在应当判断是否为null
+            if (Double.isNaN(testScore)) {
                 return "无";
             } else {
                 return format(testScore);
@@ -217,7 +230,7 @@ public class ListScoresFragment extends ListFragment {
             return kind;
         }
 
-        private static String format(float number) {
+        private static String format(double number) {
             if ((int) number == number) {
                 return String.valueOf((int) number);
             } else {
@@ -232,12 +245,12 @@ public class ListScoresFragment extends ListFragment {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(id);
+            dest.writeLong(id);
             dest.writeString(name);
-            dest.writeFloat(totalScore);
-            dest.writeFloat(totalScore);
-            dest.writeFloat(gradePoint);
-            dest.writeByte(credit);
+            dest.writeDouble(totalScore);
+            dest.writeDouble(totalScore);
+            dest.writeDouble(gradePoint);
+            dest.writeInt(credit);
             dest.writeString(kind);
         }
 

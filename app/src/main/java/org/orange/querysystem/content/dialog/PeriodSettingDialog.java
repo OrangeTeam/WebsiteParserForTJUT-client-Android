@@ -1,5 +1,7 @@
 package org.orange.querysystem.content.dialog;
 
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.util.BitOperate;
 import org.orange.querysystem.R;
 
 import android.app.Activity;
@@ -11,15 +13,17 @@ import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import util.BitOperate.BitOperateException;
-import util.webpage.Course.TimeAndAddress;
 
 public class PeriodSettingDialog extends DialogFragment {
 
-    /** {@link PeriodSettingDialog#setArguments(Bundle)}参数的Key */
+    /**
+     * {@link PeriodSettingDialog#setArguments(Bundle)}参数的Key
+     */
     public static final String PERIOD_KEY = PeriodSettingDialog.class.getName() + "period_key";
 
-    /** 课程多选框的选项 */
+    /**
+     * 课程多选框的选项
+     */
     private static final String[] MULTI_CHOICE_ITEMS = new String[13];
 
     static {
@@ -65,7 +69,7 @@ public class PeriodSettingDialog extends DialogFragment {
         try {
             //TODO 常量
             mPeriod.setPeriod(getArguments().getInt(PERIOD_KEY, 0));
-        } catch (BitOperateException e) {
+        } catch (BitOperate.BitOperateException e) {
             throw new IllegalArgumentException("非法参数" + getArguments().getInt(PERIOD_KEY, 0), e);
         }
     }
@@ -121,7 +125,7 @@ public class PeriodSettingDialog extends DialogFragment {
                                     } else {
                                         mPeriod.removePeriod(which);
                                     }
-                                } catch (BitOperateException e) {
+                                } catch (BitOperate.BitOperateException e) {
                                     throw new IllegalArgumentException("非法参数：" + which, e);
                                 }
                             }

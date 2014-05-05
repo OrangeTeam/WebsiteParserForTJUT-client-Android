@@ -15,6 +15,7 @@
  */
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Course;
 import org.orange.querysystem.CoursesInThisWeekActivity.IncorrectIdOrPasswordDialogFragment;
 import org.orange.querysystem.content.ListScoresFragment;
 import org.orange.querysystem.content.ListScoresFragment.SimpleScore;
@@ -53,9 +54,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import util.webpage.Course;
-import util.webpage.Course.CourseException;
 
 public class ScoresActivity extends FragmentActivity implements OnPostExcuteListerner {
 
@@ -161,7 +159,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
 
-                    /* User clicked OK so do some stuff */
+                                        /* User clicked OK so do some stuff */
                                         if (editText.getText().toString().equals(SettingsActivity
                                                 .getAccountPassword(ScoresActivity.this))) {
                                             authenticated = true;
@@ -180,7 +178,7 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
 
-                    /* User clicked cancel so do some stuff */
+                                        /* User clicked cancel so do some stuff */
                                         finish();
                                     }
                                 }
@@ -230,14 +228,9 @@ public class ScoresActivity extends FragmentActivity implements OnPostExcuteList
                 }
                 ArrayList<SimpleScore> scores = new ArrayList<SimpleScore>();
                 for (Course course : coursesInASemester) {
-                    try {
-                        scores.add(new SimpleScore(course.getId(), course.getName(),
-                                course.getTestScore(), course.getTotalScore(),
-                                course.getGradePoint(), course.getCredit(), course.getKind()));
-                    } catch (CourseException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    scores.add(new SimpleScore(course.getId(), course.getName(),
+                            course.getTestScore(), course.getTotalScore(),
+                            course.getGradePoint(), course.getCredit(), course.getKind()));
                 }
                 Bundle arg = new Bundle();
                 arg.putParcelableArrayList(ListScoresFragment.SCORES_KEY, scores);

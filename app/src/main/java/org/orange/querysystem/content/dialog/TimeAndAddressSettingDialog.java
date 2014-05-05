@@ -1,5 +1,7 @@
 package org.orange.querysystem.content.dialog;
 
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.util.BitOperate;
 import org.orange.querysystem.R;
 import org.orange.querysystem.content.dialog.DayOfWeekSettingDialog.DayOfWeekSettingDialogListener;
 import org.orange.querysystem.content.dialog.PeriodSettingDialog.PeriodSettingDialogListener;
@@ -16,20 +18,21 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.EditText;
 
-import util.BitOperate.BitOperateException;
-import util.webpage.Course.TimeAndAddress;
-
 /**
  * 用于设置时间地点的{@link DialogFragment}
  */
 public class TimeAndAddressSettingDialog extends DialogFragment implements
         WeekSettingDialogListener, PeriodSettingDialogListener, DayOfWeekSettingDialogListener {
 
-    /** {@link TimeAndAddressSettingDialog#setArguments(Bundle)}参数的Key，对应待设置的时间地点 */
+    /**
+     * {@link TimeAndAddressSettingDialog#setArguments(Bundle)}参数的Key，对应待设置的时间地点
+     */
     public static final String TIME_AND_ADDRESS_KEY =
             TimeAndAddressSettingDialog.class.getName() + "time_and_address_key";
 
-    /** {@link TimeAndAddressSettingDialog#setArguments(Bundle)}参数的Key，对应回调时使用的识别标签 */
+    /**
+     * {@link TimeAndAddressSettingDialog#setArguments(Bundle)}参数的Key，对应回调时使用的识别标签
+     */
     public static final String TAG_KEY = TimeAndAddressSettingDialog.class.getName() + "tag_key";
 
     private static final String DIALOG_TAG = "time_and_address_item_dialog_tag";
@@ -66,7 +69,9 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
     public static Bundle buildArgument(TimeAndAddress aTimeAndAddress, String tag) {
         Bundle args = new Bundle();
         args.putParcelable(TIME_AND_ADDRESS_KEY,
-                aTimeAndAddress != null ? new ParcelableTimeAndAddress(aTimeAndAddress) : null);
+                aTimeAndAddress != null ? ParcelableTimeAndAddress.wrap(aTimeAndAddress.clone())
+                        : null
+        );
         args.putString(TAG_KEY, tag);
         return args;
     }
@@ -89,8 +94,8 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
      * 应用通过{@link TimeAndAddressSettingDialog#setArguments(Bundle)}传递过来的参数。即初始时间地点状态
      */
     public void applyArgument() {
-        TimeAndAddress args = getArguments().getParcelable(TIME_AND_ADDRESS_KEY);
-        mTimeAndAddress = args != null ? new TimeAndAddress(args) : new TimeAndAddress();
+        ParcelableTimeAndAddress args = getArguments().getParcelable(TIME_AND_ADDRESS_KEY);
+        mTimeAndAddress = args != null ? args.clone() : new TimeAndAddress();
     }
 
     /**
@@ -99,7 +104,7 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
      * @return 当前的时间地点设置状态
      */
     public TimeAndAddress getTimeAndAddress() {
-        return new TimeAndAddress(mTimeAndAddress);
+        return mTimeAndAddress.clone();
     }
 
     @Override
@@ -249,7 +254,7 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
         try {
             mTimeAndAddress.setWeek(week);
             refreshDialog(DIALOG_WEEK);
-        } catch (BitOperateException e) {
+        } catch (BitOperate.BitOperateException e) {
             throw new IllegalArgumentException("非法参数：" + week, e);
         }
     }
@@ -260,7 +265,7 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
         try {
             mTimeAndAddress.setDay(dayOfWeek);
             refreshDialog(DIALOG_DAY_OF_WEEK);
-        } catch (BitOperateException e) {
+        } catch (BitOperate.BitOperateException e) {
             throw new IllegalArgumentException("非法参数：" + dayOfWeek, e);
         }
     }
@@ -270,7 +275,7 @@ public class TimeAndAddressSettingDialog extends DialogFragment implements
         try {
             mTimeAndAddress.setPeriod(period);
             refreshDialog(DIALOG_PERIOD);
-        } catch (BitOperateException e) {
+        } catch (BitOperate.BitOperateException e) {
             throw new IllegalArgumentException("非法参数：" + period, e);
         }
     }

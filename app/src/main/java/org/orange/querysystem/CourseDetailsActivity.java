@@ -1,5 +1,7 @@
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Course;
+import org.orange.parser.entity.Course.TimeAndAddress;
 import org.orange.querysystem.content.dialog.TimeAndAddressSettingDialog;
 import org.orange.querysystem.content.dialog.TimeAndAddressSettingDialog.TimeAndAddressSettingDialogListener;
 import org.orange.querysystem.util.ParcelableTimeAndAddress;
@@ -27,10 +29,6 @@ import android.widget.LinearLayout.LayoutParams;
 import java.util.ArrayList;
 import java.util.List;
 
-import util.webpage.Course;
-import util.webpage.Course.CourseException;
-import util.webpage.Course.TimeAndAddress;
-
 //TODO 测试不同生命周期状态下的正确性
 public class CourseDetailsActivity extends FragmentActivity
         implements TimeAndAddressSettingDialogListener {
@@ -53,7 +51,9 @@ public class CourseDetailsActivity extends FragmentActivity
 
     private int mode = NONE;
 
-    /** 正在设置的课程 */
+    /**
+     * 正在设置的课程
+     */
     private Course mCourse = new Course();
 
     private EditText course_code_input;
@@ -130,12 +130,7 @@ public class CourseDetailsActivity extends FragmentActivity
             @Override
             public void afterTextChanged(Editable s) {
                 super.afterTextChanged(s);
-                try {
-                    course_grade_point_input
-                            .setText(String.valueOf(Course.getGradePoint(newScore)));
-                } catch (CourseException e) {
-                    throw new RuntimeException(e);
-                }
+                course_grade_point_input.setText(String.valueOf(Course.getGradePoint(newScore)));
             }
         });
 
@@ -177,7 +172,7 @@ public class CourseDetailsActivity extends FragmentActivity
         //保存当前时间地点设置
         ArrayList<ParcelableTimeAndAddress> saving = new ArrayList<ParcelableTimeAndAddress>();
         for (TimeAndAddress aTimeAndAddress : mCourse.getTimeAndAddress()) {
-            saving.add(new ParcelableTimeAndAddress(aTimeAndAddress));
+            saving.add(ParcelableTimeAndAddress.wrap(aTimeAndAddress));
         }
         outState.putParcelableArrayList(KEY_INSTANCE_STATE_TIME_AND_ADDRESS, saving);
     }
@@ -255,16 +250,12 @@ public class CourseDetailsActivity extends FragmentActivity
         course_teacher_input.setText(course.getTeacherString());
         course_credit_input.setText(String.valueOf(course.getCredit()));
         course_kind_input.setText(course.getKind());
-        if (!course.isEmpty(Course.Property.TEST_SCORE)) {
+        if (course.getTestScore() != null) {
             course_test_score_input.setText(String.valueOf(course.getTestScore()));
         }
-        if (!course.isEmpty(Course.Property.TOTAL_SCORE)) {
+        if (course.getTotalScore() != null) {
             course_total_score_input.setText(String.valueOf(course.getTotalScore()));
-            try {
-                course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
-            } catch (CourseException e) {
-                throw new IllegalStateException("尚未设置期末总评成绩", e);
-            }
+            course_grade_point_input.setText(String.valueOf(course.getGradePoint()));
         }
 
         //添加时间地点
@@ -297,13 +288,13 @@ public class CourseDetailsActivity extends FragmentActivity
         //如果这是新时间地点，应该有index==mCourse.getTimeAndAddress().size()
         if (index < mCourse.getTimeAndAddress().size()) {
             if (!isEmptyTimeAndAddress) {
-                mCourse.getTimeAndAddress().set(index, new TimeAndAddress(aTimeAndAddress));
+                mCourse.getTimeAndAddress().set(index, aTimeAndAddress.clone());
             } else {
                 removeTimeAndAddressEditText(true, index);
             }
         } else if (index == mCourse.getTimeAndAddress().size()) {        //新课程
             if (!isEmptyTimeAndAddress) {
-                mCourse.getTimeAndAddress().add(new TimeAndAddress(aTimeAndAddress));
+                mCourse.getTimeAndAddress().add(aTimeAndAddress.clone());
                 addTimeAndAddressEditText();
             }
         } else {
@@ -368,7 +359,8 @@ public class CourseDetailsActivity extends FragmentActivity
         mCourse.setCode(course_code_input.getText().toString());
         mCourse.setName(course_name_input.getText().toString());
         mCourse.setClassNumber(course_class_number_input.getText().toString());
-        mCourse.setTeachers(course_teacher_input.getText().toString());
+        mCourse.getTeachers().clear();
+        mCourse.addTeachers(course_teacher_input.getText().toString());
         mCourse.setKind(course_kind_input.getText().toString());
         try {
             mCourse.setCredit(Integer.parseInt(course_credit_input.getText().toString()));
@@ -377,13 +369,14 @@ public class CourseDetailsActivity extends FragmentActivity
             //TODO 提示
         }
         try {
-            mCourse.setTestScore(Float.parseFloat(course_test_score_input.getText().toString()));
+            mCourse.setTestScore(Double.parseDouble(course_test_score_input.getText().toString()));
         } catch (Exception e1) {
             course_test_score_input.requestFocus();
             //TODO 提示
         }
         try {
-            mCourse.setTotalScore(Float.parseFloat(course_total_score_input.getText().toString()));
+            mCourse.setTotalScore(
+                    Double.parseDouble(course_total_score_input.getText().toString()));
         } catch (Exception e) {
             course_total_score_input.requestFocus();
             //TODO 提示

@@ -7,6 +7,10 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_7
+            targetCompatibility JavaVersion.VERSION_1_7
+        }
     }
 
     buildTypes {
@@ -19,6 +23,6 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:+'
-    compile files('libs/flamingo-android-hessian-client-2.2.0.jar')
-    compile files('libs/jsoup-1.7.1-changed.jar')
+//    compile files('libs/flamingo-android-hessian-client-2.2.0.jar')
+    compile 'org.orange:website-parser-tjut:2.0'
 }

@@ -6,6 +6,10 @@ package org.orange.querysystem.util;
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
 
+import org.orange.parser.entity.Post;
+import org.orange.parser.parser.ParseAdapter;
+import org.orange.parser.parser.SchoolWebpageParser;
+import org.orange.parser.util.GetterInterface;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.Contract;
@@ -23,11 +27,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.List;
-
-import util.GetterInterface;
-import util.webpage.Post;
-import util.webpage.ReadPageHelper.OnReadPageListener;
-import util.webpage.SchoolWebpageParser;
 
 /**
  * 通知更新器，用于更新通知列表。
@@ -196,7 +195,9 @@ public class PostUpdater {
 
         private StudentInfDBAdapter database = new StudentInfDBAdapter(mContext);
 
-        /** true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新 */
+        /**
+         * true表示强制更新，不管上次更新时间；false表示这是自动更新，仅当符合自动更新条件时（时间间隔等）才真正更新
+         */
         private boolean mandatorily = false;
 
         /**
@@ -328,22 +329,19 @@ public class PostUpdater {
                 if (SettingsActivity.useAlternativeInMobileConnection(mContext) || !Network
                         .isMobileConnected(mContext)) {
                     //使用备用方案
-                    MyOnReadPageListener readPageListener = new MyOnReadPageListener();
+//                    MyOnReadPageListener readPageListener = new MyOnReadPageListener();
                     try {
-                        SchoolWebpageParser parser = new SchoolWebpageParser(
-                                new MyParserListener());
-                        parser.setOnReadPageListener(readPageListener);
+                        SchoolWebpageParser parser
+                                = new SchoolWebpageParser(/*new MyParserListener()*/);
+//                        parser.setOnReadPageListener(readPageListener);
                         if (quickUpdateOrAllUpdate) {
                             posts = parser.parseCommonPosts(lastUpdatedTime, null, -1);
                         } else {
                             posts = parser.parsePosts(lastUpdatedTime, null, -1);
                         }
-                        Log.i(TAG,
-                                "共 " + posts.size() + " 条， " + readPageListener.pageNumber + " 页 "
-                                        + readPageListener.totalSize / 1024.0 + " KB"
-                        );
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
+//                        Log.i(TAG, "共 " + posts.size() + " 条， " + readPageListener.pageNumber + " 页 " + readPageListener.totalSize / 1024.0 + " KB");
+//                    } catch (CloneNotSupportedException e) {
+//                        e.printStackTrace();
                     } catch (java.io.UnsupportedEncodingException e) {
                         e.printStackTrace();
                     } catch (java.io.IOException e) {
@@ -406,10 +404,8 @@ public class PostUpdater {
             return numberOfInsertedPosts;
         }
 
-        private class MyOnReadPageListener implements OnReadPageListener {
-
+/*        private class MyOnReadPageListener implements OnReadPageListener {
             int pageNumber = 0;
-
             int totalSize = 0;
 
             @Override
@@ -421,9 +417,9 @@ public class PostUpdater {
                 pageNumber++;
             }
 
-        }
+        }*/
 
-        private class MyParserListener extends SchoolWebpageParser.ParserListenerAdapter {
+        private class MyParseListener extends ParseAdapter {
 
             /* (non-Javadoc)
              * @see util.webpage.SchoolWebpageParser.ParserListenerAdapter#onError(int, java.lang.String)

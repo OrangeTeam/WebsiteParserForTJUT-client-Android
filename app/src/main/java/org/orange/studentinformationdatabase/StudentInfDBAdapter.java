@@ -1,5 +1,10 @@
 package org.orange.studentinformationdatabase;
 
+import org.orange.parser.entity.Course;
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.entity.Post;
+import org.orange.parser.util.BitOperate;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,12 +25,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import util.BitOperate.BitOperateException;
-import util.webpage.Course;
-import util.webpage.Course.CourseException;
-import util.webpage.Course.TimeAndAddress;
-import util.webpage.Post;
 
 /**
  * 数据库名为：studentInf.db，有三张表，其中courseInf1和courseInf2是相关连的表，存储课程信息及成绩信息。表post存储通知信息。
@@ -177,8 +176,8 @@ public class StudentInfDBAdapter {
                 + KEY_CODE + " character(7) unique," + KEY_NAME + " varchar(25)," + KEY_TEACHERS
                 + " varchar(25)," + KEY_CREDIT + " tinyint," + KEY_CLASS_NUMBER + " varchar(5),"
                 + KEY_TEACHING_MATERIAL + " varchar(15)," + KEY_YEAR + " integer," + KEY_SEMESTER
-                + " INTEGER," + KEY_TEST_SCORE + " float,"
-                + KEY_TOTAL_SCORE + " float," + KEY_KIND + " varchar(5)," + KEY_NOTE
+                + " INTEGER," + KEY_TEST_SCORE + " REAL,"
+                + KEY_TOTAL_SCORE + " REAL," + KEY_KIND + " varchar(5)," + KEY_NOTE
                 + " varchar(30)," + KEY_USER_NAME + " varchar(8));";
 
         private static final String COURSE_TABLE2_CREATE = "create table " + DATABASE_COURSE_TABLE2
@@ -385,7 +384,7 @@ public class StudentInfDBAdapter {
             cursor.moveToFirst();
             //这里对courseInf1表的查询是为了获得cuorseInf1表的id字段值，用来存储到courseInf2中的link字段。
             counter = 0;
-            for (TimeAndAddress aTimeAndAddress : aCourse.getTimeAndAddress()) {
+            for (Course.TimeAndAddress aTimeAndAddress : aCourse.getTimeAndAddress()) {
                 newCourseInfTAValues.put(KEY_LINK, cursor.getInt(0));
                 //link列是courseInf1和courseInf2相‘连接’的字段以执行相应的操作，所以link列须和_id列值相等。cursor.getInt(0)是得到id字段值。
                 theViceId = Integer.toString(cursor.getInt(0)) + Integer.toString(counter++);
@@ -468,7 +467,7 @@ public class StudentInfDBAdapter {
         newCourseInfValues.put(KEY_NOTE, theCourseInf.getNote());
         newCourseInfValues.put(KEY_USER_NAME, theUserName);
 
-        theCourseInf.setId((int) db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues));
+        theCourseInf.setId(db.insert(DATABASE_COURSE_TABLE1, null, newCourseInfValues));
     }
 
     /**
@@ -578,7 +577,7 @@ public class StudentInfDBAdapter {
         if (theCourseInf == null) {
             return false;
         }
-        int rowIndex = theCourseInf.getId();
+        long rowIndex = theCourseInf.getId();
         return (db.delete(DATABASE_COURSE_TABLE1, KEY_ID + "=" + rowIndex, null) > 0)
                 && (db.delete(DATABASE_COURSE_TABLE2, KEY_LINK + "=" + rowIndex, null) > 0);
     }
@@ -613,7 +612,7 @@ public class StudentInfDBAdapter {
         ContentValues newCourseInfValues4 = new ContentValues();
 
         //从传递进来的参数获得这门课程的记录的_id，进行查询，获得courseInf1和courseInf2中的这门课的记录。
-        int rowIndex = theCourseInf.getId();
+        long rowIndex = theCourseInf.getId();
         Cursor cursor1 = db
                 .query(DATABASE_COURSE_TABLE1, null, KEY_ID + "=" + rowIndex, null, null, null,
                         null);
@@ -702,28 +701,28 @@ public class StudentInfDBAdapter {
                 if (i >= theCourseInf.getTimeAndAddress().size()) {
                     newCourseInfValues2.put(KEY_WEEK, 0);
                     db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2,
-                            KEY_VICEID + " = " + (Integer.toString(rowIndex) + (i)), null);
+                            KEY_VICEID + " = " + (String.valueOf(rowIndex) + (i)), null);
                     continue;
                 }
                 if (cursor2.getInt(2) != theCourseInf.getTimeAndAddress().get(i).getWeek()) {
                     newCourseInfValues2
                             .put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(i).getWeek());
                     db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2,
-                            KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
+                            KEY_VICEID + "=" + (String.valueOf(rowIndex) + (i)), null);
                 }
 
                 if (cursor2.getInt(3) != theCourseInf.getTimeAndAddress().get(i).getDay()) {
                     newCourseInfValues2
                             .put(KEY_DAY, theCourseInf.getTimeAndAddress().get(i).getDay());
                     db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2,
-                            KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
+                            KEY_VICEID + "=" + (String.valueOf(rowIndex) + (i)), null);
                 }
 
                 if (cursor2.getInt(4) != theCourseInf.getTimeAndAddress().get(i).getPeriod()) {
                     newCourseInfValues2
                             .put(KEY_PERIOD, theCourseInf.getTimeAndAddress().get(i).getPeriod());
                     db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2,
-                            KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
+                            KEY_VICEID + "=" + (String.valueOf(rowIndex) + (i)), null);
                 }
 
                 if (cursor2.getString(5) != null) {
@@ -732,13 +731,13 @@ public class StudentInfDBAdapter {
                         newCourseInfValues2.put(KEY_ADDRESS,
                                 theCourseInf.getTimeAndAddress().get(i).getAddress());
                         db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2,
-                                KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
+                                KEY_VICEID + "=" + (String.valueOf(rowIndex) + (i)), null);
                     }
                 } else {
                     newCourseInfValues2
                             .put(KEY_ADDRESS, theCourseInf.getTimeAndAddress().get(i).getAddress());
                     db.update(DATABASE_COURSE_TABLE2, newCourseInfValues2,
-                            KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
+                            KEY_VICEID + "=" + (String.valueOf(rowIndex) + (i)), null);
                 }
             }
 
@@ -746,7 +745,7 @@ public class StudentInfDBAdapter {
             if (theCourseInf.getTimeAndAddress().size() > count) {
                 for (int j = 0; j < theCourseInf.getTimeAndAddress().size() - count; j++) {
                     newCourseInfValues3.put(KEY_LINK, rowIndex);
-                    newCourseInfValues3.put(KEY_VICEID, Integer.toString(rowIndex) + (count + j));
+                    newCourseInfValues3.put(KEY_VICEID, String.valueOf(rowIndex) + (count + j));
                     newCourseInfValues3.put(KEY_WEEK,
                             theCourseInf.getTimeAndAddress().get(count + j).getWeek());
                     newCourseInfValues3
@@ -763,7 +762,7 @@ public class StudentInfDBAdapter {
             //这是当没有时间地点的课程的时间地点的插入
             for (int j = 0; j < theCourseInf.getTimeAndAddress().size(); j++) {
                 newCourseInfValues4.put(KEY_LINK, rowIndex);
-                newCourseInfValues4.put(KEY_VICEID, (Integer.toString(rowIndex) + (j)));
+                newCourseInfValues4.put(KEY_VICEID, (String.valueOf(rowIndex) + (j)));
                 newCourseInfValues4
                         .put(KEY_WEEK, theCourseInf.getTimeAndAddress().get(j).getWeek());
                 newCourseInfValues4.put(KEY_DAY, theCourseInf.getTimeAndAddress().get(j).getDay());
@@ -785,7 +784,7 @@ public class StudentInfDBAdapter {
             cursor2.moveToPosition(i);
             if (cursor2.getInt(2) == 0) {
                 db.delete(DATABASE_COURSE_TABLE2,
-                        KEY_VICEID + "=" + (Integer.toString(rowIndex) + (i)), null);
+                        KEY_VICEID + "=" + (String.valueOf(rowIndex) + (i)), null);
             }
         }
     }
@@ -795,7 +794,7 @@ public class StudentInfDBAdapter {
      */
     public void updateScoreInf(Course theScoreInf) {
         List<Course> courses = new ArrayList<Course>();
-        courses.add(new Course(theScoreInf));
+        courses.add(theScoreInf.clone());
         updateScoreInf(courses);
     }
 
@@ -827,22 +826,22 @@ public class StudentInfDBAdapter {
                     newCourseInfValues1.put(KEY_YEAR, aScore.getYear());
                 }
             }
-            if (aScore.getSemester() != null && aScore.getSemester().byteValue() != cursor1
-                    .getInt(8)) {
+            if (aScore.getSemester() != null && aScore.getSemester().byteValue() != cursor1.getInt(
+                    8)) {
                 newCourseInfValues1.put(KEY_SEMESTER, aScore.getSemester());
             }
 
-            if (cursor1.getFloat(9) != aScore.getTestScore()) {
+            if (aScore.getTestScore() != null && cursor1.getDouble(9) != aScore.getTestScore()) {
                 if (aScore.getTestScore() < 0) {
-                    newCourseInfValues1.put(KEY_TEST_SCORE, Float.NaN);
+                    newCourseInfValues1.put(KEY_TEST_SCORE, Double.NaN);
                 } else {
                     newCourseInfValues1.put(KEY_TEST_SCORE, aScore.getTestScore());
                 }
             }
 
-            if (cursor1.getFloat(10) != aScore.getTotalScore()) {
+            if (aScore.getTotalScore() != null && cursor1.getDouble(10) != aScore.getTotalScore()) {
                 if (aScore.getTotalScore() < 0) {
-                    newCourseInfValues1.put(KEY_TOTAL_SCORE, Float.NaN);
+                    newCourseInfValues1.put(KEY_TOTAL_SCORE, Double.NaN);
                 } else {
                     newCourseInfValues1.put(KEY_TOTAL_SCORE, aScore.getTotalScore());
                 }
@@ -1010,12 +1009,11 @@ public class StudentInfDBAdapter {
         Course result = new Course();
         boolean haveValue = false;
         for (int i = 0; i < cursor.getColumnCount(); i++) {
-            try {
                 switch (cursor.getColumnName(i)) {
                     case KEY_USER_NAME:
                         continue;        // skip these
                     case KEY_ID:
-                        result.setId(cursor.getInt(i));
+                    result.setId(cursor.getLong(i));
                         break;
                     case KEY_CODE:
                         result.setCode(cursor.getString(i));
@@ -1024,7 +1022,7 @@ public class StudentInfDBAdapter {
                         result.setName(cursor.getString(i));
                         break;
                     case KEY_TEACHERS:
-                        result.setTeachers(cursor.getString(i));
+                    result.addTeachers(cursor.getString(i));
                         break;
                     case KEY_CREDIT:
                         result.setCredit(cursor.getInt(i));
@@ -1040,14 +1038,14 @@ public class StudentInfDBAdapter {
                         break;
                     case KEY_SEMESTER:
                         if (!cursor.isNull(i)) {
-                            result.setSemester((byte) cursor.getInt(i));
+                        result.setSemester(cursor.getInt(i));
                         }
                         break;
                     case KEY_TEST_SCORE:
-                        result.setTestScore(cursor.getFloat(i));
+                    result.setTestScore(cursor.getDouble(i));
                         break;
                     case KEY_TOTAL_SCORE:
-                        result.setTotalScore(cursor.getFloat(i));
+                    result.setTotalScore(cursor.getDouble(i));
                         break;
                     case KEY_KIND:
                         result.setKind(cursor.getString(i));
@@ -1061,9 +1059,6 @@ public class StudentInfDBAdapter {
                 if (!haveValue) {
                     haveValue = true;
                 }
-            } catch (CourseException e) {
-                e.printStackTrace();
-            }
         }
         if (!haveValue) {
             throw new AssertionError("Illegal Columns: None column who have meaningful value");
@@ -1098,7 +1093,7 @@ public class StudentInfDBAdapter {
                 if (!haveValue) {
                     haveValue = true;
                 }
-            } catch (BitOperateException e) {
+            } catch (BitOperate.BitOperateException e) {
                 e.printStackTrace();
             }
         }

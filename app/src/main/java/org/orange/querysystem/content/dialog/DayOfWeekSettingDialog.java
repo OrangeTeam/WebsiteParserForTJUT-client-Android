@@ -1,5 +1,7 @@
 package org.orange.querysystem.content.dialog;
 
+import org.orange.parser.entity.Course.TimeAndAddress;
+import org.orange.parser.util.BitOperate;
 import org.orange.querysystem.R;
 
 import android.app.Activity;
@@ -11,16 +13,17 @@ import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import util.BitOperate.BitOperateException;
-import util.webpage.Course.TimeAndAddress;
-
 public class DayOfWeekSettingDialog extends DialogFragment {
 
-    /** {@link DayOfWeekSettingDialog#setArguments(Bundle)}参数的Key */
+    /**
+     * {@link DayOfWeekSettingDialog#setArguments(Bundle)}参数的Key
+     */
     public static final String DAY_OF_WEEK_KEY = DayOfWeekSettingDialog.class.getName()
             + "day_of_week_key";
 
-    /** 课程多选框的选项 */
+    /**
+     * 课程多选框的选项
+     */
     private final String[] MULTI_CHOICE_ITEMS = new String[7];
 
     private final TimeAndAddress mDayOfWeek = new TimeAndAddress();
@@ -60,7 +63,7 @@ public class DayOfWeekSettingDialog extends DialogFragment {
         try {
             //TODO 常量
             mDayOfWeek.setDay(getArguments().getInt(DAY_OF_WEEK_KEY, 0));
-        } catch (BitOperateException e) {
+        } catch (BitOperate.BitOperateException e) {
             throw new IllegalArgumentException("非法参数" + getArguments().getInt(DAY_OF_WEEK_KEY, 0),
                     e);
         }
@@ -122,7 +125,7 @@ public class DayOfWeekSettingDialog extends DialogFragment {
                                     } else {
                                         mDayOfWeek.removeDay(which);
                                     }
-                                } catch (BitOperateException e) {
+                                } catch (BitOperate.BitOperateException e) {
                                     throw new IllegalArgumentException("非法参数：" + which, e);
                                 }
                             }

@@ -154,7 +154,7 @@ public class ListCoursesFragment extends ListFragment {
 
     public static class SimpleCourse implements Parcelable {
 
-        private int id;
+        private long id;
 
         private String name;
 
@@ -162,7 +162,7 @@ public class ListCoursesFragment extends ListFragment {
 
         private String otherInfo;
 
-        public SimpleCourse(int id, String name, String time, String otherInfo) {
+        public SimpleCourse(long id, String name, String time, String otherInfo) {
             this.id = id;
             this.name = name;
             this.time = time;
@@ -170,13 +170,13 @@ public class ListCoursesFragment extends ListFragment {
         }
 
         private SimpleCourse(Parcel in) {
-            this(in.readInt(), in.readString(), in.readString(), in.readString());
+            this(in.readLong(), in.readString(), in.readString(), in.readString());
         }
 
         /**
          * @return the ID
          */
-        public int getId() {
+        public long getId() {
             return id;
         }
 
@@ -241,7 +241,7 @@ public class ListCoursesFragment extends ListFragment {
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(id);
+            out.writeLong(id);
             out.writeString(name);
             out.writeString(time);
             out.writeString(otherInfo);

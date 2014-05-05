@@ -1,5 +1,7 @@
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Course;
+import org.orange.parser.util.BitOperate;
 import org.orange.querysystem.content.ListCoursesFragment.SimpleCourse;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
@@ -20,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-
-import util.BitOperate.BitOperateException;
-import util.webpage.Course;
 
 public class MyAppWidgetProvider extends AppWidgetProvider {
 
@@ -122,7 +121,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
                                         String.valueOf(thePeriod), time.getAddress())
                         );
                     }
-                } catch (BitOperateException e) {
+                } catch (BitOperate.BitOperateException e) {
                     e.printStackTrace();
                 }
             }

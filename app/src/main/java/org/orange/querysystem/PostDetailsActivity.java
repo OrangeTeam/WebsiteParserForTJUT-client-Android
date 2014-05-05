@@ -3,6 +3,9 @@
  */
 package org.orange.querysystem;
 
+import org.orange.parser.entity.Post;
+import org.orange.parser.parser.ParseException;
+import org.orange.parser.parser.SchoolWebpageParser;
 import org.orange.querysystem.util.Network;
 import org.orange.studentinformationdatabase.Contract;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
@@ -25,10 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-
-import util.webpage.Post;
-import util.webpage.SchoolWebpageParser;
-import util.webpage.SchoolWebpageParser.ParserException;
 
 /**
  * @author Bai Jie
@@ -206,7 +205,7 @@ public class PostDetailsActivity extends FragmentActivity {
                 database.updatePostInf(result);
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (ParserException e) {
+            } catch (ParseException e) {
                 e.printStackTrace();
             } catch (SQLiteException e) {
                 Log.e(TAG, "打开数据库异常！");

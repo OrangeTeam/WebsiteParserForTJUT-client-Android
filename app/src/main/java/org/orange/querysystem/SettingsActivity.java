@@ -20,29 +20,43 @@ import java.util.Date;
 public class SettingsActivity extends PreferenceActivity
         implements OnSharedPreferenceChangeListener {
 
-    /** 设置项“帐号”的KEY */
+    /**
+     * 设置项“帐号”的KEY
+     */
     public static final String KEY_PREF_ACCOUNT = "pref_account";
 
-    /** 设置项“帐号”中学号的KEY */
+    /**
+     * 设置项“帐号”中学号的KEY
+     */
     public static final String KEY_PREF_ACCOUNT_STUDENT_ID = KEY_PREF_ACCOUNT
             + AccountSettingPreference.STUDENT_ID_SUFFIX;
 
-    /** 设置项“帐号”中密码的KEY */
+    /**
+     * 设置项“帐号”中密码的KEY
+     */
     public static final String KEY_PREF_ACCOUNT_PASSWORD = KEY_PREF_ACCOUNT
             + AccountSettingPreference.PASSWORD_SUFFIX;
 
-    /** 设置项“第0周”的KEY */
+    /**
+     * 设置项“第0周”的KEY
+     */
     public static final String KEY_PREF_SCHOOL_STARTING_DATE = "pref_startingDate";
 
-    /** 设置项“自动更新通知”的KEY */
+    /**
+     * 设置项“自动更新通知”的KEY
+     */
     public static final String KEY_PREF_UPDATE_POST_AUTOMATICALLY
             = "pref_update_post_automatically";
 
-    /** 设置项“通知更新间隔”的KEY */
+    /**
+     * 设置项“通知更新间隔”的KEY
+     */
     public static final String KEY_PREF_INTERVAL_OF_POST_UPDATING
             = "pref_interval_of_post_updating";
 
-    /** 设置项“移动网络下使用后备方案”的KEY */
+    /**
+     * 设置项“移动网络下使用后备方案”的KEY
+     */
     public static final String KEY_PREF_USE_ALTERNATIVE_IN_MOBILE_CONNECTION
             = "pref_use_alternative_in_mobile_connection";
 

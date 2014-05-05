@@ -87,7 +87,9 @@ public class ListPostsFragment extends ListFragment
     // If non-null, this is the filter the user has provided.
     String mFilter;
 
-    /** search mFilter by this clause */
+    /**
+     * search mFilter by this clause
+     */
     private static final String searchClause =
             Contract.Posts.COLUMN_NAME_TITLE + " LIKE ? OR " +
                     Contract.Posts.COLUMN_NAME_CATEGORY + " LIKE ? OR " +
@@ -337,14 +339,14 @@ public class ListPostsFragment extends ListFragment
             String tempString;
             tempString = cursor.getString(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_TITLE));
             ((TextView) view.findViewById(R.id.post_title)).setText(tempString);
-            tempString = cursor
-                    .getString(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_CATEGORY));
+            tempString = cursor.getString(
+                    cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_CATEGORY));
             ((TextView) view.findViewById(R.id.post_category)).setText(tempString);
             tempString = cursor.getString(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_AUTHOR));
             ((TextView) view.findViewById(R.id.post_author)).setText(tempString);
             long date = cursor.getLong(cursor.getColumnIndex(Contract.Posts.COLUMN_NAME_DATE));
-            ((TextView) view.findViewById(R.id.post_date))
-                    .setText(mDateFormat.format(new Date(date)));
+            ((TextView) view.findViewById(R.id.post_date)).setText(
+                    mDateFormat.format(new Date(date)));
         }
 
         @Override

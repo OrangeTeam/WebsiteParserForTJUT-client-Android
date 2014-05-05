@@ -1,5 +1,6 @@
 package org.orange.querysystem.util;
 
+import org.orange.parser.entity.Course;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.StudentInfDBAdapter;
 
@@ -10,7 +11,6 @@ import android.util.Log;
 
 import java.util.List;
 
-import util.webpage.Course;
 
 public class ReadDB extends AsyncTask<String, Void, List<Course>> {
 

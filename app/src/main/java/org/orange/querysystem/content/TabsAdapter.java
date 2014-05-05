@@ -110,9 +110,9 @@ public class TabsAdapter extends FragmentPagerAdapter
 
         TabInfo info = new TabInfo(clss, args);
         mTabs.add(info);
+        notifyDataSetChanged();
         mTabHost.addTab(tabSpec);
         setTabForIfLowerThanHONEYCOMB();
-        notifyDataSetChanged();
     }
 
     private void setTabForIfLowerThanHONEYCOMB() {

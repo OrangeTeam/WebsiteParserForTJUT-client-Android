@@ -1,4 +1,47 @@
 #################
+## Common
+#################
+# Local configuration file (sdk path, etc)
+local.properties
+/*/local.properties
+
+#built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+/*/out
+/*/*/build
+/*/*/production
+
+# others
+*~
+
+#################
+## Gradle
+#################
+# Gradle cache
+.gradle
+
+#################
+## Android Studio
+#################
+.idea
+*.iml
+*.iws
+*.ipr
+# or uncomment this↓ and comment/delete above if it better suit your needs
+#.idea/workspace.xml
+
+#################
 ## Eclipse
 #################
 
@@ -12,11 +55,9 @@ tmp/
 *.bak
 *.swp
 *~.nib
-local.properties
 .classpath
 .settings/
 .loadpath
-libs/*.properties
 
 # External tool builders
 .externalToolBuilders/

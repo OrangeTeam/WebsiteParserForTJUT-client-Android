@@ -189,7 +189,7 @@ public class PostUpdater {
 
     private class UpdatePostsListToDatabase extends AsyncTask<Void, Void, Long> {
 
-        private static final String hessianUrl = "http://schoolwebpageparser.appspot.com/getter";
+        private static final String HESSIAN_URL = "http://baijie1991-hrd.appspot.com/getter";
 
         private static final int maxAttempts = 10;
 
@@ -308,7 +308,7 @@ public class PostUpdater {
             //用Hessian连接GAE代理
             for (int counter = 1; counter <= maxAttempts; counter++) {
                 try {
-                    getter = (GetterInterface) factory.create(GetterInterface.class, hessianUrl);
+                    getter = (GetterInterface) factory.create(GetterInterface.class, HESSIAN_URL);
                     posts = getter.getPosts(lastUpdatedTime, null, -1);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();

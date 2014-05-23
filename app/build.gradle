@@ -13,10 +13,25 @@ android {
         }
     }
 
+    signingConfigs {
+        def signingConfigsProperties = rootProject.signingConfigs
+        if (signingConfigsProperties != null) {
+            release {
+                storeFile file(escapeNull(signingConfigsProperties.storeFilePath))
+                storePassword escapeNull(signingConfigsProperties.storePassword)
+                keyAlias escapeNull(signingConfigsProperties.keyAlias)
+                keyPassword escapeNull(signingConfigsProperties.keyPassword)
+            }
+        }
+    }
+
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            if (signingConfigs.names.contains("release")) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -29,4 +44,47 @@ dependencies {
     compile 'com.android.support:support-v4:+'
 //    compile files('libs/flamingo-android-hessian-client-2.2.0.jar')
     compile 'org.orange:website-parser-tjut:2.0'
+}
+
+task checkSigningConfigs << {
+    try {
+        def signingConfigs = rootProject.signingConfigs
+        def release = android.signingConfigs.release
+        if (signingConfigs.storeFilePath == null) {
+            release.storeFile = file(System.console().readLine("\n\$ Enter keystore path: "))
+        }
+        if (signingConfigs.storePassword == null) {
+            release.storePassword =
+                    new String(System.console().readPassword("\n\$ Enter keystore password: "))
+        }
+        if (signingConfigs.keyAlias == null) {
+            release.keyAlias = System.console().readLine("\n\$ Enter key alias: ")
+        }
+        if (signingConfigs.keyPassword == null) {
+            release.keyPassword =
+                    new String(System.console().readPassword("\n\$ Enter key password: "))
+        }
+    } catch (NullPointerException e) {
+        if (System.console() == null) {
+            final String LB = System.getProperty("line.separator");
+            String message = "You didn't set all signingConfigs in local.gradle " +
+                    "and cannot input them with System.console() which is null." + LB;
+            message += "You can execute task in console or set all signingConfigs in local.gradle";
+            throw new RuntimeException(message, e)
+        } else {
+            throw e;
+        }
+    }
+}
+
+if (android.signingConfigs.names.contains("release")) {
+    tasks.whenTaskAdded { theTask ->
+        if (theTask.name.equals("packageRelease")) {
+            theTask.dependsOn "checkSigningConfigs"
+        }
+    }
+}
+
+String escapeNull(String origin) {
+    return origin != null ? origin : "not_set"
 }

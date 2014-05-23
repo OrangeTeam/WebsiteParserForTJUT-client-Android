@@ -1,0 +1,7 @@
+// This is a sample of "local.gradle" file
+// "local.gradle" file must *NOT* be checked into Version Control Systems,
+// as it contains information shouldn't be public, password for example.
+ext.signingConfigs = [storeFilePath: "path/to/keystore/file",
+                        storePassword: "Keystore password",
+                        keyAlias: "Key alias",
+                        keyPassword: "Key password"]

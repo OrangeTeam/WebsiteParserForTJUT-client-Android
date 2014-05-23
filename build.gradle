@@ -1,4 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+project.ext.signingConfigs = null
+String localGradleFilePath = 'local.gradle'
+File localGradleFile = file(localGradleFilePath)
+if (localGradleFile.exists() && localGradleFile.isFile()) {
+    apply from: localGradleFilePath
+}
+
 buildscript {
     repositories {
         mavenCentral()
@@ -14,3 +21,4 @@ allprojects {
         mavenLocal()
     }
 }
+

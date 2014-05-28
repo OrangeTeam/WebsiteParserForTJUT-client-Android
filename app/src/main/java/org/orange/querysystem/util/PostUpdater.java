@@ -9,7 +9,7 @@ import com.caucho.hessian.client.MyHessianSocketConnectionFactory;
 import org.orange.parser.entity.Post;
 import org.orange.parser.parser.ParseAdapter;
 import org.orange.parser.parser.SchoolWebpageParser;
-import org.orange.parser.util.GetterInterface;
+import org.orange.parser.proxy.api.GetterInterface;
 import org.orange.querysystem.R;
 import org.orange.querysystem.SettingsActivity;
 import org.orange.studentinformationdatabase.Contract;

@@ -287,7 +287,11 @@ public class StudentInfDBAdapter {
                 for (Map.Entry<String, String> keyValue : group.getValue().entrySet()) {
                     statement.bindString(1, groupName);
                     statement.bindString(2, keyValue.getKey());
-                    statement.bindString(3, keyValue.getValue());
+                    if(keyValue.getValue() != null) {
+                        statement.bindString(3, keyValue.getValue());
+                    } else {
+                        statement.bindNull(3);
+                    }
                     if (statement.executeInsert() != -1) //TODO SQLException
                     {
                         counter++;

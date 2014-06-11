@@ -177,7 +177,11 @@ public class PostsActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 1, R.string.refresh);
+        MenuItem refresh = menu.add(0, 1, 1, R.string.refresh)
+                .setIcon(R.drawable.ic_action_refresh);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            refresh.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
         menu.add(0, 2, 2, R.string.settings);
         return super.onCreateOptionsMenu(menu);
     }

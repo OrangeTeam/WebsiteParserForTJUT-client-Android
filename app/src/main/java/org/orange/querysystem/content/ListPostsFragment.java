@@ -150,7 +150,7 @@ public class ListPostsFragment extends ListFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Place an action bar item for searching.
         MenuItem item = menu.add(Menu.NONE, SEARCH, Menu.NONE, R.string.search);
-        item.setIcon(android.R.drawable.ic_menu_search);
+        item.setIcon(R.drawable.ic_action_search);
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
                 | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         View searchView = SearchViewCompat.newSearchView(getActivity());

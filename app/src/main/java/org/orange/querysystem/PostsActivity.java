@@ -26,6 +26,7 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -69,7 +70,7 @@ public class PostsActivity extends FragmentActivity {
             public void onPostUpdate(long numberOfInsertedPosts, boolean mandatorily) {
                 if (mandatorily || numberOfInsertedPosts > 0) {
                     if (numberOfInsertedPosts > 0) {
-                        loadPosts();
+                        reloadPosts();
                         String message = PostsActivity.this.getResources()
                                 .getString(R.string.has_updated_posts, numberOfInsertedPosts);
                         Toast.makeText(PostsActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -164,6 +165,14 @@ public class PostsActivity extends FragmentActivity {
         addTab(Post.SOURCES.WEBSITE_OF_TEACHING_AFFAIRS);
         addTab(Post.SOURCES.STUDENT_WEBSITE_OF_SCCE);
         addTab(Post.SOURCES.WEBSITE_OF_SCCE);
+    }
+
+    private void reloadPosts() {
+        for (Fragment fragment : mTabsAdapter.getAddedFragmentPagers()) {
+            if (fragment instanceof ListPostsFragment) {
+                ((ListPostsFragment) fragment).restartLoader();
+            }
+        }
     }
 
     @Override

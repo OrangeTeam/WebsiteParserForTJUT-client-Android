@@ -33,7 +33,9 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a helper class that implements the management of tabs and all
@@ -54,6 +56,8 @@ public class TabsAdapter extends FragmentPagerAdapter
     private final TabHost mTabHost;
 
     private final ViewPager mViewPager;
+
+    private final List<WeakReference<Fragment>> mFragmentPagers =new ArrayList<>();
 
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
@@ -138,9 +142,22 @@ public class TabsAdapter extends FragmentPagerAdapter
      */
     public void clear() {
         mTabs.clear();
+        mFragmentPagers.clear();
         mTabHost.setCurrentTab(0);
         mTabHost.clearAllTabs();
+        mViewPager.removeAllViews();
         notifyDataSetChanged();
+    }
+
+    public List<Fragment> getAddedFragmentPagers() {
+        ArrayList<Fragment> result = new ArrayList<>();
+        for(WeakReference<Fragment> ref : mFragmentPagers) {
+            Fragment f = ref.get();
+            if(f != null) {
+                result.add(f);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -151,7 +168,9 @@ public class TabsAdapter extends FragmentPagerAdapter
     @Override
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        Fragment fragment = Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        mFragmentPagers.add(new WeakReference<>(fragment));
+        return fragment;
     }
 
     @Override

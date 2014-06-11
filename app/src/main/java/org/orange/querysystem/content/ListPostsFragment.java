@@ -209,8 +209,11 @@ public class ListPostsFragment extends ListFragment
             return;
         }
         mFilter = newText;
+        restartLoader();
+    }
+
+    public void restartLoader() {
         getLoaderManager().restartLoader(0, null, ListPostsFragment.this);
-        return;
     }
 
     /**

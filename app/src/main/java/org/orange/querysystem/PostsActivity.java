@@ -23,14 +23,19 @@ import org.orange.querysystem.util.PostUpdater.OnPostUpdateListener;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -52,6 +57,8 @@ public class PostsActivity extends FragmentActivity {
 
     PostUpdater mWebUpdaterToDB;
 
+    MenuItem mRefreshMenuItem;
+
     /* (non-Javadoc)
      * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
      */
@@ -64,7 +71,27 @@ public class PostsActivity extends FragmentActivity {
         currentTime = (TextView) findViewById(R.id.currentTime);
         currentTime.setText(R.string.post);
 
-        mWebUpdaterToDB = new PostUpdater(this);
+        mWebUpdaterToDB = Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ?
+                new PostUpdater(this) : new PostUpdater(this) {
+            @Override
+            public boolean updatePosts(boolean mandatorily) {
+                boolean isUpdating = super.updatePosts(mandatorily);
+                if (isUpdating && mRefreshMenuItem != null) {
+                    /* Attach a rotating ImageView to the refresh item as an ActionView */
+                    LayoutInflater inflater = (LayoutInflater) PostsActivity.this.getSystemService(
+                            Context.LAYOUT_INFLATER_SERVICE);
+                    ImageView iv = (ImageView) inflater.inflate(R.layout.action_refresh_view, null);
+
+                    Animation rotation = AnimationUtils
+                            .loadAnimation(PostsActivity.this, R.anim.clockwise_refresh);
+                    rotation.setRepeatCount(Animation.INFINITE);
+                    iv.startAnimation(rotation);
+
+                    mRefreshMenuItem.setActionView(iv);
+                }
+                return isUpdating;
+            }
+        };
         mWebUpdaterToDB.setOnPostExecuteListener(new OnPostUpdateListener() {
             @Override
             public void onPostUpdate(long numberOfInsertedPosts, boolean mandatorily) {
@@ -81,6 +108,14 @@ public class PostsActivity extends FragmentActivity {
                     {
                         Toast.makeText(PostsActivity.this, R.string.fail_to_update_post,
                                 Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    if (mRefreshMenuItem != null && mRefreshMenuItem.getActionView() != null) {
+                        // 停止更新动画
+                        mRefreshMenuItem.getActionView().clearAnimation();
+                        mRefreshMenuItem.setActionView(null);
                     }
                 }
             }
@@ -177,10 +212,10 @@ public class PostsActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem refresh = menu.add(0, 1, 1, R.string.refresh)
+        mRefreshMenuItem = menu.add(0, 1, 1, R.string.refresh)
                 .setIcon(R.drawable.ic_action_refresh);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            refresh.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mRefreshMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
         menu.add(0, 2, 2, R.string.settings);
         return super.onCreateOptionsMenu(menu);

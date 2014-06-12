@@ -2,7 +2,7 @@
 <resources>
 
     <!-- common -->
-    <string name="app_name">理工校务</string>
+    <string name="app_name">移动校园</string>
     <string name="settings">设置</string>
     <string name="about_me">关于</string>
     <string name="refresh">刷新</string>

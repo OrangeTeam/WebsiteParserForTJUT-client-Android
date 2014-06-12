@@ -153,7 +153,9 @@ public class ListPostsFragment extends ListFragment
         item.setIcon(R.drawable.ic_action_search);
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
                 | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-        View searchView = SearchViewCompat.newSearchView(getActivity());
+        Context context = Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
+            getActivity().getApplicationContext() : getActivity().getActionBar().getThemedContext();
+        View searchView = SearchViewCompat.newSearchView(context);
         if (searchView != null) {
             SearchViewCompat.setOnQueryTextListener(searchView,
                     new OnQueryTextListenerCompat() {

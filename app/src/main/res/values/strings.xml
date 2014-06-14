@@ -54,6 +54,7 @@
     <string name="no_course">今日无课</string>
 
     <!-- student info -->
+    <string name="personal_information">个人信息</string>
     <string name="student_number">学号</string>
     <string name="student_name">姓名</string>
     <string name="gender">性别</string>

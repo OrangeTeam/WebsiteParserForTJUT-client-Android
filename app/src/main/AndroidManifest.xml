@@ -46,7 +46,7 @@
                 android:theme="@android:style/Theme.Dialog"/>
         <activity android:name=".PostsActivity"/>
         <activity android:name=".PostDetailsActivity"/>
-        <activity android:name=".StudentInfoActivity"/>
+        <activity android:name=".StudentInfoActivity" android:label="@string/personal_information"/>
         <activity android:name=".CoursesInThisWeekActivity"/>
         <activity android:name=".AllCoursesActivity"/>
         <activity android:name=".AllCoursesInNextSemesterActivity"/>

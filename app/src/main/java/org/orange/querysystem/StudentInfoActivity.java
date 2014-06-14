@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -67,8 +68,12 @@ public class StudentInfoActivity extends ListActivity {
         setContentView(R.layout.student_info);
 
         if (savedInstanceState == null) {
-            authenticated = false;
-            showDialog(PASSWORD_PROMPT);
+            authenticated = !SettingsActivity.requestPasswordForPrivateInformation(this);
+            if (authenticated) {
+                enterActivity();
+            } else {
+                showDialog(PASSWORD_PROMPT);
+            }
         } else {
             authenticated = savedInstanceState.getBoolean(KEY_AUTHENTICATED, false);
             if (authenticated) {
@@ -98,15 +103,16 @@ public class StudentInfoActivity extends ListActivity {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        // TODO Auto-generated method stub
         switch (id) {
             case PASSWORD_PROMPT:
                 final TextView textView = new TextView(this);
-                textView.setText("请输入登陆密码：");
+                textView.setText("请输入登录密码：");
                 textView.setTextSize(14);
                 textView.setId(1);
                 final EditText editText = new EditText(this);
                 editText.setId(2);
+                editText.setInputType(
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 editText.setEnabled(true);
                 editText.setCursorVisible(true);
                 editText.setLongClickable(true);
@@ -162,8 +168,9 @@ public class StudentInfoActivity extends ListActivity {
                                 return false;
                             }
                         }).create();
+
+            default: return null;
         }
-        return null;
     }
 
     private void initAdapter() {

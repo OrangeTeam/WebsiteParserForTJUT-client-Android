@@ -9,6 +9,11 @@
                 android:key="pref_account"
                 android:title="@string/pref_student_account"
                 android:summary="@string/pref_student_account_summary"/>
+        <CheckBoxPreference
+                android:key="pref_request_password_for_private_information"
+                android:title="@string/pref_request_password_for_private_information"
+                android:summary="@string/pref_request_password_for_private_information_summary"
+                android:defaultValue="false"/>
         <org.orange.querysystem.content.DatePickerPreference
                 android:key="pref_startingDate"
                 android:title="@string/pref_starting_date"

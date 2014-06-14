@@ -37,6 +37,9 @@ public class SettingsActivity extends PreferenceActivity
     public static final String KEY_PREF_ACCOUNT_PASSWORD = KEY_PREF_ACCOUNT
             + AccountSettingPreference.PASSWORD_SUFFIX;
 
+    public static final String KEY_PREF_REQUEST_PASSWORD_FOR_PRIVATE_INFORMATION =
+            "pref_request_password_for_private_information";
+
     /**
      * 设置项“第0周”的KEY
      */
@@ -248,6 +251,17 @@ public class SettingsActivity extends PreferenceActivity
             return AccountSettingPreference.decrypt(
                     AccountSettingPreference.getStoragePassword(username), password);
         }
+    }
+
+    /**
+     * 显示私密信息（例如成绩、个人信息）前询问密码
+     *
+     * @param context 上下文环境
+     * @return 如果需要检查，返回true；如果不需要，返回false
+     */
+    public static boolean requestPasswordForPrivateInformation(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_PREF_REQUEST_PASSWORD_FOR_PRIVATE_INFORMATION, false);
     }
 
     /**

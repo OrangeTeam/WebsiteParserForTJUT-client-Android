@@ -76,18 +76,8 @@ public class PostsActivity extends FragmentActivity {
             @Override
             public boolean updatePosts(boolean mandatorily) {
                 boolean isUpdating = super.updatePosts(mandatorily);
-                if (isUpdating && mRefreshMenuItem != null) {
-                    /* Attach a rotating ImageView to the refresh item as an ActionView */
-                    LayoutInflater inflater = (LayoutInflater) PostsActivity.this.getSystemService(
-                            Context.LAYOUT_INFLATER_SERVICE);
-                    ImageView iv = (ImageView) inflater.inflate(R.layout.action_refresh_view, null);
-
-                    Animation rotation = AnimationUtils
-                            .loadAnimation(PostsActivity.this, R.anim.clockwise_refresh);
-                    rotation.setRepeatCount(Animation.INFINITE);
-                    iv.startAnimation(rotation);
-
-                    mRefreshMenuItem.setActionView(iv);
+                if (isUpdating) {
+                    startRefreshAnimation();
                 }
                 return isUpdating;
             }
@@ -112,11 +102,7 @@ public class PostsActivity extends FragmentActivity {
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    if (mRefreshMenuItem != null && mRefreshMenuItem.getActionView() != null) {
-                        // 停止更新动画
-                        mRefreshMenuItem.getActionView().clearAnimation();
-                        mRefreshMenuItem.setActionView(null);
-                    }
+                    stopRefreshAnimation();
                 }
             }
         });
@@ -216,6 +202,7 @@ public class PostsActivity extends FragmentActivity {
                 .setIcon(R.drawable.ic_action_refresh);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             mRefreshMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            if (mWebUpdaterToDB != null && mWebUpdaterToDB.isUpdating()) startRefreshAnimation();
         }
         menu.add(0, 2, 2, R.string.settings);
         return super.onCreateOptionsMenu(menu);
@@ -231,5 +218,28 @@ public class PostsActivity extends FragmentActivity {
             startActivity(new Intent(this, SettingsActivity.class));
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void startRefreshAnimation() {
+        if (mRefreshMenuItem == null) return;
+        /* Attach a rotating ImageView to the refresh item as an ActionView */
+        LayoutInflater inflater = (LayoutInflater) PostsActivity.this.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        ImageView iv = (ImageView) inflater.inflate(R.layout.action_refresh_view, null);
+
+        Animation rotation = AnimationUtils
+                .loadAnimation(PostsActivity.this, R.anim.clockwise_refresh);
+        rotation.setRepeatCount(Animation.INFINITE);
+        iv.startAnimation(rotation);
+
+        mRefreshMenuItem.setActionView(iv);
+    }
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void stopRefreshAnimation() {
+        if (mRefreshMenuItem != null && mRefreshMenuItem.getActionView() != null) {
+            mRefreshMenuItem.getActionView().clearAnimation();
+            mRefreshMenuItem.setActionView(null);
+        }
     }
 }

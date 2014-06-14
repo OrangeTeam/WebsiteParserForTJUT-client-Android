@@ -1,5 +1,6 @@
 package org.orange.querysystem;
 
+import org.orange.parser.connection.LoginConnectionAgent;
 import org.orange.parser.connection.SSFWWebsiteConnectionAgent;
 import org.orange.parser.parser.PersonalInformationParser;
 import org.orange.querysystem.content.ListViewAdapter;
@@ -21,6 +22,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
@@ -46,7 +48,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class StudentInfoActivity extends ListActivity {
+public class StudentInfoActivity extends FragmentActivity {
 
     private static final String KEY_AUTHENTICATED = "authenticated";
 
@@ -92,11 +94,11 @@ public class StudentInfoActivity extends ListActivity {
         showImage = getLayoutInflater().inflate(R.layout.show_image, null);
         imageView = (ImageView) showImage.findViewById(R.id.studentImageView);
 
-        listView = getListView();
+        listView = (ListView) findViewById(android.R.id.list);
         listView.setCacheColorHint(Color.TRANSPARENT);
         listView.addFooterView(showImage);
         initAdapter();
-        setListAdapter(adapter);
+        listView.setAdapter(adapter);
 
         new StudentInfoFromDatabase().execute();
     }
@@ -237,22 +239,38 @@ public class StudentInfoActivity extends ListActivity {
     }
 
     private class StudentInfoFromWeb extends AsyncTask<Void, Void, Long> {
+        private static final long RESULT_CANNOT_LOGIN = -2;
 
+        private LoginConnectionAgent mSSFWConnectionAgent;
         private PersonalInformationUpdater mUpdater;
 
-        public StudentInfoFromWeb(Context context, PersonalInformationParser parser) {
+        public StudentInfoFromWeb(Context context) {
+            String username = SettingsActivity.getAccountStudentID(context);
+            String password = SettingsActivity.getAccountPassword(context);
+            mSSFWConnectionAgent = new SSFWWebsiteConnectionAgent().setAccount(username, password);
+            PersonalInformationParser parser = new PersonalInformationParser();
+            parser.setConnectionAgent(mSSFWConnectionAgent);
             mUpdater = new PersonalInformationUpdater(context, parser);
         }
 
         @Override
         protected Long doInBackground(Void... params) {
+            try {
+                if (!mSSFWConnectionAgent.login()) return RESULT_CANNOT_LOGIN;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return 0L;
+            }
             return mUpdater.update();
         }
 
         @Override
         protected void onPostExecute(Long counter) {
             //TODO 改善
-            if (counter == 0) {
+            if (counter == RESULT_CANNOT_LOGIN) {
+                new CoursesInThisWeekActivity.IncorrectIdOrPasswordDialogFragment()
+                        .show(getSupportFragmentManager(), "IncorrectIdOrPasswordDialog");
+            } else if (counter == 0) {
                 Toast.makeText(StudentInfoActivity.this, "学生信息更新失败，请点击刷新来更新信息", Toast.LENGTH_LONG)
                         .show();
             } else {
@@ -290,7 +308,7 @@ public class StudentInfoActivity extends ListActivity {
 
 //            imageView.setImageBitmap(getBitmap());
             adapter = new ListViewAdapter(StudentInfoActivity.this, items);
-            setListAdapter(adapter);
+            listView.setAdapter(adapter);
         }
     }
 
@@ -304,19 +322,9 @@ public class StudentInfoActivity extends ListActivity {
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        // TODO Auto-generated method stub\
         if (item.getItemId() == 1) {
             if (Network.isConnected(this)) {
-                String username = SettingsActivity.getAccountStudentID(this);
-                String password = SettingsActivity.getAccountPassword(this);
-                PersonalInformationParser parser = new PersonalInformationParser();
-                parser.setConnectionAgent(
-                        new SSFWWebsiteConnectionAgent().setAccount(username, password));
-                new StudentInfoFromWeb(this, parser).execute();
-//                start_resume = 1;
-//                startActivity(new Intent(this, InsertDBFragmentActivity.class));
-                //TODO startActivity后不会继续运行
-//                readDB();
+                new StudentInfoFromWeb(this).execute();
             } else {
                 Toast.makeText(this, "网络异常！请检查网络设置！", Toast.LENGTH_LONG).show();
             }

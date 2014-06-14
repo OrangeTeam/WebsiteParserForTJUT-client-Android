@@ -72,6 +72,10 @@ public class RefreshScoresFragmentActivity extends Activity {
             StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(
                     RefreshScoresFragmentActivity.this);
             try {
+                if (!connectionAgent.login()) {
+                    setResult(RESULT_CANNOT_LOGIN);
+                    return false;
+                }
                 studentInfDBAdapter.open();
                 String yearString = getStartAcademicYear(studentInfDBAdapter.getDatabase(),
                         connectionAgent);

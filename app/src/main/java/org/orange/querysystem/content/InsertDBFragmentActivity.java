@@ -1,6 +1,8 @@
 package org.orange.querysystem.content;
 
+import org.orange.parser.connection.LoginConnectionAgent;
 import org.orange.parser.connection.SSFWWebsiteConnectionAgent;
+import org.orange.parser.entity.Course;
 import org.orange.parser.parser.ParseAdapter;
 import org.orange.parser.parser.ParseListener;
 import org.orange.parser.parser.SelectedCourseParser;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.widget.ProgressBar;
 
 import java.io.IOException;
+import java.util.List;
 
 public class InsertDBFragmentActivity extends Activity {
 
@@ -53,13 +56,19 @@ public class InsertDBFragmentActivity extends Activity {
             final String username = args[0], password = args[1];
             SelectedCourseParser parser = new SelectedCourseParser();
             parser.setParseListener(new MyParserListener());
-            parser.setConnectionAgent(
-                    new SSFWWebsiteConnectionAgent().setAccount(username, password));
+            LoginConnectionAgent ssfwConnectionAgent =
+                    new SSFWWebsiteConnectionAgent().setAccount(username, password);
+            parser.setConnectionAgent(ssfwConnectionAgent);
             StudentInfDBAdapter studentInfDBAdapter = new StudentInfDBAdapter(
                     InsertDBFragmentActivity.this);
             try {
+                if (!ssfwConnectionAgent.login()) {
+                    setResult(RESULT_CANNOT_LOGIN);
+                    return null;
+                }
+                List<Course> courses = parser.parse();
                 studentInfDBAdapter.open();
-                studentInfDBAdapter.autoInsertArrayCoursesInf(parser.parse(), args[0]);
+                studentInfDBAdapter.autoInsertArrayCoursesInf(courses, username);
                 setResult(RESULT_OK);
             } catch (SQLiteException e) {
                 e.printStackTrace();
